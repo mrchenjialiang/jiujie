@@ -43,7 +43,7 @@ public class MyOkHttpUtil {
     public static OkHttpClient getOkHttpClient(Context context,boolean isSaveCookie,boolean isUseCookie,String saveCookieKey,String[] useCookieKeys) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
-            builder .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+            builder .connectTimeout(20000L, TimeUnit.MILLISECONDS)
                     .readTimeout(10000L, TimeUnit.MILLISECONDS)
                     .hostnameVerifier(new HostnameVerifier() {
                         @Override

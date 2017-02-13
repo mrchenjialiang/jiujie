@@ -13,33 +13,37 @@ import java.util.List;
 
 /**
  * @author Created by ChenJiaLiang on 2016/6/1.
- * Email : 576507648@qq.com
+ *         Email : 576507648@qq.com
  */
 public class URLImageGetter implements Html.ImageGetter {
     private final List<String> picList;
     private final Activity activity;
 
-    protected URLImageGetter(Activity activity,List<String> picList) {
+    protected URLImageGetter(Activity activity, List<String> picList) {
         this.activity = activity;
         this.picList = picList;
     }
 
     @Override
     public Drawable getDrawable(String source) {
-        if(!TextUtils.isEmpty(source)&&!source.startsWith("http")){
+        if (TextUtils.isEmpty(source))
             return null;
+        if (!TextUtils.isEmpty(source) && !source.startsWith("http")) {
+            if (!TextUtils.isEmpty(APP.defaultDoMain)) {
+                source = APP.defaultDoMain + source;
+            }
         }
-        if(picList!=null&&!picList.contains(source))picList.add(source);
+        if (picList != null && !picList.contains(source)) picList.add(source);
         Drawable drawable = null;
         try {
             drawable = ImageUtil.instance().getImageDrawableFromNet(activity, source);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            if(APP.isDeBug){
-                UIHelper.showLog("Exception:"+e);
-                UIHelper.showToastLong(activity,"Exception:"+e);
-            }else{
-                UIHelper.showLog("Exception:"+e);
+            if (APP.isDeBug) {
+                UIHelper.showLog("Exception:" + e);
+                UIHelper.showToastLong(activity, "Exception:" + e);
+            } else {
+                UIHelper.showLog("Exception:" + e);
             }
         }
         return drawable;

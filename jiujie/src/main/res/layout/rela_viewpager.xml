@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:android_custom="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" 
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
 
@@ -9,32 +8,8 @@
         android:id="@+id/rela_viewpager_photoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:layout_gravity="center"
-    	android:background="#000000" />
-<!--         android:src="@drawable/ic_stub" -->
-    
-    <!--<ImageView
-        android:id="@+id/rela_viewpager_imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/logo_gray_conner"/>
-
-    <com.jiujie.base.widget.RoundProgressBar
-        android:id="@+id/rela_viewpager_roundProgressBar1"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
         android:layout_centerInParent="true"
-
-        android_custom:roundColor="#00ec00"
-        android_custom:roundProgressColor="#000000"
-        android_custom:roundWidth="4dip"
-        android_custom:textColor="#00ec00"
-        android_custom:textIsDisplayable="true"
-        android_custom:textSize="16sp"/>-->
+        android:scaleType="centerInside"
+        android:background="#000000" />
 
 </RelativeLayout>

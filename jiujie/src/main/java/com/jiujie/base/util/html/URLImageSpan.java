@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import com.jiujie.base.activity.ViewPagerActivity;
+import com.jiujie.base.activity.ImageViewPagerActivity;
 import com.jiujie.base.util.UIHelper;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class URLImageSpan extends ClickableSpan {
 
     @Override
     public void onClick(View widget) {
-        Intent intent = new Intent(mActivity,ViewPagerActivity.class);
+        Intent intent = new Intent(mActivity,ImageViewPagerActivity.class);
         intent.putExtra("url", url);
         intent.putStringArrayListExtra("urlList", picList);
         mActivity.startActivity(intent);

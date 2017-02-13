@@ -13,11 +13,13 @@ public class APP {
     public static boolean isUseUMeng;
     public static boolean isCrashError;
     public static boolean isDeBug;
+    public static String defaultDoMain;
 
-    public static void init(Context context,boolean isUseUMeng,boolean isCrashError,boolean isDeBug){
+    public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug){
         APP.isUseUMeng = isUseUMeng;
         APP.isCrashError = isCrashError;
         APP.isDeBug = isDeBug;
+        APP.defaultDoMain = defaultDoMain;
 
         if(isUseUMeng)initUMeng(context);
 

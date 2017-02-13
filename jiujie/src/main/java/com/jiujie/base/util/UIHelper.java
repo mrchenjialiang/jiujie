@@ -41,8 +41,6 @@ import android.widget.Toast;
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.WaitingDialog;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -542,21 +540,20 @@ public class UIHelper {
         return hex.toString();
     }
 
-    /**
-     * 清除ImageLoader的某个缓存
-     *
-     * @param url
-     */
-    public static void clearImageLoaderCache(String url) {
-        if (!TextUtils.isEmpty(url)) {
-            DiscCacheAware discCacheAware = ImageLoader.getInstance()
-                    .getDiscCache();
-            File file = discCacheAware.get(url);
-            if (file != null && file.exists()) {
-                file.delete();
-            }
-        }
-    }
+//    /**
+//     * 清除ImageLoader的某个缓存
+//     * @param url
+//     */
+//    public static void clearImageLoaderCache(String url) {
+//        if (!TextUtils.isEmpty(url)) {
+//            DiscCacheAware discCacheAware = ImageLoader.getInstance()
+//                    .getDiscCache();
+//            File file = discCacheAware.get(url);
+//            if (file != null && file.exists()) {
+//                file.delete();
+//            }
+//        }
+//    }
 
 //    use for ImageLoader but never use,now,use Glide
 //    public static File getImageLoaderCache(String url) {

@@ -29,57 +29,36 @@ import android.view.View.OnClickListener;
  */
 public class HackyViewPager extends ViewPager implements OnClickListener {
 
-	private boolean isLocked;
-	
+
     public HackyViewPager(Context context) {
         super(context);
-        isLocked = false;
     }
 
     public HackyViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        isLocked = false;
 		setClickable(true);
         setOnClickListener(this);
     }
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-    	if (!isLocked) {
-	        try {
-	            return super.onInterceptTouchEvent(ev);//当滑线和水平线夹角<45°时返回true,其他都为false
-	        } catch (IllegalArgumentException e) {
-	        	//异常不可避免,要么就去改系统源码..
+		try {
+			return super.onInterceptTouchEvent(ev);//当滑线和水平线夹角<45°时返回true,其他都为false
+		} catch (IllegalArgumentException e) {
+			//异常不可避免,要么就去改系统源码..
 //	        	System.out.println("异常:"+e.getMessage());
 //	        	System.out.println("HackyViewPager抛出异常");
-	            return false;
-	        }
-    	}
-    	return false;
+			return false;
+		}
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!isLocked) {
-            return super.onTouchEvent(event);
-        }
-        return false;
+		return super.onTouchEvent(event);
     }
-    
-	public void toggleLock() {
-		isLocked = !isLocked;
-	}
-
-	public void setLocked(boolean isLocked) {
-		this.isLocked = isLocked;
-	}
-
-	public boolean isLocked() {
-		return isLocked;
-	}
 
 	@Override
 	public void onClick(View v) {
-		System.out.println("点击了");
+//		System.out.println("点击了");
 	}
 	
 }
