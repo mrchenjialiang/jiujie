@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jiujie.base.widget.DrawerLayoutNoScroll xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/base_drawer"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/base_drawer_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FAFAFA"
+        android:layout_gravity="end"
+        android:orientation="vertical"
+        android:paddingTop="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/root_layout"
+            android:orientation="vertical">
+
+            <include layout="@layout/toolbar_layout" />
+
+        </LinearLayout>
+
+        <include layout="@layout/activity_base"/>
+
+    </LinearLayout>
+
+</com.jiujie.base.widget.DrawerLayoutNoScroll>

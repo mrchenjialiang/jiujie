@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/base_title"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_of_title"
+        android:background="#efeff4"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/title_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="visible" >
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="16dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/title_search_back" />
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_white_conner_5_line_gray1"
+            android:layout_marginRight="20dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/title_search_text"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:background="@null"
+                android:textColorHint="#999999"
+                android:textColor="#999999"
+                android:imeOptions="actionSearch"
+                android:hint="请输入要搜索的内容"
+                android:textSize="14sp"
+                android:layout_weight="1">
+            </EditText>
+
+            <LinearLayout 
+                android:id="@+id/title_search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:gravity="center">
+                
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerInside"
+                android:src="@drawable/title_search_search" />
+            </LinearLayout>
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+
+    <View style="@style/HLine" />
+
+</LinearLayout>
