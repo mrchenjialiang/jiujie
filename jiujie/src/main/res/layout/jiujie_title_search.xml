@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/base_title"
+    android:id="@+id/ts_base_title"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -13,7 +13,7 @@
         android:orientation="horizontal" >
 
         <LinearLayout
-            android:id="@+id/title_back"
+            android:id="@+id/ts_title_back"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -36,7 +36,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/title_search_text"
+                android:id="@+id/ts_title_search_text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -54,7 +54,7 @@
             </EditText>
 
             <LinearLayout 
-                android:id="@+id/title_search"
+                android:id="@+id/ts_title_search"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:paddingLeft="12dp"

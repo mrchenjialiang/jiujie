@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.umeng.analytics.MobclickAgent;
 
+
+
 /**
  * @author : Created by ChenJiaLiang on 2016/6/12.
  * Email : 576507648@qq.com
@@ -21,6 +23,8 @@ public class APP {
         APP.isDeBug = isDeBug;
         APP.defaultDoMain = defaultDoMain;
 
+//        compile 'com.mcxiaoke.photoview:parent:1.2.3'
+
         if(isUseUMeng)initUMeng(context);
 
         if(isCrashError){
@@ -31,11 +35,8 @@ public class APP {
     }
 
     private static void initUMeng(Context context) {
-        MobclickAgent.onError(context);
         MobclickAgent.setDebugMode(APP.isDeBug);
-        MobclickAgent.setAutoLocation(false);//设置是否允许收集地理位置信息 (默认true)
         MobclickAgent.setSessionContinueMillis(30000);//退出应用，再过多长时间进来表示不同的启动
-        MobclickAgent.updateOnlineConfig(context);//
         MobclickAgent.openActivityDurationTrack(true);//页面统计
     }
 

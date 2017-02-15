@@ -46,6 +46,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -150,6 +151,66 @@ public class UIHelper {
             Log.e("CJL", text);
         }
     }
+    public static void showLogInFile(String text) {
+//        writeStringToFile("E:/AndroidLog/","log.txt",text);
+        writeStringToFile(Environment.getExternalStorageDirectory().getPath(), "log.txt", text);
+    }
+
+    public static void writeStringToFile(String fileDic,String fileName,String text){
+        if(TextUtils.isEmpty(text)){
+            return;
+        }
+        if(TextUtils.isEmpty(fileDic)){
+            return;
+        }
+        if(TextUtils.isEmpty(fileName)){
+            return;
+        }
+        File file = new File(fileDic);
+        if(!file.exists()){
+            boolean mkdirs = file.mkdirs();
+//            boolean mkdirs = file.mkdir();
+            if(!mkdirs){
+                UIHelper.showLog("writeStringToFile mkdirs File " + file.getPath() + " fail");
+                return;
+            }
+        }
+        file = new File(fileDic,fileName);
+//        if(!file.exists()){
+//            boolean mkdirs = file.mkdirs();
+//            if(!mkdirs){
+//                UIHelper.showLog("writeStringToFile mkdirs File " + file.getPath() + " fail");
+//                return;
+//            }
+//        }
+
+        if(file.exists()) {
+            boolean delete = file.delete();
+            if(!delete){
+                UIHelper.showLog("writeStringToFile delete File " + file.getPath() + " fail");
+                return;
+            }
+        }
+        if(!file.exists()){
+            try {
+                boolean newFile = file.createNewFile();
+                if(!newFile){
+                    UIHelper.showLog("writeStringToFile newFile File " + file.getPath() + " fail");
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(file,false);
+            fos.write(text.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static int dip2px(Context context, float dipValue) {
         float scale = context.getResources().getDisplayMetrics().density;
@@ -229,7 +290,6 @@ public class UIHelper {
     }
 
     /**
-     * @param activity
      * @param type     1:into center 0→max, 2,out center max →0
      */
     public static void setJumpAnimation(Activity activity, int type) {
@@ -782,6 +842,7 @@ public class UIHelper {
         if(content==null){
             content = "";
         }
+        content = content.replaceAll("<div><br \\/><\\/div>","");
         while(content.startsWith("<br />")||content.startsWith("<br >")||content.startsWith("<br/>")||content.startsWith("<br>")||content.startsWith("\\n")){
             if(content.startsWith("<br />")){
                 content = content.substring("<br />".length(),content.length()).trim();

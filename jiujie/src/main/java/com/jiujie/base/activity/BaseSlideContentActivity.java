@@ -63,7 +63,6 @@ public abstract class BaseSlideContentActivity extends AppCompatActivity {
             setToolBarHeight(titleHeight);
         }
 
-        MobclickAgent.onError(this);
     }
 
     private DrawerLayoutNoScroll drawerLayout;

@@ -15,7 +15,7 @@
 	        android:layout_height="wrap_content"
 	        android:background="@color/trans" >
 
-	        <include layout="@layout/title_search" />
+	        <include layout="@layout/jiujie_title_search" />
 	    </LinearLayout>
 
 		<include layout="@layout/base_content_layout"/>

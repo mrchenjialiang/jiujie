@@ -35,6 +35,7 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
+-keep class android.support.v4.*.**{*;}
 -keep public class * extends android.support.v4.app.Fragment
 -keep public class * extends android.support.v4.app.FragmentActivity
 -keep public class * extends android.support.v7.app.AppCompatActivity
@@ -78,9 +79,37 @@
    public <init>(org.json.JSONObject);
 }
 
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
 
 -dontwarn com.igexin.**
 -keep class com.igexin.**{*;}
+
+-dontwarn com.mob.tools.network.**
+-keep class com.mob.**{*;}
+-keep class com.mob.tools.network.**{*;}
+-keep class com.mob.tools.network.HttpConnectionImpl
+
+-dontwarn com.umeng.analytics.**
+-dontwarn com.umeng.common.net.**
+-dontwarn com.umeng.fb.**
+-dontwarn com.umeng.fb.a.**
+-dontwarn com.umeng.fb.util.**
+-keep class com.umeng.**{*;}
+
+-dontwarn okio.**
+-keep class okio.**{*;}
+
+-dontwarn retrofit2.**
+-keep class retrofit2.**{*;}
+
+-dontwarn rx.internal.util.unsafe.**
+-keep class rx.internal.util.unsafe.**{*;}
+
+-dontwarn org.apache.**
+-keep class org.apache.*.**{*;}
+
+
 -keep class com.edmodo.** {*; }
 -keep class com.nostra13.** {*; }
 -keep class opensource.** {*; }
@@ -105,6 +134,9 @@
 -keep class com.android.pc.ioc.**{*;}
 
 -keep class **.R$* {*;}
+-keep public class com.jiujie.base.R$*{
+    public static final int *;
+}
 
 -keep  class * implements com.badlogic.gdx.utils.Json*
 -keep  class com.umeng.*.** {*; }
@@ -116,14 +148,9 @@
 -keep class com.jiujie.base.APP {*;}
 -keep class com.jiujie.base.Title {*;}
 -keep class com.jiujie.base.util.MyHandler {*;}
+-keep  class okhttp3.** {*; }
+-keep  class okhttp3.Request$Builder
 
-
-#Glide
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
-    **[] $VALUES;
-    public *;
-}
 
 
 -keepattributes Signature
@@ -156,3 +183,25 @@
      public <init>(android.content.Context, android.util.AttributeSet, int);
      public void set*(...);
  }
+
+##Butterknife混淆配置 start
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$Finder { *; }
+-keep class **$$ViewBinder { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+##Butterknife混淆配置 end
+
+
+#Glide  start
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+    **[] $VALUES;
+    public *;
+}
+#Glide  end

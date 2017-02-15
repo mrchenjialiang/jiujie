@@ -25,14 +25,15 @@ import java.util.ArrayList;
 public class HtmlTextUtil {
 
     private static MyLinkedHashMap<String, SpannableStringBuilder> dataMap = new MyLinkedHashMap<>();
-    private static MyLinkedHashMap<String, Drawable> imageMap = new MyLinkedHashMap<>();
+    private static final int minImageWidth = 30;
+    private static final int bigMoreToScreenWidth = 360;
+    public static final int ScreenWidth = 0;//确定要撑满
+    public static final int AutoWidth = 1;//原图多大就多大
+    public static final int AiAutoWidth = 2;//如果原图大于某个尺寸就撑满，如果小于某个尺寸就固定30，其他情况原图多大就多大。
 
     public static void clearCache(){
         if(dataMap!=null){
             dataMap.clear();
-        }
-        if(imageMap!=null){
-            imageMap.clear();
         }
     }
 
@@ -40,35 +41,27 @@ public class HtmlTextUtil {
         setText(activity, text, textView, isSetScreenWidth,key,urlClickListen,null);
     }
 
-    public enum ImageWidthType{
-        ScreenWidth,//确定要撑满
-        AutoWidth,//原图多大就多大
-        AiAutoWidth //如果原图大于某个尺寸就撑满，如果小于某个尺寸就固定30，其他情况原图多大就多大。
-    }
-    private static final int minImageWidth = 30;
-    private static final int bigMoreToScreenWidth = 360;
-
-    public static void setText(final Activity activity,final String text,final TextView textView, ImageWidthType imageWidthType,String key,final URLSpanClickListen urlClickListen) {
+    public static void setText(final Activity activity,final String text,final TextView textView, int imageWidthType,String key,final URLSpanClickListen urlClickListen) {
         setText(activity, text, textView, imageWidthType,key,urlClickListen,null);
     }
 
-    public static void setText(final Activity activity,final String text,final TextView textView, ImageWidthType imageWidthType,final URLSpanClickListen urlClickListen) {
+    public static void setText(final Activity activity,final String text,final TextView textView, int imageWidthType,final URLSpanClickListen urlClickListen) {
         setText(activity, text, textView, imageWidthType,null,urlClickListen,null);
     }
 
-    public static void setText(final Activity activity,final String text,final TextView textView, ImageWidthType imageWidthType) {
+    public static void setText(final Activity activity,final String text,final TextView textView, int imageWidthType) {
         setText(activity, text, textView, imageWidthType,null,null,null);
     }
 
     public static void setText(final Activity activity,final String text,final TextView textView, final boolean isSetScreenWidth,String key,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
         if(isSetScreenWidth){
-            setText(activity, text, textView, ImageWidthType.ScreenWidth,key,urlClickListen,onTextCallbackListen);
+            setText(activity, text, textView, ScreenWidth,key,urlClickListen,onTextCallbackListen);
         }else{
-            setText(activity, text, textView, ImageWidthType.AiAutoWidth,key,urlClickListen,onTextCallbackListen);
+            setText(activity, text, textView, AiAutoWidth,key,urlClickListen,onTextCallbackListen);
         }
     }
 
-    public static void setText(final Activity activity,final String text,final TextView textView, ImageWidthType imageWidthType,String key,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
+    public static void setText(final Activity activity,final String text,final TextView textView, int imageWidthType,String key,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
         int imageMaxWidth = textView.getWidth()-textView.getPaddingLeft()-textView.getPaddingRight();
         textView.setText(Html.fromHtml(text));
         textView.setMovementMethod(LinkMovementMethod.getInstance());//设置Span可点击
@@ -88,16 +81,15 @@ public class HtmlTextUtil {
      * textView.setMovementMethod(LinkMovementMethod.getInstance());//设置Span可点击
      */
     public static void getText(final Activity activity,final String text,String key, final int imageMaxWidth,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
-        getText(activity, text, key, imageMaxWidth, ImageWidthType.AutoWidth, urlClickListen, onTextCallbackListen);
+        getText(activity, text, key, imageMaxWidth, AutoWidth, urlClickListen, onTextCallbackListen);
     }
 
     /**
      * textView.setMovementMethod(LinkMovementMethod.getInstance());//设置Span可点击
      */
-    public static void getText(final Activity activity,final String text,String key, final int imageMaxWidth,final ImageWidthType imageWidthType,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
+    public static void getText(final Activity activity,final String text,String key, final int imageMaxWidth,final int imageWidthType,final URLSpanClickListen urlClickListen, final OnTextCallbackListen onTextCallbackListen) {
         if(TextUtils.isEmpty(text))return;
         dataMap.setMaxSize(50);
-        imageMap.setMaxSize(20);
 
         if(TextUtils.isEmpty(key)){
             int length = text.length();
@@ -136,7 +128,7 @@ public class HtmlTextUtil {
         }.execute("");
     }
 
-    private static CharSequence setSpanAction(Activity activity, CharSequence text, ArrayList<String> picList, int imageMaxWidth, ImageWidthType imageWidthType, URLSpanClickListen urlClickListen){
+    private static CharSequence setSpanAction(Activity activity, CharSequence text, ArrayList<String> picList, int imageMaxWidth, int imageWidthType, URLSpanClickListen urlClickListen){
         if (text instanceof Spannable) {
             int end = text.length();
             SpannableStringBuilder style = new SpannableStringBuilder(text);
@@ -155,20 +147,20 @@ public class HtmlTextUtil {
         return text;
     }
 
-    private static void setImageSpanAction(Activity activity, SpannableStringBuilder style, ImageSpan image, ArrayList<String> picList, int imageMaxWidth, ImageWidthType imageWidthType){
+    private static void setImageSpanAction(Activity activity, SpannableStringBuilder style, ImageSpan image, ArrayList<String> picList, int imageMaxWidth, int imageWidthType){
         if(image==null)return;
         Drawable drawable = image.getDrawable();
         if(drawable==null)return;
 
         int width = drawable.getIntrinsicWidth();
         int height;
-        if(imageWidthType==ImageWidthType.AiAutoWidth){
+        if(imageWidthType==AiAutoWidth){
             if(width<minImageWidth){
                 width = minImageWidth;
             }else if(width>=bigMoreToScreenWidth){
                 width = imageMaxWidth;
             }
-        }else if(imageWidthType==ImageWidthType.ScreenWidth){
+        }else if(imageWidthType==ScreenWidth){
             width = imageMaxWidth;
         }
         if(width==drawable.getIntrinsicWidth()){

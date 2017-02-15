@@ -163,6 +163,23 @@ public class Title {
 	/**
 	 * only use in activity
 	 */
+	public void setLeftButtonBack(int drawId){
+		title_left_btn.setVisibility(View.VISIBLE);
+		title_left_btn_image.setImageResource(drawId);
+		if(title_left_btn!=null){
+			if(activity!=null){
+				title_left_btn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						activity.finish();
+					}
+				});
+			}
+		}
+	}
+	/**
+	 * only use in activity
+	 */
 	public void setLeftButtonBack(int normalId,int pressId){
 		title_left_btn.setVisibility(View.VISIBLE);
 		setLeftButtonImage(normalId,pressId);
@@ -231,4 +248,5 @@ public class Title {
 		if(mDefaultTitle!=null)mDefaultTitle.setBackgroundColor(titleBackGroundColor);
 		if(title_custom_line!=null)title_custom_line.setBackgroundColor(titleBackGroundColor);
 	}
+
 }

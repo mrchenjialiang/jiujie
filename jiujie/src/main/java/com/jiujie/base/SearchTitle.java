@@ -27,10 +27,10 @@ public class SearchTitle {
 	}
 
 	private void initUI() {
-		mTitleView = activity.findViewById(R.id.base_title);
-		mLeftBtn = activity.findViewById(R.id.title_back);
-		mSearchBtn = activity.findViewById(R.id.title_search);
-		mSearchText = (EditText) activity.findViewById(R.id.title_search_text);
+		mTitleView = activity.findViewById(R.id.ts_base_title);
+		mLeftBtn = activity.findViewById(R.id.ts_title_back);
+		mSearchBtn = activity.findViewById(R.id.ts_title_search);
+		mSearchText = (EditText) activity.findViewById(R.id.ts_title_search_text);
 	}
 
 	public EditText getSearchText() {

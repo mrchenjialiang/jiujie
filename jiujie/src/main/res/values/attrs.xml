@@ -20,6 +20,7 @@
     <attr name="background_p" format="reference|color"/>
     <attr name="scaleHeight" format="float"/>
     <attr name="scaleWidth" format="float"/>
+    <attr name="lineSpacing" format="dimension"/>
 
     <declare-styleable name="MarqueeViewGroup">
         <attr name="showNum" format="integer"/>
@@ -75,8 +76,13 @@
     </declare-styleable>
 
     <declare-styleable name="LabelViewGroup">
-        <attr name="lineSpacing" format="dimension"/>
+        <attr name="lineSpacing"/>
         <attr name="spacing" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="AutoFillLineViewGroup">
+        <attr name="lineNum" format="integer"/>
+        <attr name="lineSpacing"/>
     </declare-styleable>
 
     <declare-styleable name="RoundProgressBar">
