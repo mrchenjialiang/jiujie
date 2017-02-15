@@ -3,7 +3,6 @@ package com.jiujie.base.http.rx;
 
 import android.text.TextUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,11 +18,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public abstract class BaseHttpMethods<T> {
 
     public T httpService;
-    private Cookie SESSION_COOKIE;
-
-    public void logoff(){
-        SESSION_COOKIE = null;
-    }
 
     protected BaseHttpMethods() {
         if(TextUtils.isEmpty(getBaseUrl())){
@@ -41,30 +35,12 @@ public abstract class BaseHttpMethods<T> {
         builder.cookieJar(new CookieJar() {
             @Override
             public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
-                if (list != null && list.size() > 0) {
-                    for (int i = 0; i < list.size(); i++) {
-                        Cookie cookie = list.get(i);
-                        if (cookie.name().equals("SESSION")) {
-                            String path = httpUrl.url().getPath();
-                            if(path.contains("/api/app-login")){
-                                SESSION_COOKIE = cookie;
-//                                UIHelper.showLog("saveFromResponse SESSION_COOKIE:"+SESSION_COOKIE);
-                            }
-                        }
-                    }
-                }
+                BaseHttpMethods.this.saveFromResponse(httpUrl, list);
             }
 
             @Override
             public List<Cookie> loadForRequest(HttpUrl httpUrl) {
-                List<Cookie> cookies = new ArrayList<>();
-                if(SESSION_COOKIE!=null){
-                    cookies.add(SESSION_COOKIE);
-                    if (SESSION_COOKIE.name().equals("SESSION")) {
-//                        UIHelper.showLog("loadForRequest SESSION_COOKIE:"+SESSION_COOKIE);
-                    }
-                }
-                return cookies;
+                return BaseHttpMethods.this.loadForRequest(httpUrl);
             }
         });
 
@@ -77,6 +53,7 @@ public abstract class BaseHttpMethods<T> {
 
         httpService = retrofit.create(getServiceClass());
     }
+
 
     /**
      * 必须重写
@@ -92,5 +69,8 @@ public abstract class BaseHttpMethods<T> {
      * 必须重写
      */
     protected abstract int getTimeOutSecond();
+
+    protected abstract void saveFromResponse(HttpUrl httpUrl, List<Cookie> list);
+    protected abstract List<Cookie> loadForRequest(HttpUrl httpUrl);
 
 }

@@ -15,6 +15,8 @@ public abstract class BaseListNoTitleActivity extends BaseNoTitleActivity implem
 
 	public boolean isEnd;
 	public RecyclerViewUtil recyclerViewUtil;
+	public int page;
+	public int size = 20;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -15,6 +15,8 @@ public abstract class BaseListFragment extends BaseFragment implements  Refresh 
 
 	public boolean isEnd;
 	public RecyclerViewUtil recyclerViewUtil;
+	public int page;
+	public int size = 20;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
