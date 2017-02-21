@@ -29,6 +29,7 @@ public abstract class BaseAdvertAdapter extends PagerAdapter {
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
+		viewMap.clear();
 		if(onNotifyDataSetChangedListen!=null) onNotifyDataSetChangedListen.changed();
 	}
 

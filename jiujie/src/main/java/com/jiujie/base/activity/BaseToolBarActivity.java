@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.util.PermissionsManager;
+import com.umeng.analytics.MobclickAgent;
 
 public class BaseToolBarActivity extends AppCompatActivity {
 
@@ -76,5 +78,17 @@ public class BaseToolBarActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(APP.isUseUMeng) MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(APP.isUseUMeng) MobclickAgent.onPause(this);
     }
 }

@@ -132,17 +132,13 @@ public class GlideUtil {
     }
 
     public void setDefaultNoCacheImage(Context context, String url, ImageView imageView) {
-        DrawableRequestBuilder<String> builder = Glide.with(context)
+        Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.logo_gray)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)//禁用磁盘缓存
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
-                .centerCrop();
-        if (!isKeepInMemory) {
-            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        builder
+                .centerCrop()
                 .into(imageView);
     }
 
@@ -203,6 +199,28 @@ public class GlideUtil {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
         builder
+                .into(imageView);
+    }
+
+    public void setCircleNoCacheImage(Context context, String url, ImageView imageView) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.circle_bg_gray)
+                .transform(new GlideCircleTransform(context.getApplicationContext()))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)//跳过内存缓存
+                .crossFade()
+                .into(imageView);
+    }
+
+    public void setCircleNoCacheImage(Fragment context, String url, ImageView imageView) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.circle_bg_gray)
+                .transform(new GlideCircleTransform(context.getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)//跳过内存缓存
+                .crossFade()
                 .into(imageView);
     }
 

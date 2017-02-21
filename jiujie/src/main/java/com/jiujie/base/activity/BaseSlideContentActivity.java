@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.util.PermissionsManager;
@@ -111,14 +112,14 @@ public abstract class BaseSlideContentActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
+        if(APP.isUseUMeng)MobclickAgent.onResume(this);
         UIHelper.hidePan(mActivity);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        MobclickAgent.onPause(this);
+        if(APP.isUseUMeng)MobclickAgent.onPause(this);
     }
 
     @Override
