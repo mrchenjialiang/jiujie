@@ -12,7 +12,7 @@ public class GlideModuleMine implements GlideModule {
 
     // 需要在AndroidManifest.xml中声明
     // <meta-data
-    //    android:name="com.jiujie.base.util.glide.GlideModuleMine"
+    //    android:name="com.jiujie.base_swipe_back.util.glide.GlideModuleMine"
     //    android:value="GlideModule" />
 
     @Override

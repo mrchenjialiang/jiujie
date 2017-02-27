@@ -23,7 +23,7 @@ import com.jiujie.base.R;
  * WebView页面，需要传参 String url,String title
  * @author ChenJiaLiang
  */
-public class WebActivity extends BaseSlideContentActivity {
+public class WebActivity extends BaseActivity {
 	
 	private WebView webView;
 	private String title;

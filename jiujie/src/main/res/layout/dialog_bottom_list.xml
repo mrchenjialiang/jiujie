@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp">
+
+        <ScrollView
+            android:id="@+id/dbl_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/dbl_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+                <include layout="@layout/dialog_center_list_item"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/dbl_btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:background="@drawable/selector_bottom_dialog_item_single"
+            android:text="取消"
+            android:textColor="#2b84fd"
+            android:textSize="20sp"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

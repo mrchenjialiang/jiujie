@@ -1,12 +1,11 @@
 package com.jiujie.base.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,21 +15,16 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.Title;
-import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.widget.DrawerLayoutNoScroll;
-import com.umeng.analytics.MobclickAgent;
 
 /**
- * 将主要内容作为drawer,初始就显示，向右滑动则退出当前界面，继承该类，需使用透明主题
- android:theme="@style/JK.SwipeBack.Transparent.Theme"
  * Created by ChenJiaLiang on 2016/6/3.
  * Email : 576507648@qq.com
  */
-public abstract class BaseSlideContentActivity extends AppCompatActivity {
+public abstract class BaseDrawMenuActivity extends BaseMostActivity {
     public Title mTitle;
     public Activity mActivity;
     public Toolbar toolbar;
@@ -79,54 +73,54 @@ public abstract class BaseSlideContentActivity extends AppCompatActivity {
 
     private void initDrawer() {
         drawerLayout = (DrawerLayoutNoScroll) findViewById(R.id.base_drawer);
-
-        LinearLayout drawContent = (LinearLayout) findViewById(R.id.base_drawer_content);
-        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) drawContent.getLayoutParams();
-        params.width = UIHelper.getScreenWidth(this);
-        drawContent.setLayoutParams(params);
-
-        drawerLayout.openDrawer(drawContent);
-
-        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                finish();
-                overridePendingTransition(0, 0);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
+        LinearLayout drawContent = (LinearLayout) findViewById(R.id.base_drawer_menu);
+        if(getDrawLayoutId()!=0){
+            drawContent.addView(getLayoutInflater().inflate(getDrawLayoutId(),drawContent,false));
+        }
+//        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) drawContent.getLayoutParams();
+//        params.width = UIHelper.getScreenWidth(this);
+//        drawContent.setLayoutParams(params);
+//        drawerLayout.openDrawer(drawContent);
+//
+//        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+//            @Override
+//            public void onDrawerSlide(View drawerView, float slideOffset) {
+//            }
+//
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                finish();
+//                overridePendingTransition(0, 0);
+//            }
+//
+//            @Override
+//            public void onDrawerStateChanged(int newState) {
+//
+//            }
+//        });
     }
 
+    protected int getDrawLayoutId(){
+        return 0;
+    }
+
+
     @Override
-    protected void onResume() {
-        super.onResume();
-        if(APP.isUseUMeng)MobclickAgent.onResume(this);
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
         UIHelper.hidePan(mActivity);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(APP.isUseUMeng)MobclickAgent.onPause(this);
+        overridePendingTransition(R.anim.slide_right_in, R.anim.no_anim);
     }
 
     @Override
     public void finish() {
         super.finish();
         UIHelper.hidePan(mActivity);
-        overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+        overridePendingTransition(0, R.anim.slide_right_out);
     }
 
     private void initToolbar() {
@@ -194,7 +188,7 @@ public abstract class BaseSlideContentActivity extends AppCompatActivity {
         if (getLayoutId() == 0) {
             throw new NullPointerException(this+" getLayoutId() should not be 0");
         }
-        View contentView = LayoutInflater.from(this).inflate(getLayoutId(),null);
+        View contentView = LayoutInflater.from(this).inflate(getLayoutId(),contentLayout,false);
         LinearLayout.LayoutParams lpContent = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.FILL_PARENT,
                 LinearLayout.LayoutParams.FILL_PARENT);
@@ -284,11 +278,5 @@ public abstract class BaseSlideContentActivity extends AppCompatActivity {
             mLoadingLine.setVisibility(View.GONE);
         }
         mLoadingFail.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

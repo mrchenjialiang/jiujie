@@ -11,7 +11,7 @@ import com.jiujie.base.util.RecyclerViewUtil;
 /**
  * @author ChenJiaLiang
  */
-public abstract class BaseSlideListActivity extends BaseSlideContentActivity implements Refresh {
+public abstract class BaseDrawMenuListActivity extends BaseDrawMenuActivity implements Refresh {
 
 	public boolean isEnd;
 	public RecyclerViewUtil recyclerViewUtil;

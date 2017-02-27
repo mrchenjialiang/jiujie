@@ -2,11 +2,14 @@ package com.jiujie.base.http.okhttp;
 
 import java.io.Serializable;
 
+import okhttp3.Cookie;
+
 /**
  * author : Created by ChenJiaLiang on 2016/6/24.
  * Email : 576507648@qq.com
  */
 public class MyCookie implements Serializable{
+    private static final long serialVersionUID = -6977481843253829729L;
     String name;
     String value;
     long expiresAt;
@@ -16,7 +19,7 @@ public class MyCookie implements Serializable{
     boolean httpOnly;
     boolean hostOnly;
     boolean persistent;
-    MyCookie(String name, String value, long expiresAt, String domain, String path,
+    public MyCookie(String name, String value, long expiresAt, String domain, String path,
             boolean secure, boolean httpOnly, boolean hostOnly, boolean persistent){
         this.name = name;
         this.value = value;
@@ -71,5 +74,26 @@ public class MyCookie implements Serializable{
 
     public boolean secure() {
         return secure;
+    }
+    public Cookie toCookie(){
+        Cookie.Builder b = new Cookie.Builder();
+        b.name(name())
+                .value(value())
+                .path(path());
+        if(secure()){
+            b.secure();
+        }
+        if(httpOnly){
+            b.httpOnly();
+        }
+        if(hostOnly()){
+            b.hostOnlyDomain(domain());
+        }else{
+            b.domain(domain());
+        }
+        if(persistent()){
+            b.expiresAt(expiresAt());
+        }
+        return b.build();
     }
 }

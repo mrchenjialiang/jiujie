@@ -23,9 +23,7 @@ public class APP {
         APP.isDeBug = isDeBug;
         APP.defaultDoMain = defaultDoMain;
 
-//        compile 'com.mcxiaoke.photoview:parent:1.2.3'
-
-        if(isUseUMeng)initUMeng(context);
+        if(isUseUMeng)initUMeng();
 
         if(isCrashError){
             //初始化捕捉异常类
@@ -34,7 +32,7 @@ public class APP {
         }
     }
 
-    private static void initUMeng(Context context) {
+    private static void initUMeng() {
         MobclickAgent.setDebugMode(APP.isDeBug);
         MobclickAgent.setSessionContinueMillis(30000);//退出应用，再过多长时间进来表示不同的启动
         MobclickAgent.openActivityDurationTrack(true);//页面统计

@@ -17,7 +17,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     @SuppressWarnings("unused")
     private static final String TAG = "ImageViewTouchBase";
 
-    // This is the base transformation which is used to show the image
+    // This is the base_swipe_back transformation which is used to show the image
     // initially. The current computation for this shows the image in
     // it's entirety, letterboxing as needed. One could choose to
     // show the image as cropped instead.
@@ -34,7 +34,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     protected Matrix mSuppMatrix = new Matrix();
 
     // This is the final matrix which is computed as the concatentation
-    // of the base matrix and the supplementary matrix.
+    // of the base_swipe_back matrix and the supplementary matrix.
     private final Matrix mDisplayMatrix = new Matrix();
 
     // Temporary buffer used for getting the values out of a matrix.
@@ -134,7 +134,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     private Runnable mOnLayoutRunnable = null;
 
-    // This function changes bitmap, reset base matrix according to the size
+    // This function changes bitmap, reset base_swipe_back matrix according to the size
     // of the bitmap, and optionally reset the supplementary matrix.
     public void setImageBitmapResetBase(final Bitmap bitmap, final boolean resetSupp) {
         setImageRotateBitmapResetBase(new RotateBitmap(bitmap), resetSupp);
@@ -242,7 +242,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         return getScale(mSuppMatrix);
     }
 
-    // Setup the base matrix so that the image is centered and scaled properly.
+    // Setup the base_swipe_back matrix so that the image is centered and scaled properly.
     private void getProperBaseMatrix(RotateBitmap bitmap, Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
@@ -263,9 +263,9 @@ public abstract class ImageViewTouchBase extends ImageView {
         matrix.postTranslate((viewWidth - w * scale) / 2F, (viewHeight - h * scale) / 2F);
     }
 
-    // Combine the base matrix and the supp matrix to make the final matrix.
+    // Combine the base_swipe_back matrix and the supp matrix to make the final matrix.
     protected Matrix getImageViewMatrix() {
-        // The final matrix is computed as the concatentation of the base matrix
+        // The final matrix is computed as the concatentation of the base_swipe_back matrix
         // and the supplementary matrix.
         mDisplayMatrix.set(mBaseMatrix);
         mDisplayMatrix.postConcat(mSuppMatrix);
@@ -274,7 +274,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     static final float SCALE_RATE = 1.25F;
 
-    // Sets the maximum zoom, which is a scale relative to the base matrix. It
+    // Sets the maximum zoom, which is a scale relative to the base_swipe_back matrix. It
     // is calculated to show the image at 400% zoom regardless of screen or
     // image orientation. If in the future we decode the full 3 megapixel image,
     // rather than the current 1024x768, this should be changed down to 200%.

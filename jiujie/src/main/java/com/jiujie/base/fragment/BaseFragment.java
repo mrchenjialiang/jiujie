@@ -3,7 +3,6 @@ package com.jiujie.base.fragment;
 import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,13 +12,12 @@ import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
 import com.jiujie.base.Title;
-import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 
 /**
  * 有标题
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends BaseMostFragment {
 
 	public Title mTitle;
 	public Activity mActivity;
@@ -127,9 +125,4 @@ public abstract class BaseFragment extends Fragment {
 		mLoadingFail.setVisibility(View.GONE);
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-	}
 }

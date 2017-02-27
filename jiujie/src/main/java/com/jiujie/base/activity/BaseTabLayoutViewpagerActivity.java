@@ -14,7 +14,7 @@ import java.util.List;
  * author : Created by ChenJiaLiang on 2016/10/9.
  * Email : 576507648@qq.com
  */
-public abstract class BaseTabLayoutViewpagerActivity extends BaseSlideContentActivity{
+public abstract class BaseTabLayoutViewpagerActivity extends BaseActivity{
     protected ViewPager mViewPager;
     protected TabLayout mTabLayout;
 
@@ -33,22 +33,22 @@ public abstract class BaseTabLayoutViewpagerActivity extends BaseSlideContentAct
         List<String> titleList = getTitleList();
         mViewPager.setAdapter(new ViewPagerFragmentTabAdapter(getSupportFragmentManager(), getFragmentList(), titleList));
         mTabLayout.setupWithViewPager(mViewPager);//must set after viewpager.setAdapter
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                setDrawerScrollEnable(position==0);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                setDrawerScrollEnable(position==0);
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//
+//            }
+//        });
     }
 
     protected abstract List<Fragment> getFragmentList();

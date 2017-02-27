@@ -3,7 +3,6 @@ package com.jiujie.base.fragment;
 import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,10 +12,9 @@ import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
 import com.jiujie.base.jk.LoadStatus;
-import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 
-public abstract class BaseNoTitleFragment extends Fragment implements LoadStatus {
+public abstract class BaseNoTitleFragment extends BaseMostFragment implements LoadStatus {
 
 	public Activity mActivity;
 	public View mView;
@@ -139,9 +137,4 @@ public abstract class BaseNoTitleFragment extends Fragment implements LoadStatus
 		return 0;
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-	}
 }

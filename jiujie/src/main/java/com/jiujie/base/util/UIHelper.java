@@ -669,6 +669,14 @@ public class UIHelper {
     }
 
     /**
+     * 保留两位小数→Str
+     */
+    public static String getTwoDecimal(double num) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(num);
+    }
+
+    /**
      * 保留两位小数→float
      */
     public static float getTwoDecimal1(float num) {

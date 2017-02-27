@@ -15,15 +15,15 @@ import rx.Subscriber;
 
 public class ListSubscriber<T> extends Subscriber<T>{
 
-    private final int type;
+    protected int type;
     public ListLoadingCallBack mLoadingCallBack;
-    private Activity context;
+    protected Activity activity;
     private Dialog waitingDialog;
 
     public ListSubscriber(Activity context, int type, ListLoadingCallBack<T> mLoadingCallBack) {
         if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
         this.mLoadingCallBack = mLoadingCallBack;
-        this.context = context;
+        this.activity = context;
         this.type = type;
         waitingDialog = UIHelper.getWaitingDialog(context);
         waitingDialog.setCanceledOnTouchOutside(false);

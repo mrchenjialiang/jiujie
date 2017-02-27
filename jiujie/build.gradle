@@ -14,7 +14,7 @@ android {
         multiDexEnabled true
     }
     buildTypes {
-        //base 不能混淆，如需混淆，则要兼顾 类名、方法、参数---有public参数被引用
+        //base_swipe_back 不能混淆，如需混淆，则要兼顾 类名、方法、参数---有public参数被引用
         release {
             // 不显示Log
 //            buildConfigField "boolean", "isDeBug", "false"
@@ -33,11 +33,11 @@ android {
             // 显示Log
 //            buildConfigField "boolean", "isDeBug", "true"
             // 混淆 开关
-            minifyEnabled true
+            minifyEnabled false
             //zipAlign优化
-            zipAlignEnabled true
+            zipAlignEnabled false
             // 移除无用resource文件
-            shrinkResources true
+            shrinkResources false
             // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 //            signingConfig signingConfigs.release
@@ -56,14 +56,22 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
+
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
+
     compile 'com.github.bumptech.glide:glide:3.7.0'
+
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+
     compile 'com.umeng.analytics:analytics:latest.integration'
+
     compile 'com.jakewharton:butterknife:7.0.1'
+
     compile 'com.uwetrottmann.photoview:library:1.2.4'
+
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

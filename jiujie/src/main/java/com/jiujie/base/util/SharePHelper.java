@@ -113,4 +113,8 @@ public class SharePHelper {
 	public boolean isContainsKey(String key){
 		return sp.contains(key);
 	}
+
+	public void remove(String key){
+		sp.edit().remove(key).apply();
+	}
 }
