@@ -20,50 +20,60 @@ import rx.Subscriber;
  */
 public class ProgressSubscriber<T> extends Subscriber<T>{
 
-    public LoadingCallBack mLoadingCallBack;
+    private boolean isShowDialog = true;
+    public LoadingCallBack<T> mLoadingCallBack;
     private String message;
-    private Activity context;
+    private Activity activity;
     private Dialog waitingDialog;
 
-    public ProgressSubscriber(Activity context,LoadingCallBack<T> mLoadingCallBack) {
+    public ProgressSubscriber(Activity activity,LoadingCallBack<T> mLoadingCallBack) {
         if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
         this.mLoadingCallBack = mLoadingCallBack;
-        this.context = context;
-        waitingDialog = UIHelper.getWaitingDialog(context);
+        this.activity = activity;
+        waitingDialog = UIHelper.getWaitingDialog(activity);
         waitingDialog.setCanceledOnTouchOutside(false);
     }
 
-    public ProgressSubscriber( Activity context, String message,LoadingCallBack<T> mLoadingCallBack) {
+    public ProgressSubscriber(Activity activity,boolean isShowDialog,LoadingCallBack<T> mLoadingCallBack) {
         if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
         this.mLoadingCallBack = mLoadingCallBack;
-        this.context = context;
+        this.activity = activity;
+        this.isShowDialog = isShowDialog;
+        if(isShowDialog){
+            waitingDialog = UIHelper.getWaitingDialog(activity);
+            waitingDialog.setCanceledOnTouchOutside(false);
+        }
+    }
+
+    public ProgressSubscriber( Activity activity, String message,LoadingCallBack<T> mLoadingCallBack) {
+        if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
+        this.mLoadingCallBack = mLoadingCallBack;
+        this.activity = activity;
         this.message = message;
-        waitingDialog = UIHelper.getWaitingDialog(context);
+        waitingDialog = UIHelper.getWaitingDialog(activity);
         waitingDialog.setCanceledOnTouchOutside(false);
     }
 
     @Override
     public void onStart() {
-        waitingDialog.show();
-//        mLoadingCallBack.onLoadStart();
+        if(isShowDialog&&activity!=null&&!activity.isFinishing())waitingDialog.show();
     }
 
     @Override
     public void onCompleted() {
-        waitingDialog.dismiss();
-//        mLoadingCallBack.onLoadCompleted();
+        if(isShowDialog&&activity!=null&&!activity.isFinishing()&&waitingDialog.isShowing())waitingDialog.dismiss();
     }
 
     @Override
     public void onError(Throwable e) {
-        waitingDialog.dismiss();
+        if(isShowDialog&&activity!=null&&!activity.isFinishing()&&waitingDialog.isShowing())waitingDialog.dismiss();
         String error;
         if (e instanceof SocketTimeoutException) {
             error = "连接超时，请检查您的网络状态";
         } else if (e instanceof ConnectException) {
             error = "网络中断，请检查您的网络状态";
         } else {
-            error = e.getMessage();
+            error = "服务器异常，请稍候再试";
         }
         mLoadingCallBack.onLoadError(error);
         UIHelper.showLog("httpResult error:" + error);

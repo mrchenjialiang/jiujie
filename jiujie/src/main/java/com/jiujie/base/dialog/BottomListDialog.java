@@ -47,7 +47,17 @@ public class BottomListDialog extends BaseDialog {
 
         list.removeAllViews();
         if(dataList.size()==1){
-            list.addView(getListItemView(dataList.get(0),ItemType.Single, 0), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            View itemView = getListItemView(dataList.get(0), ItemType.Single, 0);
+            list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                    if (onItemClickListen != null) {
+                        onItemClickListen.click(0);
+                    }
+                }
+            });
         }else{
             for (int i = 0;i<dataList.size();i++){
                 View itemView;

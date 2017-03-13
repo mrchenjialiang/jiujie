@@ -11,7 +11,9 @@ import android.view.View;
 
 import com.jiujie.base.R;
 import com.jiujie.base.jk.onSelectListener;
+import com.jiujie.base.util.UIHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public class PickerView extends View {
     private float moveY;
     private int mViewHeight;
     private int mViewWidth;
-    private int mCenterTextTextSize = 32;
+    private int mCenterTextTextSize = 40;
     private float JG = 8;
     private onSelectListener mSelectListener;
 
@@ -56,6 +58,7 @@ public class PickerView extends View {
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.PickerView);
 
+            mCenterTextTextSize = UIHelper.sp2px(context,16);
             mCenterTextTextSize = a.getDimensionPixelSize(R.styleable.PickerView_textSize, mCenterTextTextSize);
 
             mCenterTextColor = a.getColor(R.styleable.PickerView_textColor_center, mCenterTextColor);
@@ -63,6 +66,10 @@ public class PickerView extends View {
             isInfinite = a.getBoolean(R.styleable.PickerView_isInfinite,isInfinite);
 
             a.recycle();
+        }
+        if(mDataList==null)mDataList = new ArrayList<>();
+        for (int i=2000;i<2017;i++){
+            mDataList.add(String.format("%d测试", i));
         }
     }
 

@@ -52,7 +52,7 @@ public class MyOkHttpUtil {
                         }
                     });
             if (APP.isDeBug) {
-                builder.addInterceptor(new LoggerInterceptor("CJL"));
+                builder.addInterceptor(new LoggerInterceptor("LOG"));
             }
         }
         builder.cookieJar(new MyCookieJar(context,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys));

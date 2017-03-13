@@ -135,29 +135,6 @@ public class UpdateManager implements MyHandlerInterface {
 				})
 				.show();
 
-//		Builder builder = new Builder(mActivity);
-//		builder.setTitle("软件更新");
-//		builder.setMessage("检测到有更新版本，建议马上进行更新");
-//		// 更新
-//		builder.setPositiveButton("立即升级",
-//				new OnBaseDialogClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				dialog.dismiss();
-//				// 显示下载对话框
-//				downloadApk();
-//			}
-//		});
-//		// 稍后更新
-//		builder.setNegativeButton("下次再说",
-//				new OnBaseDialogClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				dialog.dismiss();
-//			}
-//		});
-//		Dialog noticeDialog = builder.create();
-//		noticeDialog.show();
 	}
 
 	/**

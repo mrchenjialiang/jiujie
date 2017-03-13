@@ -16,7 +16,7 @@ import rx.Subscriber;
 public class ListSubscriber<T> extends Subscriber<T>{
 
     protected int type;
-    public ListLoadingCallBack mLoadingCallBack;
+    public ListLoadingCallBack<T> mLoadingCallBack;
     protected Activity activity;
     private Dialog waitingDialog;
 
@@ -50,10 +50,10 @@ public class ListSubscriber<T> extends Subscriber<T>{
         } else if (e instanceof ConnectException) {
             error = "网络中断，请检查您的网络状态";
         } else {
-            error = e.getMessage();
+            error = "服务器异常，请稍候再试";
         }
         mLoadingCallBack.onLoadError(error,type);
-        UIHelper.showLog("httpResult error:" + error);
+        UIHelper.showLog("httpResult error:" + error+",e:"+e);
     }
 
     @Override

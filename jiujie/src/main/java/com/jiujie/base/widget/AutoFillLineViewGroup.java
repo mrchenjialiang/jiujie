@@ -164,6 +164,9 @@ public class AutoFillLineViewGroup extends ViewGroup {
 
     public void setChildViewList(List<View> childViewList) {
         this.childViewList = childViewList;
+        if (this.childViewList == null) {
+            this.childViewList = new ArrayList<>();
+        }
         requestLayout();
     }
 

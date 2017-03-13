@@ -82,6 +82,7 @@ public class ScrollViewElastic extends ScrollView {
 	private int actionPointCount;
 	private ArrayList<Point> pointList = new ArrayList<>();
 	private boolean isShouldRefreshPoints = false;
+    private float downX,downY;
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
     	
@@ -94,6 +95,8 @@ public class ScrollViewElastic extends ScrollView {
             if(canPullDown||canPullUp){
                 getParent().requestDisallowInterceptTouchEvent(true);
             }
+            downX = ev.getX();
+            downY = ev.getY();
             break;
         case MotionEvent.ACTION_POINTER_DOWN:
         	downAction(ev);
@@ -106,6 +109,13 @@ public class ScrollViewElastic extends ScrollView {
         	upAction(ev);
         	break;
         case MotionEvent.ACTION_MOVE:
+            float checkX = ev.getX();
+            float checkY = ev.getY();
+            if(Math.abs(checkY-downY)<Math.abs(checkX-downX)){
+                //X移动距离大于Y移动距离
+                getParent().requestDisallowInterceptTouchEvent(false);
+                break;
+            }
             //在移动的过程中， 既没有滚动到可以上拉的程度， 也没有滚动到可以下拉的程度
             if(!canPullDown && !canPullUp) {
                 canPullDown = isCanPullDown();
@@ -117,18 +127,18 @@ public class ScrollViewElastic extends ScrollView {
             	refreshPoints(ev);
             	isShouldRefreshPoints = false;
             }
-			float max = 0;
+			float maxY = 0;
 			for (int i = 0; i < pointerCount; i++) {
 				Point point = pointList.get(i);
 				float currentY = ev.getY(i);
 				float oldY = point.getY();
 				float moveY = currentY - oldY;
 				point.setY(currentY);
-				if(Math.abs(moveY)>max){
-					max = moveY;
+				if(Math.abs(moveY)>maxY){
+					maxY = moveY;
 				}
 			}
-			moveY += max;
+			moveY += maxY;
             //是否应该移动布局
             boolean shouldMove = 
                     (canPullDown && moveY > 0)    //可以下拉， 并且手指向下移动

@@ -72,7 +72,7 @@ public class SearchTitle {
 		mSearchText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH||actionId == EditorInfo.IME_ACTION_DONE||actionId == EditorInfo.IME_ACTION_UNSPECIFIED||actionId == EditorInfo.IME_ACTION_GO) {
     				if(activity!=null) UIHelper.hidePan(activity);
                 	if(inputAction!=null) {
     					Editable text = mSearchText.getText();

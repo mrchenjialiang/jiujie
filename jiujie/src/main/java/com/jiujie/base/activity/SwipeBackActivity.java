@@ -44,6 +44,12 @@ public class SwipeBackActivity extends BaseMostActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		UIHelper.hidePan(this);
+	}
+
+	@Override
 	public void finish() {
 		super.finish();
 		UIHelper.hidePan(this);

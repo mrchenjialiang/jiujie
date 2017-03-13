@@ -4,18 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/dcl_list_line"
+    <ScrollView
+        android:id="@+id/dcl_scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <include layout="@layout/dialog_center_list_item"/>
-        <include layout="@layout/dialog_center_list_item"/>
-        <include layout="@layout/dialog_center_list_item"/>
+        <LinearLayout
+            android:id="@+id/dcl_list_line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <include layout="@layout/dialog_center_list_item"/>
+            <include layout="@layout/dialog_center_list_item"/>
+            <include layout="@layout/dialog_center_list_item"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

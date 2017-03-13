@@ -14,9 +14,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 
-/**
- * Created by zhy on 16/3/1.
- */
 public class LoggerInterceptor implements Interceptor {
     public static final String TAG = "OkHttpUtils";
     private String tag;
@@ -37,7 +34,7 @@ public class LoggerInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        logForRequest(request);
+//        logForRequest(request);
         Response response = chain.proceed(request);
         return logForResponse(response);
     }
@@ -45,10 +42,11 @@ public class LoggerInterceptor implements Interceptor {
     private Response logForResponse(Response response) {
         try {
             //===>response log
-            Log.e(tag, "========response'log=======");
+            Log.e(tag, "========Http Log Start=======");
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
             Log.e(tag, "url : " + clone.request().url());
+            Log.e(tag, "method : " + clone.request().method());
             Log.e(tag, "code : " + clone.code());
             Log.e(tag, "protocol : " + clone.protocol());
             if (!TextUtils.isEmpty(clone.message()))
@@ -73,7 +71,7 @@ public class LoggerInterceptor implements Interceptor {
                 }
             }
 
-            Log.e(tag, "========response'log=======end");
+            Log.e(tag, "========Http Log End=======");
         } catch (Exception e) {
 //            e.printStackTrace();
         }
@@ -86,7 +84,7 @@ public class LoggerInterceptor implements Interceptor {
             String url = request.url().toString();
             Headers headers = request.headers();
 
-            Log.e(tag, "========request'log=======");
+            Log.e(tag, "========Http Log1 Start=======");
             Log.e(tag, "method : " + request.method());
             Log.e(tag, "url : " + url);
             if (headers != null && headers.size() > 0) {
@@ -104,7 +102,7 @@ public class LoggerInterceptor implements Interceptor {
                     }
                 }
             }
-            Log.e(tag, "========request'log=======end");
+            Log.e(tag, "========Http Log1 End=======");
         } catch (Exception e) {
 //            e.printStackTrace();
         }

@@ -53,6 +53,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -148,7 +149,7 @@ public class UIHelper {
 
     public static void showLog(String text) {
         if (APP.isDeBug) {
-            Log.e("CJL", text);
+            Log.e("LOG", text);
         }
     }
     public static void showLogInFile(String text) {
@@ -169,20 +170,12 @@ public class UIHelper {
         File file = new File(fileDic);
         if(!file.exists()){
             boolean mkdirs = file.mkdirs();
-//            boolean mkdirs = file.mkdir();
             if(!mkdirs){
                 UIHelper.showLog("writeStringToFile mkdirs File " + file.getPath() + " fail");
                 return;
             }
         }
         file = new File(fileDic,fileName);
-//        if(!file.exists()){
-//            boolean mkdirs = file.mkdirs();
-//            if(!mkdirs){
-//                UIHelper.showLog("writeStringToFile mkdirs File " + file.getPath() + " fail");
-//                return;
-//            }
-//        }
 
         if(file.exists()) {
             boolean delete = file.delete();
@@ -252,8 +245,6 @@ public class UIHelper {
 
     /**
      * 获取屏幕宽度
-     *
-     * @return
      */
     public static int getScreenWidth(Activity context) {
         Display display = context.getWindowManager().getDefaultDisplay();
@@ -270,8 +261,6 @@ public class UIHelper {
 
     /**
      * 隐藏键盘
-     *
-     * @param activity
      */
     public static void hidePan(Activity activity) {
         try {
@@ -290,17 +279,6 @@ public class UIHelper {
     }
 
     /**
-     * @param type     1:into center 0→max, 2,out center max →0
-     */
-    public static void setJumpAnimation(Activity activity, int type) {
-        if (type == 1) {
-            activity.overridePendingTransition(R.anim.center_0_to_max, R.anim.alpha_null);
-        } else if (type == 2) {
-            activity.overridePendingTransition(R.anim.alpha_null, R.anim.center_max_to_0);
-        }
-    }
-
-    /**
      * 显示键盘
      */
     public static void showPan(Activity activity, View view) {
@@ -312,13 +290,22 @@ public class UIHelper {
         }
     }
 
+    /**
+     * @param type     1:into center 0→max, 2,out center max →0
+     */
+    public static void setJumpAnimation(Activity activity, int type) {
+        if (type == 1) {
+            activity.overridePendingTransition(R.anim.center_0_to_max, R.anim.alpha_null);
+        } else if (type == 2) {
+            activity.overridePendingTransition(R.anim.alpha_null, R.anim.center_max_to_0);
+        }
+    }
 
     //yyyy-MM-dd hh:mm:ss----12小时制
     //yyyy-MM-dd HH:mm:ss----24小时制
 
     /**
      * 时间格式转换
-     * @author ChenJiaLiang
      */
     public static long timeStrToTimeLong(String timeStr, String format) {
         Date date;
@@ -332,7 +319,6 @@ public class UIHelper {
 
     /**
      * 时间格式转换
-     * @author ChenJiaLiang
      */
     public static String timeStrToTimeStr(String timeStr, String oldFormat, String newFormat) {
         Date date;
@@ -346,7 +332,6 @@ public class UIHelper {
 
     /**
      * 时间格式转换，固定从yyyy-MM-dd HH:mm:ss 转换为  yyyy-MM-dd
-     * @author ChenJiaLiang
      */
     public static String timeStrToTimeStr1(String timeStr) {
         return timeStrToTimeStr(timeStr, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd");
@@ -354,7 +339,6 @@ public class UIHelper {
 
     /**
      * 时间格式转换，固定从yyyy-MM-dd HH:mm:ss 转换为  yyyy-MM-dd
-     * @author ChenJiaLiang
      */
     public static String timeStrToTimeStr2(String timeStr) {
         return timeStrToTimeStr(timeStr, "yyyy-MM-dd HH:mm:ss", "yyyy.MM.dd");
@@ -365,7 +349,6 @@ public class UIHelper {
      *
      * @param timestamp  时间戳  秒为单位
      * @param timeFromat 时间格式
-     * @author ChenJiaLiang
      */
     public static String timeDoubleMiaoToString(Double timestamp, String timeFromat) {
         SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
@@ -377,11 +360,10 @@ public class UIHelper {
      *
      * @param timestamp  时间戳  秒为单位
      * @param timeFromat 时间格式
-     * @author ChenJiaLiang
      */
     public static String timeLongMiaoToString(long timestamp, String timeFromat) {
         SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
-        return sdf.format(new Date((long) (timestamp * 1000L)));
+        return sdf.format(new Date(timestamp * 1000L));
     }
 
     /**
@@ -405,8 +387,8 @@ public class UIHelper {
                 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
                 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
                 'Y', 'Z'};
-        int[] cha = new int[num];
-        for (int i = 0; i < cha.length; i++) {
+//        int[] cha = new int[num];
+        for (int i = 0; i < num; i++) {
             int j = (int) (Math.random() * 62);
             builder.append(chars[j]);
         }
@@ -508,10 +490,6 @@ public class UIHelper {
 
     /**
      * 获取某年某个月的所有日
-     *
-     * @param year
-     * @param month
-     * @return
      */
     public static String[] getDaysOfMonth(int year, int month) {
         int size = 0;
@@ -535,8 +513,6 @@ public class UIHelper {
 
     /**
      * 从assets中获取文件内容
-     *
-     * @param context
      * @param fileName 文件名
      * @return 文件内容
      */
@@ -570,9 +546,7 @@ public class UIHelper {
             ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
             ObjectInputStream in = new ObjectInputStream(byteIn);
             dest = (List) in.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dest;
@@ -580,8 +554,6 @@ public class UIHelper {
 
     /**
      * MD5加密
-     *
-     * @param string
      */
     public static String md5(String string) {
         byte[] hash;
@@ -677,6 +649,14 @@ public class UIHelper {
     }
 
     /**
+     * 保留三位小数→Str
+     */
+    public static String getThreeDecimal(double num) {
+        DecimalFormat df = new DecimalFormat("0.000");
+        return df.format(num);
+    }
+
+    /**
      * 保留两位小数→float
      */
     public static float getTwoDecimal1(float num) {
@@ -706,9 +686,8 @@ public class UIHelper {
      */
     public static void showVibrator(Context context) {
         // 震动提示
-        @SuppressWarnings("static-access")
         Vibrator vibrator = (Vibrator) context
-                .getSystemService(context.VIBRATOR_SERVICE);
+                .getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {50, 300, 50, 200};
         vibrator.vibrate(pattern, -1);
     }
@@ -725,6 +704,7 @@ public class UIHelper {
             mp.prepare();
             mp.start();
         } catch (Exception e) {
+            showLog("Exception startRing:"+e);
         }
     }
 
@@ -819,10 +799,7 @@ public class UIHelper {
         List<ResolveInfo> resolveInfo =
                 packageManager.queryIntentActivities(intent,
                         PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo.size() > 0) {
-            return true;
-        }
-        return false;
+        return resolveInfo.size() > 0;
     }
 
     /**
@@ -997,6 +974,17 @@ public class UIHelper {
             return 0;
         }
         return size;
+    }
+
+    public static Object doMethod(Class<?> classObject,String methodName){
+        try {
+            Method classMethod = classObject.getDeclaredMethod(methodName);
+            classMethod.setAccessible(true);
+            return classMethod.invoke(classObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

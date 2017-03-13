@@ -42,23 +42,6 @@ public abstract class BaseNoTitleBeforeActivity extends BaseToolBarActivity {
 
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		UIHelper.hidePan(mActivity);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	public void finish() {
-		super.finish();
-		UIHelper.hidePan(mActivity);
-	}
-
 	public abstract int getLayoutId();
 	public abstract View getContentView();
 	
