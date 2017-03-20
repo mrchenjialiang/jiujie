@@ -12,7 +12,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@style/BaseAppTheme"></style>
+    <style name="AppTheme" parent="@style/BaseAppTheme"/>
 
 
     <style name="Dialog" parent="@android:style/Theme.Dialog">
@@ -74,7 +74,7 @@
     <style name="JK.SwipeBack.NoTransparent.Theme" parent="AppTheme">
         <!--<item name="android:windowAnimationStyle">@style/JK.Animation.SlidingBack</item>-->
         <item name="android:actionBarStyle">@style/JKActionBar.Custom</item>
-        <item name="android:backgroundDimEnabled">true</item><!--背景是否模糊显示-->
+        <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
     </style>
 
     <style name="JKActionBar.Custom" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">

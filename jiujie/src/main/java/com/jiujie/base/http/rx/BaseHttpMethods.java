@@ -37,18 +37,22 @@ public abstract class BaseHttpMethods<T> {
     public final OkHttpClient okHttpClient;
 
     protected BaseHttpMethods() {
-        if(TextUtils.isEmpty(getBaseUrl())){
+        if (TextUtils.isEmpty(getBaseUrl())) {
             throw new NullPointerException("getBaseUrl should not return null");
         }
-        if(getTimeOutSecond()==0){
-            throw new NullPointerException("getTimeOutSecond should not return 0");
+        if (getConnectTimeOutSecond() == 0) {
+            throw new NullPointerException("getConnectTimeOutSecond should not return 0");
         }
-        if(getServiceClass()==null){
+        if (getReadTimeOutSecond() == 0) {
+            throw new NullPointerException("getReadTimeOutSecond should not return 0");
+        }
+        if (getServiceClass() == null) {
             throw new NullPointerException("getServiceClass should not return null");
         }
         //手动创建一个OkHttpClient并设置超时时间
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(getTimeOutSecond(), TimeUnit.SECONDS);
+        builder.connectTimeout(getConnectTimeOutSecond(), TimeUnit.SECONDS);
+        builder.readTimeout(getReadTimeOutSecond(), TimeUnit.SECONDS);
         builder.cookieJar(new CookieJar() {
             @Override
             public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
@@ -77,7 +81,7 @@ public abstract class BaseHttpMethods<T> {
         httpService = retrofit.create(getServiceClass());
     }
 
-    public Converter.Factory getConverterFactory(){
+    public Converter.Factory getConverterFactory() {
 //        return ResponseConverterFactory.create(buildGson());
 //        return ScalarsConverterFactory.create();//只能用于请求String等基本类型数据
         return GsonConverterFactory.create();//只能请求json，而且，0.3类型写成int会报错等
@@ -98,15 +102,17 @@ public abstract class BaseHttpMethods<T> {
     /**
      * 必须重写
      */
-    protected abstract int getTimeOutSecond();
+    protected abstract int getConnectTimeOutSecond();
+    protected abstract int getReadTimeOutSecond();
 
     protected abstract void saveFromResponse(HttpUrl httpUrl, List<Cookie> list);
+
     protected abstract List<Cookie> loadForRequest(HttpUrl httpUrl);
 
     /**
      * must do in background thread
      */
-    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap,final ICallback<String> callback){
+    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, final ICallback<String> callback) {
         RequestBody formBody;
         if (postParamMap != null && postParamMap.size() > 0) {
             FormBody.Builder builder = new FormBody.Builder();
@@ -124,7 +130,7 @@ public abstract class BaseHttpMethods<T> {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                if (activity != null && callback != null) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -134,9 +140,10 @@ public abstract class BaseHttpMethods<T> {
                     });
                 }
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if(activity!=null&&callback!=null){
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。

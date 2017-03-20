@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.WaitingDialog;
+import com.jiujie.base.util.appupdate.NotificationUtil;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -521,7 +522,7 @@ public class UIHelper {
         try {
             InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
             BufferedReader bufReader = new BufferedReader(inputReader);
-            String line = "";
+            String line;
             while ((line = bufReader.readLine()) != null)
                 builder.append(line);
         } catch (Exception e) {

@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:padding="6dp"
         android:orientation="horizontal">
 
@@ -17,6 +17,25 @@
             android:src="@drawable/logo" />
 
         <LinearLayout
+            android:id="@+id/notify_message_line"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="6dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/notify_message_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="准备下载中..."
+                android:textSize="18sp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/notify_loading_line"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -25,7 +44,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
@@ -47,7 +66,7 @@
                 android:id="@+id/notify_progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"/>
 
         </LinearLayout>

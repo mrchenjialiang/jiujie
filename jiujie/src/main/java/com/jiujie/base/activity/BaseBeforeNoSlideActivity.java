@@ -15,7 +15,7 @@ import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.util.UIHelper;
 
-public abstract class BaseBeforeActivity extends BaseToolBarActivity {
+public abstract class BaseBeforeNoSlideActivity extends BaseToolBarNoSlideActivity{
 
 	public Title mTitle;
 	public Activity mActivity;

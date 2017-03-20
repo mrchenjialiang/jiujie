@@ -14,7 +14,7 @@ import com.jiujie.base.widget.SwipeBackLayout;
  * @author xiaanming
  *
  */
-public class SwipeBackActivity extends BaseMostActivity {
+public class SlideBackActivity extends BaseMostActivity {
 	protected SwipeBackLayout swipeBackLayout;
 
 	@Override

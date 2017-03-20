@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
 
-public class BaseToolBarActivity extends SlideBackActivity {
+public class BaseToolBarNoSlideActivity extends BaseMostActivity {
 
     public Toolbar toolbar;
     public Activity mActivity;

@@ -12,16 +12,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -34,42 +34,39 @@ import okhttp3.ResponseBody;
  * author : Created by ChenJiaLiang on 2016/6/24.
  * Email : 576507648@qq.com
  */
-public class MyOkHttpUtil {
+public abstract class MyOkHttpUtil {
 
-
-    private static OkHttpClient.Builder builder;
-//    private static OkHttpClient okHttpClient;
-
-    public static OkHttpClient getOkHttpClient(Context context,boolean isSaveCookie,boolean isUseCookie,String saveCookieKey,String[] useCookieKeys) {
-        if (builder == null) {
-            builder = new OkHttpClient.Builder();
-            builder .connectTimeout(20000L, TimeUnit.MILLISECONDS)
-                    .readTimeout(10000L, TimeUnit.MILLISECONDS)
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            return true;
-                        }
-                    });
-            if (APP.isDeBug) {
-                builder.addInterceptor(new LoggerInterceptor("LOG"));
+    public final OkHttpClient okHttpClient;
+    protected MyOkHttpUtil(){
+        //手动创建一个OkHttpClient并设置超时时间
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(getConnectTimeOutSecond(), TimeUnit.SECONDS);
+        builder.readTimeout(getReadTimeOutSecond(), TimeUnit.SECONDS);
+        builder.cookieJar(new CookieJar() {
+            @Override
+            public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
+                MyOkHttpUtil.this.saveFromResponse(httpUrl, list);
             }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl httpUrl) {
+                return MyOkHttpUtil.this.loadForRequest(httpUrl);
+            }
+        });
+        if (APP.isDeBug) {
+            builder.addInterceptor(new LoggerInterceptor("LOG"));
         }
-        builder.cookieJar(new MyCookieJar(context,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys));
-        return builder.build();
+
+        okHttpClient = builder.build();
     }
 
-    public static void clearCookie(){
-        if(builder!=null){
-            CookieJar cookieJar = builder.build().cookieJar();
-            if(cookieJar!=null&&cookieJar instanceof MyCookieJar){
-                MyCookieJar myCookieJar = (MyCookieJar) cookieJar;
-                myCookieJar.clearCookie();
-            }
-        }
-    }
+    protected abstract int getConnectTimeOutSecond();
+    protected abstract int getReadTimeOutSecond();
 
-    private static String getGetUrl(String url, Map<String, Object> paramMap) {
+    protected abstract void saveFromResponse(HttpUrl httpUrl, List<Cookie> list);
+    protected abstract List<Cookie> loadForRequest(HttpUrl httpUrl);
+
+    private String getGetUrl(String url, Map<String, Object> paramMap) {
         if (paramMap != null && paramMap.size() > 0) {
             StringBuilder sb = new StringBuilder(url);
             sb.append("?");
@@ -91,15 +88,15 @@ public class MyOkHttpUtil {
         return url;
     }
 
-    public static void httpGet(final Activity activity, String url, Map<String, Object> paramMap, String tag, final boolean isSaveCookie, final boolean isUseCookie,String saveCookieKey,String[] useCookieKeys, final ICallback<String> callback) {
+    public void httpGet(final Activity activity, String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
         Request.Builder builder = new Request.Builder();
         builder.get().url(getGetUrl(url, paramMap)).tag(tag);
 
         Request request = builder.build();
-        getOkHttpClient(activity,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys).newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                if (activity != null && callback != null) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -112,7 +109,7 @@ public class MyOkHttpUtil {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                if (activity != null && callback != null) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
                             ResponseBody body = response.body();
@@ -145,19 +142,15 @@ public class MyOkHttpUtil {
         });
     }
 
-    public static void httpGet(final Activity context, String url, Map<String, Object> paramMap, String tag, final boolean isSaveCookie, final boolean isUseCookie, final ICallback<String> callback) {
-        httpGet(context, url, paramMap, tag, isSaveCookie, isUseCookie, null, null, callback);
-    }
-
     /**
-     * callBack in thread no UI thread
+     * callBack in background thread
      */
-    public static void httpGet1(final Context context, String url, Map<String, Object> paramMap, String tag, final boolean isSaveCookie, final boolean isUseCookie,String saveCookieKey,String[] useCookieKeys, final ICallback<String> callback) {
+    public void httpGet1(final Context context, String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
         Request.Builder builder = new Request.Builder();
         builder.get().url(getGetUrl(url, paramMap)).tag(tag);
 
         Request request = builder.build();
-        getOkHttpClient(context, isSaveCookie, isUseCookie,saveCookieKey,useCookieKeys).newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 try {
@@ -185,14 +178,7 @@ public class MyOkHttpUtil {
         });
     }
 
-    /**
-     * callBack in thread no UI thread
-     */
-    public static void httpGet1(final Context context, String url, Map<String, Object> paramMap, String tag, final boolean isSaveCookie, final boolean isUseCookie, final ICallback<String> callback) {
-        httpGet1(context, url, paramMap, tag, isSaveCookie, isUseCookie, null, null, callback);
-    }
-
-    public static void httpPost(final Activity activity, String url, Map<String, String> postParamMap, String tag, final boolean isSaveCookie, final boolean isUseCookie,String saveCookieKey,String[] useCookieKeys, final ICallback<String> callback) {
+    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, String tag, final ICallback<String> callback) {
         RequestBody formBody;
         if (postParamMap != null && postParamMap.size() > 0) {
             FormBody.Builder builder = new FormBody.Builder();
@@ -209,10 +195,10 @@ public class MyOkHttpUtil {
         builder.url(url).post(formBody).tag(tag);
 
         Request request = builder.build();
-        getOkHttpClient(activity,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys).newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                if (activity != null && callback != null) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -225,7 +211,7 @@ public class MyOkHttpUtil {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                if(activity!=null&&callback!=null){
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
@@ -262,25 +248,18 @@ public class MyOkHttpUtil {
     /**
      * 用于表单上传图片
      */
-    public static void httpPostFile(Activity activity,String url,Map<String, String> postParamMap, File file,String keyName,String tag,ICallback<String> callback){
-        httpPostFile(activity, url, postParamMap, file, keyName, tag, false, false, null, null, callback);
-    }
-
-    /**
-     * 用于表单上传图片
-     */
-    public static void httpPostFile(final Activity activity, String url, Map<String, String> postParamMap, File file,String keyName,String tag, final boolean isSaveCookie, final boolean isUseCookie,String saveCookieKey,String[] useCookieKeys, final ICallback<String> callback) {
+    public void httpPostFile(final Activity activity, String url, Map<String, String> postParamMap, File file, String keyName, String tag, final ICallback<String> callback) {
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if(file != null){
+        if (file != null) {
             // MediaType.parse() 里面是上传的文件类型。
             RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
             // 参数分别为， 请求key ，文件名称 ， RequestBody
-            if(TextUtils.isEmpty(keyName)){
+            if (TextUtils.isEmpty(keyName)) {
                 keyName = "uploadedfile";
             }
             requestBody.addFormDataPart(keyName, file.getName(), body);
         }
-        if (postParamMap != null&&postParamMap.size()>0) {
+        if (postParamMap != null && postParamMap.size() > 0) {
             // map 里面是请求中所需要的 key 和 value
             for (String key : postParamMap.keySet()) {
                 requestBody.addFormDataPart(key, postParamMap.get(key));
@@ -288,10 +267,10 @@ public class MyOkHttpUtil {
         }
         Request request = new Request.Builder().url(url).post(requestBody.build()).tag(tag).build();
 
-        getOkHttpClient(activity,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys).newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                if (activity != null && callback != null) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -304,7 +283,7 @@ public class MyOkHttpUtil {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                if(activity!=null&&callback!=null){
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
@@ -338,12 +317,7 @@ public class MyOkHttpUtil {
         });
     }
 
-
-    public static void httpPost(final Activity context, String url, Map<String, String> postParamMap, String tag, final boolean isSaveCookie, final boolean isUseCookie, final ICallback<String> callback) {
-        httpPost(context, url, postParamMap, tag, isSaveCookie, isUseCookie, null, null, callback);
-    }
-
-    public static void httpPostGBK(final Activity activity, String url, Map<String, String> postParamMap, String tag, final boolean isSaveCookie, final boolean isUseCookie, String saveCookieKey,String[] useCookieKeys,final ICallback<String> callback) {
+    public void httpPostGBK(final Activity activity, String url, Map<String, String> postParamMap, String tag, final ICallback<String> callback) {
         MyFormBody formBody;
         if (postParamMap != null && postParamMap.size() > 0) {
             MyFormBody.Builder builder = new MyFormBody.Builder();
@@ -360,15 +334,15 @@ public class MyOkHttpUtil {
         builder.url(url).post(formBody).tag(tag);
 
         Request request = builder.build();
-        getOkHttpClient(activity,isSaveCookie,isUseCookie,saveCookieKey,useCookieKeys).newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                if(activity!=null&&callback!=null){
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             String message = e.getMessage();
-                            callback.onFail(TextUtils.isEmpty(message)?"服务器异常，请稍后再试":message);
+                            callback.onFail(TextUtils.isEmpty(message) ? "服务器异常，请稍后再试" : message);
                         }
                     });
                 }
@@ -376,7 +350,7 @@ public class MyOkHttpUtil {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                if(activity!=null&&callback!=null){
+                if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
@@ -389,7 +363,7 @@ public class MyOkHttpUtil {
                                     callback.onSucceed(decode);
                                 }
                             });
-                        }else{
+                        } else {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -397,7 +371,7 @@ public class MyOkHttpUtil {
                                 }
                             });
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -408,10 +382,6 @@ public class MyOkHttpUtil {
                 }
             }
         });
-    }
-
-    public static void httpPostGBK(final Activity context, String url, Map<String, String> postParamMap, String tag, final boolean isSaveCookie, final boolean isUseCookie, final ICallback<String> callback) {
-        httpPostGBK(context, url, postParamMap, tag, isSaveCookie, isUseCookie, null, null, callback);
     }
 
 //    @Multipart

@@ -1,11 +1,10 @@
-package com.jiujie.base.util;
+package com.jiujie.base.util.appupdate;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,42 +14,45 @@ import com.jiujie.base.dialog.EnsureDialog;
 import com.jiujie.base.jk.MyHandlerInterface;
 import com.jiujie.base.jk.OnBaseDialogClickListener;
 import com.jiujie.base.jk.UpdateListen;
+import com.jiujie.base.util.ImageUtil;
+import com.jiujie.base.util.MyHandler;
+import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class UpdateManager implements MyHandlerInterface {
+	/* 准备下载 */
+	private final int DOWNLOAD_PREPARE = 0;
 	/* 开始下载 */
-	public static final int START_DOWN = 0;
+	private final int DOWNLOAD_START = 1;
 	/* 下载中 */
-	private static final int DOWNLOADING = 1;
+	private final int DOWNLOAD_ING = 2;
 	/* 下载结束 */
-	private static final int DOWNLOAD_FINISH = 2;
-	private final String content;
+	private final int DOWNLOAD_FINISH = 3;
+	/* 下载结束 */
+	private final int DOWNLOAD_FAIL = 4;
+	private String downLoadPageUrl;
+
+	private String content;
 	/* 下载保存路径 */
 	private String mSavePath;
 	/* 记录进度条数量 */
-	private int progress;
-	private int total;
+	private long loadedLength;
+	private long total;
 	/* 是否取消更新 */
 	private boolean cancelUpdate = false;
 	
 	private Activity mActivity;
-	/* 更新进度条 */
-//	private ProgressBar mProgress;
-//	private Dialog mDownloadDialog;
 	private String appName;
 	private String appUrl;
 	private NotificationUtil notificationUtil;
 	private long lastUpdateTime;
-	private static final long IntervalTime = 200;
+	private static final long IntervalTime = 500;
 	private boolean isUpdating;
 	private MyHandler mHandler;
 	private UpdateListen updateListen;
 	public static int UpdateAppRequestCode = 125;
+	private int progress;
 
 	public void cancelUpdate(){
 		if(isUpdating)
@@ -64,23 +66,51 @@ public class UpdateManager implements MyHandlerInterface {
 	@Override
 	public void handleMessage(Message msg) {
 		switch (msg.what) {
-			case START_DOWN:
+			case DOWNLOAD_PREPARE:
 				isUpdating = true;
 				notificationUtil = new NotificationUtil(mActivity, 110);
-				notificationUtil.createRecordingNotification(UIHelper.getFormatSize(total));
+				notificationUtil.createAndSetPrepare();
 				break;
-			case DOWNLOADING:
+			case DOWNLOAD_START:
+				isUpdating = true;
+				notificationUtil.setStart(UIHelper.getFormatSize(total));
+				break;
+			case DOWNLOAD_ING:
 				//频率太快了会死的
 				long currentTime = System.currentTimeMillis();
 				if(currentTime - lastUpdateTime > IntervalTime){
 					lastUpdateTime = currentTime;
-					int num = progress*100/total;
-					String progressStr = UIHelper.getFormatSize(progress);
-					notificationUtil.updateRecordingNotification(progressStr, num);
+					String progressStr = UIHelper.getFormatSize(loadedLength);
+					notificationUtil.setLoading(progressStr, progress);
 				}
+				break;
+			case DOWNLOAD_FAIL:
+				notificationUtil.setFail();
+				EnsureDialog ensureDialog = new EnsureDialog(mActivity);
+				ensureDialog.create()
+						.setText("更新下载失败，是否使用浏览器进行下载？")
+						.setBtnLeft("取消", new OnBaseDialogClickListener() {
+							@Override
+							public void onClick(BaseDialog dialog, View v) {
+								dialog.dismiss();
+							}
+						})
+						.setBtnRight("确定", new OnBaseDialogClickListener() {
+							@Override
+							public void onClick(BaseDialog dialog, View v) {
+								dialog.dismiss();
+								Intent intent = new Intent();
+								intent.setAction("android.intent.action.VIEW");
+								Uri content_url = Uri.parse(TextUtils.isEmpty(downLoadPageUrl)?appUrl:downLoadPageUrl);
+								intent.setData(content_url);
+								mActivity.startActivity(intent);
+							}
+						})
+						.show();
 				break;
 			case DOWNLOAD_FINISH:
 				isUpdating = false;
+				notificationUtil.clearNotification();
 				// 安装文件
 				installApk();
 				break;
@@ -93,30 +123,30 @@ public class UpdateManager implements MyHandlerInterface {
 		this.mActivity = activity;
 		this.appName = appName+".apk";
 		this.appUrl = appUrl;
-		if(TextUtils.isEmpty(content))content = "检测到有更新版本，建议马上进行更新";
 		this.content = content;
 		mHandler = new MyHandler(this);
 
-		mSavePath = Environment.getExternalStorageDirectory() + "/";
-		String packageName = activity.getPackageName();
-		String[] split = packageName.split("\\.");
-		if(split.length>1){
-			for (String str : split){
-				if(!str.equals("com"))
-					mSavePath+=(str+"/");
-			}
-		}else{
-			mSavePath+="jiujie/";
-		}
-		mSavePath+="res/apk/";
+		mSavePath = ImageUtil.instance().getCacheSDDic(activity)+"res/apk/";
 	}
-	
+
+	public UpdateManager(Activity activity, String appName, String appUrl, String content,String downLoadPageUrl) {
+		this.mActivity = activity;
+		this.appName = appName+".apk";
+		this.appUrl = appUrl;
+		this.content = content;
+		this.downLoadPageUrl = downLoadPageUrl;
+		mHandler = new MyHandler(this);
+
+		mSavePath = ImageUtil.instance().getCacheSDDic(activity)+"res/apk/";
+	}
+
 	/**
 	 * 显示更新对话框
 	 */
 	public void showUpdateDialog() {
 		// 构造对话框
 		EnsureDialog ensureDialog = new EnsureDialog(mActivity);
+		if(TextUtils.isEmpty(content))content = "检测到有更新版本，建议马上进行更新";
 		ensureDialog.create()
 				.setText(content)
 				.setBtnLeft("下次再说", new OnBaseDialogClickListener() {
@@ -134,7 +164,6 @@ public class UpdateManager implements MyHandlerInterface {
 					}
 				})
 				.show();
-
 	}
 
 	/**
@@ -144,9 +173,10 @@ public class UpdateManager implements MyHandlerInterface {
 		this.updateListen = updateListen1;
 		// 构造对话框
 		EnsureDialog ensureDialog = new EnsureDialog(mActivity);
+		if(TextUtils.isEmpty(content))content = "检测到有更新版本，建议马上进行更新";
 		ensureDialog.create()
-				.setText(content)
-				.setBtnLeft("下次再说", new OnBaseDialogClickListener() {
+				.setText("强制更新："+content)
+				.setBtnLeft("退出APP", new OnBaseDialogClickListener() {
 					@Override
 					public void onClick(BaseDialog dialog, View v) {
 						dialog.dismiss();
@@ -175,14 +205,13 @@ public class UpdateManager implements MyHandlerInterface {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		UIHelper.showLog("UpdateManager onActivityResult requestCode:"+requestCode);
-		UIHelper.showLog("UpdateManager onActivityResult resultCode:"+resultCode);
-		UIHelper.showLog("UpdateManager onActivityResult data:" + data);
 		if(requestCode==UpdateAppRequestCode){
 			if(resultCode!=Activity.RESULT_OK){
 				//下载了，却取消安装或者安装失败
-				UIHelper.showToastShort(mActivity,"安装失败，请先卸载然后再安装");
-				if(updateListen!=null)updateListen.cancel();
+				if(mActivity!=null){
+					UIHelper.showToastLong(mActivity, "安装失败，请先卸载然后再安装");
+					if(updateListen!=null)updateListen.cancel();
+				}
 			}
 		}
 	}
@@ -190,72 +219,39 @@ public class UpdateManager implements MyHandlerInterface {
 	/**
 	 * 下载apk文件
 	 */
-	private void downloadApk() {
-		// 启动新线程下载软件
-		new downloadApkThread().start();
+	private void downloadApk(){
+		new DownloadFileUtil(appUrl, mSavePath, appName, new DownloadFileUtil.DownloadListen() {
+			@Override
+			public void onStart(long total) {
+				UpdateManager.this.total = total;
+				mHandler.sendEmptyMessage(DOWNLOAD_START);
+			}
+
+			@Override
+			public void onFinish(String filePath) {
+				mHandler.sendEmptyMessage(DOWNLOAD_FINISH);
+			}
+
+			@Override
+			public void onPrepare() {
+				mHandler.sendEmptyMessage(DOWNLOAD_PREPARE);
+			}
+
+			@Override
+			public void onFail(String error) {
+				UIHelper.showLog("downloadApk onFail:" + error);
+				mHandler.sendEmptyMessage(DOWNLOAD_FAIL);
+			}
+
+			@Override
+			public void onLoading(long loadedLength,int progress) {
+				UpdateManager.this.loadedLength = loadedLength;
+				UpdateManager.this.progress = progress;
+				mHandler.sendEmptyMessage(DOWNLOAD_ING);
+			}
+		}).start();
 	}
 
-	/**
-	 * 下载文件线程
-	 */
-	private class downloadApkThread extends Thread {
-		@Override
-		public void run() {
-			try {
-				// 判断SD卡是否存在，并且是否具有读写权限
-				if (Environment.getExternalStorageState().equals(
-						Environment.MEDIA_MOUNTED)) {
-					URL url = new URL(appUrl);
-					// 创建连接
-					HttpURLConnection conn = (HttpURLConnection) url
-							.openConnection();
-					conn.connect();
-					// 获取文件大小
-					total = conn.getContentLength();
-					// 创建输入流
-					InputStream is = conn.getInputStream();
-					
-					File file = new File(mSavePath);
-					// 判断文件目录是否存在
-					if (!file.exists()) {
-						boolean isCreateFile = file.mkdir();
-						if(!isCreateFile){
-							return;
-						}
-					}
-					File apkFile = new File(mSavePath, appName);
-					FileOutputStream fos = new FileOutputStream(apkFile);
-					int count = 0;
-					// 缓存
-					byte buf[] = new byte[1024];
-					// 写入到文件中
-					mHandler.sendEmptyMessage(START_DOWN);
-					do {
-						int numread = is.read(buf);
-						count += numread;
-						// 计算进度条位置
-						progress = count;
-						// 更新进度
-						mHandler.sendEmptyMessage(DOWNLOADING);
-						if (numread <= 0) {
-							// 下载完成
-							mHandler.sendEmptyMessage(DOWNLOAD_FINISH);
-							break;
-						}
-						// 写入文件
-						fos.write(buf, 0, numread);
-					} while (!cancelUpdate);// 点击取消就停止下载.
-					fos.close();
-					is.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			// 取消下载对话框显示
-//			mDownloadDialog.dismiss();
-		}
-	}
-	
 	/**
 	 * 安装APK文件
 	 */
@@ -270,6 +266,6 @@ public class UpdateManager implements MyHandlerInterface {
 				"application/vnd.android.package-archive");
 //		mActivity.startActivity(i);
 		mActivity.startActivityForResult(i, UpdateAppRequestCode);
-		notificationUtil.clearRecordingNotification();
+		notificationUtil.clearNotification();
 	}
 }

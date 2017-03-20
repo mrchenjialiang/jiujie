@@ -1,4 +1,10 @@
 <resources>
+    <!--单引号   '      &apos;-->
+    <!--双引号   "     &quot;-->
+    <!--大于号   >    &gt;-->
+    <!--小于号   <    &lt;-->
+    <!--与       &   &amp;-->
+
     <string name="app_name">Base</string>
 
     <string name="list_footer_more">正在加载更多……</string>
@@ -10,4 +16,5 @@
 
     <!--  裁剪图片界面 -->
     <string name="gl_wait">请稍等</string>
+
 </resources>
