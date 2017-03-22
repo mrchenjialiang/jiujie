@@ -10,6 +10,8 @@ import com.jiujie.base.jk.ICallback;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +112,7 @@ public abstract class BaseHttpMethods<T> {
     protected abstract List<Cookie> loadForRequest(HttpUrl httpUrl);
 
     /**
-     * must do in background thread
+     * callback in UI thread
      */
     public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, final ICallback<String> callback) {
         RequestBody formBody;
@@ -175,6 +177,84 @@ public abstract class BaseHttpMethods<T> {
                 }
             }
         });
+    }
+
+    /**
+     * callback in UI thread
+     */
+    public void httpGet(final Activity activity, String url, Map<String, Object> parmamMap, final ICallback<String> callback) {
+        Request.Builder builder = new Request.Builder();
+        Request request = builder.url(getGetUrl(url, parmamMap)).get().build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                if (activity != null && !activity.isFinishing() && callback != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String message = e.getMessage();
+                            callback.onFail(TextUtils.isEmpty(message) ? "服务器异常，请稍后再试" : message);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (activity != null && !activity.isFinishing() && callback != null) {
+                    try {
+                        if (response.isSuccessful()) {
+                            //这一步也是网络操作。。。
+                            ResponseBody body = response.body();
+                            final String decode = UIHelper.decode(body.string());
+                            body.close();
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onSucceed(decode);
+                                }
+                            });
+                        } else {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onFail("服务器异常，请稍后再试");
+                                }
+                            });
+                        }
+                    } catch (Exception ex) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail("服务器异常，请稍后再试");
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    private String getGetUrl(String url, Map<String, Object> paramMap) {
+        if (paramMap != null && paramMap.size() > 0) {
+            StringBuilder sb = new StringBuilder(url);
+            sb.append("?");
+            for (String key : paramMap.keySet()) {
+                if (sb.length() != (url.length() + 1)) {
+                    sb.append("&");
+                }
+                try {
+                    sb.append(key)
+                            .append("=")
+                            .append(URLEncoder.encode(paramMap.get(key)
+                                    .toString(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
+        }
+        return url;
     }
 
 }
