@@ -132,6 +132,12 @@ public class Title {
 		}
 	}
 	
+	public void setRightTextButtonTextSize(float textSizeSp){
+		if(title_right_text!=null){
+			title_right_text.setTextSize(textSizeSp);
+		}
+	}
+
 	public void setRightTextButtonText(String text){
 		if(title_right_text!=null&&!TextUtils.isEmpty(text)){
 			title_right_text.setText(text);

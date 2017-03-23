@@ -45,6 +45,10 @@ public class BottomListDialog extends BaseDialog {
             }
         });
 
+        setOrRefreshDataList(dataList);
+    }
+
+    public void setOrRefreshDataList(List<String> dataList) {
         list.removeAllViews();
         if(dataList.size()==1){
             View itemView = getListItemView(dataList.get(0), ItemType.Single, 0);
