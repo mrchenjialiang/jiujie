@@ -88,9 +88,16 @@ public abstract class MyOkHttpUtil {
         return url;
     }
 
+    public void httpGet(final Activity activity, String url, Map<String, Object> paramMap, final ICallback<String> callback) {
+        httpGet(activity,url,paramMap,null,callback);
+    }
+
     public void httpGet(final Activity activity, String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
         Request.Builder builder = new Request.Builder();
-        builder.get().url(getGetUrl(url, paramMap)).tag(tag);
+        builder.get().url(getGetUrl(url, paramMap));
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
 
         Request request = builder.build();
         okHttpClient.newCall(request).enqueue(new Callback() {

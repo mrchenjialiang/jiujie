@@ -199,4 +199,8 @@ public class RecyclerViewUtil {
         if(adapter!=null)
             adapter.notifyDataSetChanged();
     }
+
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
 }
