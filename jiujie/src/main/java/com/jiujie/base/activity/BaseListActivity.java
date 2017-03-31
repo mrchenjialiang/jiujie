@@ -36,21 +36,6 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh {
 		recyclerViewUtil.setRefreshListen(this);
 	}
 
-	@Override
-	public void initData() {
-
-	}
-
-	@Override
-	public void refresh() {
-
-	}
-
-	@Override
-	public void loadMore() {
-
-	}
-
 	/**
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */

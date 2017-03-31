@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.jiujie.base.dialog.BaseDialog;
 import com.jiujie.base.dialog.EnsureDialog;
+import com.jiujie.base.jk.DownloadFileListen;
 import com.jiujie.base.jk.MyHandlerInterface;
 import com.jiujie.base.jk.OnBaseDialogClickListener;
 import com.jiujie.base.jk.UpdateListen;
@@ -220,7 +221,7 @@ public class UpdateManager implements MyHandlerInterface {
 	 * 下载apk文件
 	 */
 	private void downloadApk(){
-		new DownloadFileUtil(appUrl, mSavePath, appName, new DownloadFileUtil.DownloadListen() {
+		new DownloadFileUtil(appUrl, mSavePath, appName, new DownloadFileListen() {
 			@Override
 			public void onStart(long total) {
 				UpdateManager.this.total = total;

@@ -17,7 +17,7 @@ import com.jiujie.base.util.UIHelper;
 /**
  * 有标题
  */
-public abstract class BaseFragment extends BaseMostFragment {
+public abstract class BaseFragment extends BaseMostFragment{
 
 	public Title mTitle;
 	public Activity mActivity;

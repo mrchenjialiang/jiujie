@@ -11,7 +11,7 @@ import com.jiujie.base.util.RecyclerViewUtil;
 /**
  * @author ChenJiaLiang
  */
-public abstract class BaseListNoTitleActivity extends BaseNoTitleActivity implements Refresh {
+public abstract class BaseDrawerListActivity extends BaseDrawerActivity implements Refresh {
 
 	public boolean isEnd;
 	public RecyclerViewUtil recyclerViewUtil;
@@ -34,6 +34,10 @@ public abstract class BaseListNoTitleActivity extends BaseNoTitleActivity implem
 	private void initView() {
 		recyclerViewUtil = new RecyclerViewUtil(mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter());
 		recyclerViewUtil.setRefreshListen(this);
+	}
+
+	protected void notifyDataSetChanged(){
+		if(recyclerViewUtil!=null) recyclerViewUtil.notifyDataSetChanged();
 	}
 
 	@Override

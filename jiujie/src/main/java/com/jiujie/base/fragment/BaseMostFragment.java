@@ -5,9 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.jiujie.base.R;
+import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.util.PermissionsManager;
 
-public class BaseMostFragment extends Fragment{
+public abstract class BaseMostFragment extends Fragment  implements LoadStatus {
 
     @Override
     public void startActivity(Intent intent) {

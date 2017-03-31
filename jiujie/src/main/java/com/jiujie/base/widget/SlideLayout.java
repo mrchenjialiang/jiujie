@@ -13,20 +13,24 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 import android.widget.Scroller;
 
 import com.jiujie.base.R;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 
 /**
- * @author xiaanming
- * blog http://blog.csdn.net/xiaanming
+ * 需求透明主题，只能在清单里设置，Activity里设置无效！
+ * @author ChenJiaLiang
+ * 改自blog http://blog.csdn.net/xiaanming
  */
-public class SwipeBackLayout extends FrameLayout {
-	private static final String TAG = SwipeBackLayout.class.getSimpleName();
+public class SlideLayout extends FrameLayout {
+	private static final String TAG = SlideLayout.class.getSimpleName();
 	private View mContentView;
 	private int mTouchSlop;
 	private int downX;
@@ -38,16 +42,25 @@ public class SwipeBackLayout extends FrameLayout {
 	private boolean isFinish;
 	private Drawable mShadowDrawable;
 	private Activity mActivity;
-	private List<ViewPager> mViewPagers = new LinkedList<>();
+	private List<View> mChildViewList = new LinkedList<>();
 	private boolean isEnable = true;
 
-	public SwipeBackLayout(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
+	public SlideLayout(Context context) {
+		super(context);
+		init(context);
 	}
 
-	public SwipeBackLayout(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+	public SlideLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context);
+	}
 
+	public SlideLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		init(context);
+	}
+
+	private void init(Context context) {
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		mScroller = new Scroller(context);
 
@@ -83,11 +96,31 @@ public class SwipeBackLayout extends FrameLayout {
 		if(!isEnable){
 			return super.onInterceptTouchEvent(ev);
 		}
-		//处理ViewPager冲突问题
-		ViewPager mViewPager = getTouchViewPager(mViewPagers, ev);
 
-		if(mViewPager != null && mViewPager.getCurrentItem() != 0){
-			return super.onInterceptTouchEvent(ev);
+		//处理滑动冲突问题
+		List<View> touchViewList = getTouchViewList(mChildViewList,ev);
+//		Log.e(TAG, "mChildViewList:" + mChildViewList.size());
+//		Log.e(TAG, "touchViewList:" + touchViewList);
+//		if(touchViewList!=null)Log.e(TAG,"touchViewList size:"+touchViewList.size());
+		if(touchViewList!=null&&touchViewList.size()>0){
+			for (View touchView:touchViewList){
+				//设置不拦截情况
+				if(touchView instanceof ViewPager){
+					ViewPager viewPager = (ViewPager) touchView;
+					if(viewPager.getCurrentItem() != 0){
+						return super.onInterceptTouchEvent(ev);
+					}
+				}else if(touchView instanceof HorizontalScrollView){
+					HorizontalScrollView horizontalScrollView = (HorizontalScrollView) touchView;
+					if(horizontalScrollView.getScrollX()>0){
+						return super.onInterceptTouchEvent(ev);
+					}
+				}else{
+					if(touchView.onTouchEvent(ev)){
+						return super.onInterceptTouchEvent(ev);
+					}
+				}
+			}
 		}
 
 		switch (ev.getAction()) {
@@ -142,38 +175,62 @@ public class SwipeBackLayout extends FrameLayout {
 		return true;
 	}
 
+
 	/**
-	 * 获取SwipeBackLayout里面的ViewPager的集合
+	 * 获取需求不拦截的ChildView列表
 	 */
-	private void getAlLViewPager(List<ViewPager> mViewPagers, ViewGroup parent){
+	private void getChildShouldInterceptViewList(List<View> mChildViewList,ViewGroup parent){
 		int childCount = parent.getChildCount();
 		for(int i=0; i<childCount; i++){
 			View child = parent.getChildAt(i);
 			if(child instanceof ViewPager){
-				mViewPagers.add((ViewPager)child);
+				mChildViewList.add(child);
 			}else if(child instanceof ViewGroup){
-				getAlLViewPager(mViewPagers, (ViewGroup)child);
+				if(child instanceof HorizontalScrollView){
+					mChildViewList.add(child);
+					getChildShouldInterceptViewList(mChildViewList,(ViewGroup) child);
+				}else if(child instanceof ScrollView){
+					getChildShouldInterceptViewList(mChildViewList,(ViewGroup) child);
+				}else{
+					getChildShouldInterceptViewList(mChildViewList,(ViewGroup) child);
+				}
+			} else{
+				mChildViewList.add(child);
 			}
 		}
 	}
 
-
 	/**
-	 * 返回我们touch的ViewPager
+	 * 返回我们触摸到的View 列表
 	 */
-	private ViewPager getTouchViewPager(List<ViewPager> mViewPagers, MotionEvent ev){
-		if(mViewPagers == null || mViewPagers.size() == 0){
+	private List<View> getTouchViewList(List<View> mChildViewList,MotionEvent ev){
+		if(mChildViewList == null || mChildViewList.size() == 0){
 			return null;
 		}
+		List<View> touchViewList = new ArrayList<>();
 		Rect mRect = new Rect();
-		for(ViewPager v : mViewPagers){
-			v.getHitRect(mRect);
-
-			if(mRect.contains((int)ev.getX(), (int)ev.getY())){
-				return v;
+		for(View v : mChildViewList){
+//			try {
+//				Log.e(TAG,"v:"+v);
+//				Log.e(TAG, "MotionEvent getX:" + (int) ev.getX() + "," + (int) ev.getY());
+//				Log.e(TAG, "MotionEvent getRawX:" + (int) ev.getRawX() + "," + (int) ev.getRawY());
+//				v.getLocalVisibleRect(mRect);
+//				Log.e(TAG, "getLocalVisibleRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+//				v.getHitRect(mRect);
+//				Log.e(TAG, "getHitRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+//				v.getDrawingRect(mRect);
+//				Log.e(TAG, "getDrawingRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+//				v.getGlobalVisibleRect(mRect);
+//				Log.e(TAG, "getGlobalVisibleRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+//			}catch (Exception e){
+//				Log.e(TAG,"e:"+e);
+//			}
+			v.getGlobalVisibleRect(mRect);
+			if(mRect.contains((int)ev.getRawX(), (int)ev.getRawY())){
+				touchViewList.add(v);
 			}
 		}
-		return null;
+		return touchViewList;
 	}
 
 	@Override
@@ -182,7 +239,8 @@ public class SwipeBackLayout extends FrameLayout {
 		if (changed) {
 			viewWidth = this.getWidth();
 
-			getAlLViewPager(mViewPagers, this);
+			mChildViewList.clear();
+			getChildShouldInterceptViewList(mChildViewList, this);
 		}
 	}
 

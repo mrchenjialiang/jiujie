@@ -1,5 +1,7 @@
 package com.jiujie.base.util.appupdate;
 
+import com.jiujie.base.jk.DownloadFileListen;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,24 +23,13 @@ public class DownloadFileUtil {
     private final String url;
     private final String saveDir;
     private final String saveName;
-    private final DownloadListen downloadListen;
+    private final DownloadFileListen downloadListen;
 
-    public DownloadFileUtil(String url,String saveDir,String saveName,DownloadListen downloadListen) {
+    public DownloadFileUtil(String url,String saveDir,String saveName,DownloadFileListen downloadListen) {
         this.url = url;
         this.saveDir = saveDir;
         this.saveName = saveName;
         this.downloadListen = downloadListen;
-    }
-
-    /**
-     * call on background thread
-     */
-    public interface DownloadListen{
-        void onPrepare();
-        void onStart(long total);
-        void onFinish(String filePath);
-        void onFail(String error);
-        void onLoading(long loadedLength, int progress);
     }
 
     public void start(){

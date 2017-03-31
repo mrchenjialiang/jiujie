@@ -88,6 +88,12 @@ public class WebActivity extends BaseActivity {
 		}
 		mTitle.setLeftButtonBack();
 	}
+
+	@Override
+	public boolean isShowTitle() {
+		return true;
+	}
+
 	@SuppressLint("SetJavaScriptEnabled")
 	private void initWebView() {
 		webView = (WebView) findViewById(R.id.webView1);

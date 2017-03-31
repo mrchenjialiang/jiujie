@@ -1,17 +1,16 @@
 package com.jiujie.base.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -24,34 +23,28 @@ import com.jiujie.base.widget.DrawerLayoutNoScroll;
  * Created by ChenJiaLiang on 2016/6/3.
  * Email : 576507648@qq.com
  */
-public abstract class BaseDrawMenuActivity extends BaseMostActivity {
+public abstract class BaseDrawerActivity extends BaseMostActivity {
     public Title mTitle;
-    public Activity mActivity;
     public Toolbar toolbar;
     private View mLoadingLine,mLoadingFail;
     private AnimationDrawable mLoadingAnimation;
     public LinearLayout contentLayout;
     private View customTitleView;
     private LinearLayout mTagLayout;
+    private LinearLayout drawerContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 这句很关键，注意是调用父类的方法
-        super.setContentView(R.layout.activity_base_slide_content);
-        mActivity = this;
-        // 经测试在代码里直接声明透明状态栏更有效
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
-            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
-        }
+        setContentView(R.layout.activity_base_slide_content);
+
         initDrawer();
 
         initView();
         initToolbar();
         initBaseTitle();
 
-        int titleHeight = getResources().getDimensionPixelOffset(R.dimen.height_of_title);
+        int titleHeight = isShowTitle()?getResources().getDimensionPixelOffset(R.dimen.height_of_title):0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
             setToolBarHeight(UIHelper.getStatusBarHeightByReadR(mActivity)+ titleHeight);
         }else{
@@ -59,6 +52,8 @@ public abstract class BaseDrawMenuActivity extends BaseMostActivity {
         }
 
     }
+
+    public abstract boolean isShowTitle();
 
     private DrawerLayoutNoScroll drawerLayout;
 
@@ -71,43 +66,40 @@ public abstract class BaseDrawMenuActivity extends BaseMostActivity {
             drawerLayout.setIsCanScroll(isEnable);
     }
 
-    private void initDrawer() {
-        drawerLayout = (DrawerLayoutNoScroll) findViewById(R.id.base_drawer);
-        LinearLayout drawContent = (LinearLayout) findViewById(R.id.base_drawer_menu);
-        if(getDrawLayoutId()!=0){
-            drawContent.addView(getLayoutInflater().inflate(getDrawLayoutId(),drawContent,false));
-        }
-//        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) drawContent.getLayoutParams();
-//        params.width = UIHelper.getScreenWidth(this);
-//        drawContent.setLayoutParams(params);
-//        drawerLayout.openDrawer(drawContent);
-//
-//        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-//            @Override
-//            public void onDrawerSlide(View drawerView, float slideOffset) {
-//            }
-//
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//            }
-//
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//                finish();
-//                overridePendingTransition(0, 0);
-//            }
-//
-//            @Override
-//            public void onDrawerStateChanged(int newState) {
-//
-//            }
-//        });
-    }
-
-    protected int getDrawLayoutId(){
+    protected int getDrawerInsideLayoutId(){
         return 0;
     }
 
+    protected void openDrawer(){
+        if(drawerLayout!=null&&drawerContent!=null&&drawerContent.getChildCount()>0){
+            drawerLayout.openDrawer(drawerContent);
+        }
+    }
+
+    protected void closeDrawer(){
+        if(drawerLayout!=null&&drawerContent!=null&&drawerContent.getChildCount()>0){
+            drawerLayout.closeDrawer(drawerContent);
+        }
+    }
+
+    /**
+     * 设置菜单位置，如Gravity.END右侧菜单，Gravity.START 左侧菜单
+     */
+    protected void setDrawerDirection(int gravity){
+        DrawerLayout.LayoutParams layoutParams = (DrawerLayout.LayoutParams) drawerContent.getLayoutParams();
+        layoutParams.gravity = gravity;
+        drawerContent.setLayoutParams(layoutParams);
+
+    }
+
+    private void initDrawer() {
+        drawerLayout = (DrawerLayoutNoScroll) findViewById(R.id.base_drawer);
+        drawerContent = (LinearLayout) findViewById(R.id.base_drawer_content);
+        if(getDrawerInsideLayoutId()!=0){
+            View drawerInsideContent = getLayoutInflater().inflate(getDrawerInsideLayoutId(), drawerContent, false);
+            drawerContent.addView(drawerInsideContent);
+        }
+    }
 
     @Override
     public void startActivity(Intent intent) {

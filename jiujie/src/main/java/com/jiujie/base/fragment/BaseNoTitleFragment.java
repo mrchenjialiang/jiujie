@@ -11,10 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
-import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.util.UIHelper;
 
-public abstract class BaseNoTitleFragment extends BaseMostFragment implements LoadStatus {
+public abstract class BaseNoTitleFragment extends BaseMostFragment{
 
 	public Activity mActivity;
 	public View mView;

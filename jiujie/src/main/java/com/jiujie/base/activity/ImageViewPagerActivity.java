@@ -42,7 +42,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 
-public class ImageViewPagerActivity extends BaseNoTitleActivity {
+public class ImageViewPagerActivity extends BaseActivity {
 
 	private ArrayList<String> dataList = new ArrayList<>();
 	private Dialog waitingDialog;
@@ -72,7 +72,12 @@ public class ImageViewPagerActivity extends BaseNoTitleActivity {
 			}
 		});
     }
-	
+
+	@Override
+	public boolean isShowTitle() {
+		return false;
+	}
+
 	@Override
 	public int getLayoutId() {
 		return R.layout.activity_view_pager;
