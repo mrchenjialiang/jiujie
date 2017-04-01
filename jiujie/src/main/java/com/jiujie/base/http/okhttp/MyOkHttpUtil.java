@@ -54,7 +54,7 @@ public abstract class MyOkHttpUtil {
             }
         });
         if (APP.isDeBug) {
-            builder.addInterceptor(new LoggerInterceptor("LOG"));
+            builder.addInterceptor(new LoggerInterceptor("LOG",true));
         }
 
         okHttpClient = builder.build();

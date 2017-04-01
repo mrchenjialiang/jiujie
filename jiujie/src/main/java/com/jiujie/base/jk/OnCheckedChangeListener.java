@@ -1,6 +1,7 @@
 package com.jiujie.base.jk;
 
-import com.jiujie.base.widget.SwitchButton;
+import android.view.View;
+import android.widget.Checkable;
 
 /**
  * @author : Created by ChenJiaLiang on 2016/12/15.
@@ -8,5 +9,5 @@ import com.jiujie.base.widget.SwitchButton;
  */
 
 public interface OnCheckedChangeListener {
-    void onCheckedChanged(SwitchButton switchButton, boolean isCheck);
+    void onCheckedChanged(Checkable checkable,View v, boolean isCheck);
 }

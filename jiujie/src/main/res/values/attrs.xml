@@ -22,6 +22,19 @@
     <attr name="scaleWidth" format="float"/>
     <attr name="lineSpacing" format="dimension"/>
 
+
+    <declare-styleable name="SwitchButton">
+        <attr name="mainHeight" format="dimension"/>
+        <attr name="circleHeight" format="dimension"/>
+        <attr name="circleColor" format="color"/>
+        <attr name="colorCheck" format="color"/>
+        <attr name="colorUnCheck" format="color"/>
+        <attr name="checked" format="boolean"/>
+        <attr name="android:layout_width"/>
+        <attr name="android:layout_height"/>
+    </declare-styleable>
+
+
     <declare-styleable name="MarqueeViewGroup">
         <attr name="showNum" format="integer"/>
     </declare-styleable>
