@@ -3,13 +3,13 @@ package com.jiujie.base.http.okhttp;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.jiujie.base.util.UIHelper;
+
 import java.io.IOException;
 
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -34,7 +34,6 @@ public class LoggerInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-//        logForRequest(request);
         Response response = chain.proceed(request);
         return logForResponse(response);
     }
@@ -59,8 +58,9 @@ public class LoggerInterceptor implements Interceptor {
                     if (mediaType != null) {
                         Log.e(tag, "responseBody's contentType : " + mediaType.toString());
                         if (isText(mediaType)) {
-                            String resp = body.string();
+                            String resp = UIHelper.decode(body.string());
                             Log.e(tag, "responseBody's content : " + resp);
+                            Log.e(tag, "========Http Log End=======");
 
                             body = ResponseBody.create(mediaType, resp);
                             return response.newBuilder().body(body).build();
@@ -79,44 +79,18 @@ public class LoggerInterceptor implements Interceptor {
         return response;
     }
 
-    private void logForRequest(Request request) {
-        try {
-            String url = request.url().toString();
-            Headers headers = request.headers();
-
-            Log.e(tag, "========Http Log1 Start=======");
-            Log.e(tag, "method : " + request.method());
-            Log.e(tag, "url : " + url);
-            if (headers != null && headers.size() > 0) {
-                Log.e(tag, "headers : " + headers.toString());
-            }
-            RequestBody requestBody = request.body();
-            if (requestBody != null) {
-                MediaType mediaType = requestBody.contentType();
-                if (mediaType != null) {
-                    Log.e(tag, "requestBody's contentType : " + mediaType.toString());
-                    if (isText(mediaType)) {
-                        Log.e(tag, "requestBody's content : " + bodyToString(request));
-                    } else {
-                        Log.e(tag, "requestBody's content : " + " maybe [file part] , too large too print , ignored!");
-                    }
-                }
-            }
-            Log.e(tag, "========Http Log1 End=======");
-        } catch (Exception e) {
-//            e.printStackTrace();
-        }
-    }
-
     private boolean isText(MediaType mediaType) {
         if (mediaType.type() != null && mediaType.type().equals("text")) {
             return true;
         }
-        if (mediaType.subtype() != null) {
-            if (mediaType.subtype().equals("json") ||
-                    mediaType.subtype().equals("xml") ||
-                    mediaType.subtype().equals("html") ||
-                    mediaType.subtype().equals("webviewhtml")
+        String subtype = mediaType.subtype();
+        if (subtype != null) {
+            if (subtype.equals("json") ||
+                    subtype.equals("xml") ||
+                    subtype.equals("html") ||
+                    subtype.equals("javascript") ||
+                    subtype.equals("x-javascript") ||
+                    subtype.equals("webviewhtml")
                     )
                 return true;
         }
