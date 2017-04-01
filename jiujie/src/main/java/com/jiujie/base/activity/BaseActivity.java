@@ -4,6 +4,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -18,6 +19,7 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	private View mLoadingLine,mLoadingFail;
 	private AnimationDrawable mLoadingAnimation;
 	public LinearLayout contentLayout;
+	private LinearLayout mTagLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,11 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	private void initLoading() {
 		mLoadingLine = findViewById(R.id.base_loading_line);
 		mLoadingFail = findViewById(R.id.base_loading_fail);
+		mTagLayout = (LinearLayout)findViewById(R.id.base_tag_layout);
+		mTagLayout.setVisibility(View.GONE);
+		if(getTagLayoutId()!=0){
+			mTagLayout.addView(getLayoutInflater().inflate(getTagLayoutId(),mTagLayout,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
 		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
 		mLoadingLine.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +83,14 @@ public abstract class BaseActivity extends BaseTitleActivity {
 				initData();
 			}
 		});
+	}
+
+	public int getTagLayoutId(){
+		return 0;
+	}
+
+	public void showTabLayout(boolean isShow){
+		mTagLayout.setVisibility(isShow?View.VISIBLE:View.GONE);
 	}
 
 	public abstract void initData();

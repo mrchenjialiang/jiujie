@@ -665,6 +665,13 @@ public class UIHelper {
     }
 
     /**
+     * 保留两位小数→float
+     */
+    public static double getTwoDecimal1(double num) {
+        return (double) Math.round(num * 100) / 100;
+    }
+
+    /**
      * 让TextView中的关键字不同的颜色
      */
     public static void setTextColorWhenKeyWord(TextView textView, String text, String keyWord, int color) {

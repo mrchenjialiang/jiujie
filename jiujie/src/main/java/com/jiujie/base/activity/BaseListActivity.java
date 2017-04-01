@@ -65,4 +65,8 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh {
 		}
 		recyclerViewUtil.notifyDataSetChanged();
 	}
+
+	public void notifyDataSetChanged(){
+		recyclerViewUtil.notifyDataSetChanged();
+	}
 }

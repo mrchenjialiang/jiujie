@@ -84,7 +84,9 @@ public abstract class BaseTitleActivity extends BaseSlideActivity{
         }
     }
 
-    public abstract boolean isShowTitle();
+    public boolean isShowTitle(){
+        return true;
+    }
 
     public void setToolBarHeight(int height){
         if(toolbar==null) return;

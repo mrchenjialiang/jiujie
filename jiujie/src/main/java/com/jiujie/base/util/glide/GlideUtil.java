@@ -1,13 +1,16 @@
 package com.jiujie.base.util.glide;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 import com.jiujie.base.R;
 import com.jiujie.base.util.UIHelper;
 
@@ -306,6 +309,40 @@ public class GlideUtil {
         builder
 //                .centerCrop()//不能这样，否则会变成方形
                 .into(imageView);
+    }
+
+    /**
+     * Must do on a background thread
+     */
+    public Bitmap getImage(Context context, String url, boolean isUseCache, boolean isShowAnim) {
+        return getImage(context,url,isUseCache,isShowAnim, Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+    }
+    /**
+     * Must do on a background thread
+     */
+    public Bitmap getImage(Context context, String url, boolean isUseCache, boolean isShowAnim,int width,int height) {
+        DrawableTypeRequest<String> builder = Glide.with(context)
+                .load(url);
+        if(isUseCache){
+            builder.diskCacheStrategy(DiskCacheStrategy.ALL);
+        }else{
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true);
+        }
+        if(!isShowAnim){
+            builder.dontAnimate();
+        }else{
+            builder.crossFade();
+        }
+        Bitmap bitmap = null;
+        try {
+            bitmap = builder.asBitmap()
+                    .into(width, height)
+                    .get();
+        }catch (Exception e){
+            UIHelper.showLog("GlideUtil getImage error "+e);
+        }
+        return bitmap;
     }
 
 }
