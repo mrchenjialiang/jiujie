@@ -45,6 +45,7 @@ public class AutoFillLineViewGroup extends ViewGroup {
                     R.styleable.AutoFillLineViewGroup);
             lineSpacing = (int)a.getDimension(R.styleable.AutoFillLineViewGroup_lineSpacing, lineSpacing);
             lineNum = a.getInteger(R.styleable.AutoFillLineViewGroup_lineNum, lineNum);
+//            viewWidth = a.getLayoutDimension(R.styleable.AutoFillLineViewGroup_android_layout_width, -1);
             a.recycle();
         }
     }
@@ -91,6 +92,7 @@ public class AutoFillLineViewGroup extends ViewGroup {
          */
         childHeight = 0;
         childWidth = 0;
+        spacing = 0;
 
         removeAllViews();
         for (int i = 0; i < childViewList.size(); i++) {
@@ -112,10 +114,15 @@ public class AutoFillLineViewGroup extends ViewGroup {
                 childWidth = child.getMeasuredWidth();
                 if(childWidth*lineNum+getPaddingLeft()+getPaddingRight()+(lineNum-1)* spacing > viewWidth){
                     int resultChildWidth = (viewWidth - ((lineNum-1)* spacing+getPaddingLeft()+getPaddingRight()))/lineNum;
-                    childHeight = childHeight*resultChildWidth/childWidth;
-                    childWidth = resultChildWidth;
+                    if(resultChildWidth>0){
+                        childHeight = childHeight*resultChildWidth/childWidth;
+                        childWidth = resultChildWidth;
+                    }
                 }else{
                     spacing = (viewWidth - (childWidth*lineNum+getPaddingLeft()+getPaddingRight()))/(lineNum-1);
+                }
+                if(childHeight!=0&&spacing!=0){
+                    break;
                 }
             }
         }
@@ -151,14 +158,14 @@ public class AutoFillLineViewGroup extends ViewGroup {
     public void setLineNum(int lineNum) {
         if(this.lineNum!=lineNum){
             this.lineNum = lineNum;
-            requestLayout();
+//            requestLayout();
         }
     }
 
     public void setLineSpacing(int lineSpacing) {
         if(this.lineSpacing!=lineSpacing){
             this.lineSpacing = lineSpacing;
-            requestLayout();
+//            requestLayout();
         }
     }
 
