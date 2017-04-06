@@ -89,7 +89,7 @@ public abstract class MyOkHttpUtil {
     }
 
     public void httpGet(final Activity activity, String url, Map<String, Object> paramMap, final ICallback<String> callback) {
-        httpGet(activity,url,paramMap,null,callback);
+        httpGet(activity, url, paramMap, null, callback);
     }
 
     public void httpGet(final Activity activity, String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
@@ -185,7 +185,7 @@ public abstract class MyOkHttpUtil {
         });
     }
 
-    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, String tag, final ICallback<String> callback) {
+    public void httpPost(String url, Map<String, String> postParamMap, String tag, Callback callback) {
         RequestBody formBody;
         if (postParamMap != null && postParamMap.size() > 0) {
             FormBody.Builder builder = new FormBody.Builder();
@@ -194,15 +194,21 @@ public abstract class MyOkHttpUtil {
             }
             formBody = builder.build();
         } else {
-            UIHelper.showLog("httpPost should have post params");
-            return;
+            formBody = new FormBody.Builder().build();
         }
 
         Request.Builder builder = new Request.Builder();
-        builder.url(url).post(formBody).tag(tag);
+        builder.url(url).post(formBody);
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
 
         Request request = builder.build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(callback);
+    }
+
+    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, String tag, final ICallback<String> callback) {
+        httpPost(url, postParamMap, tag, new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 if (activity != null && !activity.isFinishing() && callback != null) {
@@ -272,7 +278,12 @@ public abstract class MyOkHttpUtil {
                 requestBody.addFormDataPart(key, postParamMap.get(key));
             }
         }
-        Request request = new Request.Builder().url(url).post(requestBody.build()).tag(tag).build();
+        Request.Builder builder = new Request.Builder();
+        builder.url(url).post(requestBody.build());
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
+        Request request = builder.build();
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -333,12 +344,14 @@ public abstract class MyOkHttpUtil {
             }
             formBody = builder.build();
         } else {
-            UIHelper.showLog("httpPost should have post params");
-            return;
+            formBody = new MyFormBody.Builder().build();
         }
 
         Request.Builder builder = new Request.Builder();
-        builder.url(url).post(formBody).tag(tag);
+        builder.url(url).post(formBody);
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
 
         Request request = builder.build();
         okHttpClient.newCall(request).enqueue(new Callback() {
