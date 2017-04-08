@@ -8,17 +8,16 @@ import android.view.ViewGroup;
 
 import com.jiujie.base.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * item项的margin被设置忽略，应用于item都一个大小排列用
  * @author : Created by ChenJiaLiang on 2016/10/17.
  * Email : 576507648@qq.com
  */
 public class AutoFillLineViewGroup extends ViewGroup {
 
     private static final String TAG = "AutoFillLineViewGroup ";
-    private List<View> childViewList;
     private int lineSpacing = 16;
     private int spacing = 8;
     private int lineNum = 5;
@@ -37,34 +36,54 @@ public class AutoFillLineViewGroup extends ViewGroup {
 
     public AutoFillLineViewGroup(Context context) {
         super(context);
+        init(context, null);
     }
 
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.AutoFillLineViewGroup);
-            lineSpacing = (int)a.getDimension(R.styleable.AutoFillLineViewGroup_lineSpacing, lineSpacing);
+            lineSpacing = (int) a.getDimension(R.styleable.AutoFillLineViewGroup_lineSpacing, lineSpacing);
             lineNum = a.getInteger(R.styleable.AutoFillLineViewGroup_lineNum, lineNum);
-//            viewWidth = a.getLayoutDimension(R.styleable.AutoFillLineViewGroup_android_layout_width, -1);
             a.recycle();
+        }
+    }
+
+    public void setLineNum(int lineNum) {
+        if (this.lineNum != lineNum) {
+            this.lineNum = lineNum;
+//            requestLayout();
+        }
+    }
+
+    public void setLineSpacing(int lineSpacing) {
+        if (this.lineSpacing != lineSpacing) {
+            this.lineSpacing = lineSpacing;
+//            requestLayout();
+        }
+    }
+
+    public void setChildViewList(List<View> childViewList) {
+        removeAllViews();
+        for (View view : childViewList) {
+            addView(view);
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (childViewList != null && childViewList.size() > 0) {
+        if (getChildCount() > 0) {
             int paddingLeft = getPaddingLeft();
             int paddingTop = getPaddingTop();
             int left, top = 0, right = 0, bottom;
 
-            for (int i = 0; i < childViewList.size(); i++) {
-                View child = childViewList.get(i);
-
-                if(i%lineNum==0){
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if (i % lineNum == 0) {
                     //一行第一个
                     left = paddingLeft;
-                    top = paddingTop + (childHeight + lineSpacing)*(i/lineNum);
-                }else{
+                    top = paddingTop + (childHeight + lineSpacing) * (i / lineNum);
+                } else {
                     left = right + spacing;
                 }
                 right = left + childWidth;
@@ -76,108 +95,69 @@ public class AutoFillLineViewGroup extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        /**
-         * 获得此ViewGroup上级容器为其推荐的宽和高，以及计算模式
-         */
-//        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+//        MeasureSpec.EXACTLY:1073741824
+//        MeasureSpec.AT_MOST:-2147483648
+//        MeasureSpec.UNSPECIFIED:0
+
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int viewWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
-
-        int height;
-
-
-        /**
-         * 根据childView计算的出的宽和高，以及设置的margin计算容器的宽和高，主要用于容器是warp_content时
-         */
-        childHeight = 0;
-        childWidth = 0;
-        spacing = 0;
-
-        removeAllViews();
-        for (int i = 0; i < childViewList.size(); i++) {
-            View child = childViewList.get(i);
-            if(child.getParent()!=null){
-                removeView(child);
-            }
-            addView(child,LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-        }
-
-        // 计算出所有的childView的宽和高
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
-        for (int i = 0; i < childViewList.size(); i++) {
-            View child = childViewList.get(i);
-//            measureChild(child, widthMeasureSpec, heightMeasureSpec);
-            if(childHeight ==0){
-                childHeight = child.getMeasuredHeight();
-                childWidth = child.getMeasuredWidth();
-                if(childWidth*lineNum+getPaddingLeft()+getPaddingRight()+(lineNum-1)* spacing > viewWidth){
-                    int resultChildWidth = (viewWidth - ((lineNum-1)* spacing+getPaddingLeft()+getPaddingRight()))/lineNum;
-                    if(resultChildWidth>0){
-                        childHeight = childHeight*resultChildWidth/childWidth;
-                        childWidth = resultChildWidth;
-                    }
-                }else{
-                    spacing = (viewWidth - (childWidth*lineNum+getPaddingLeft()+getPaddingRight()))/(lineNum-1);
+        int width = getPaddingLeft() + getPaddingRight();
+        int height = getPaddingBottom() + getPaddingTop();
+        //开始处理wrap_content,如果一个子元素都没有，就设置为0
+        if (getChildCount() == 0) {
+            setMeasuredDimension(width, height);
+        } else {
+            View child = getChildAt(0);
+            childHeight = child.getMeasuredHeight();
+            childWidth = child.getMeasuredWidth();
+            if (childWidth * lineNum + getPaddingLeft() + getPaddingRight() + (lineNum - 1) * spacing > widthSize) {
+                int resultChildWidth = (widthSize - ((lineNum - 1) * spacing + getPaddingLeft() + getPaddingRight())) / lineNum;
+                if (resultChildWidth > 0) {
+                    childWidth = resultChildWidth;
                 }
-                if(childHeight!=0&&spacing!=0){
-                    break;
-                }
+            } else {
+                spacing = (widthSize - (childWidth * lineNum + getPaddingLeft() + getPaddingRight())) / (lineNum - 1);
             }
-        }
-        int lineCount;
-        if(childViewList.size()%lineNum==0){
-            lineCount = childViewList.size()/lineNum;
-        }else{
-            lineCount = childViewList.size()/lineNum + 1;
-        }
+            int lineCount = getChildCount() / lineNum + (getChildCount() % lineNum == 0 ? 0 : 1);
+            height += childHeight * lineCount;
+            height += lineSpacing * (lineCount - 1);
+            if (widthMode == MeasureSpec.AT_MOST) {
+                int showLineNum = Math.min(lineNum, getChildCount());
+                width = getPaddingLeft() + getPaddingRight() + showLineNum * childWidth + spacing * (showLineNum - 1);
+            } else {
+                width = widthSize;
+            }
+            if (heightMode == MeasureSpec.UNSPECIFIED) {
 
-        height = lineCount* childHeight + getPaddingTop() + getPaddingBottom() + lineSpacing*(lineCount-1);
+            } else if (heightMode == MeasureSpec.AT_MOST) {
 
-        int viewHeight = (heightMode == MeasureSpec.EXACTLY) ? sizeHeight : height;
-
-        /**
-         * 如果是wrap_content设置为我们计算的值
-         * 否则：直接设置为父容器计算的值
-         */
-        setMeasuredDimension(viewWidth, viewHeight);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        if (childViewList == null) {
-            childViewList = new ArrayList<>();
-        }
-        for (int i = 0; i < getChildCount(); i++) {
-            childViewList.add(getChildAt(i));
+            } else if (heightMode == MeasureSpec.EXACTLY) {
+                height = heightSize;
+            }
+            setMeasuredDimension(width, height);
         }
     }
 
-    public void setLineNum(int lineNum) {
-        if(this.lineNum!=lineNum){
-            this.lineNum = lineNum;
-//            requestLayout();
-        }
-    }
-
-    public void setLineSpacing(int lineSpacing) {
-        if(this.lineSpacing!=lineSpacing){
-            this.lineSpacing = lineSpacing;
-//            requestLayout();
-        }
-    }
-
-    public void setChildViewList(List<View> childViewList) {
-        this.childViewList = childViewList;
-        if (this.childViewList == null) {
-            this.childViewList = new ArrayList<>();
-        }
-        requestLayout();
-    }
-
-    public void notifyDataSetChange() {
-        requestLayout();
-    }
+    //不设置item的margin
+//    @Override
+//    public LayoutParams generateLayoutParams(AttributeSet attrs) {
+//        return new MarginLayoutParams(getContext(),attrs);
+//    }
+//
+//    @Override
+//    protected LayoutParams generateDefaultLayoutParams() {
+//        return new MarginLayoutParams(LayoutParams.MATCH_PARENT,
+//                LayoutParams.MATCH_PARENT);
+//    }
+//
+//    @Override
+//    protected LayoutParams generateLayoutParams(LayoutParams p) {
+//        return new MarginLayoutParams(p);
+//    }
 }
