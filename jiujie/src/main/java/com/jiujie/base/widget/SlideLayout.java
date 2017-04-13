@@ -14,8 +14,11 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
+import android.widget.TextView;
 
 import com.jiujie.base.R;
 
@@ -116,8 +119,12 @@ public class SlideLayout extends FrameLayout {
 						return super.onInterceptTouchEvent(ev);
 					}
 				}else{
-					if(touchView.onTouchEvent(ev)){
-						return super.onInterceptTouchEvent(ev);
+					if(touchView instanceof TextView||touchView instanceof ImageView){
+
+					}else{
+						if(touchView.onTouchEvent(ev)){
+							return super.onInterceptTouchEvent(ev);
+						}
 					}
 				}
 			}
