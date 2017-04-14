@@ -107,10 +107,15 @@ public class AutoFillLineViewGroup extends ViewGroup {
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
-        int width = getPaddingLeft() + getPaddingRight();
+        int width;
         int height = getPaddingBottom() + getPaddingTop();
-        //开始处理wrap_content,如果一个子元素都没有，就设置为0
         if (getChildCount() == 0) {
+            if (widthMode == MeasureSpec.AT_MOST) {
+                //wrap_content
+                width = getPaddingLeft() + getPaddingRight();
+            } else {
+                width = widthSize;
+            }
             setMeasuredDimension(width, height);
         } else {
             View child = getChildAt(0);
