@@ -28,4 +28,6 @@
     <!--裁剪页面-->
     <color name="gl_background">#737373</color>
 
+    <color name="press_bg">#33626262</color>
+    <color name="btn_press_bg">#66ffffff</color>
 </resources>

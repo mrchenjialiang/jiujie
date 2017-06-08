@@ -1,25 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
-    
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical" >
-
-	    <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:background="@color/trans" >
-
-	        <include layout="@layout/base_title" />
-	    </LinearLayout>
-
-		<include layout="@layout/base_content_layout"/>
+		android:id="@+id/base_title_title_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="bottom">
 
 	</LinearLayout>
-    
+
+	<RelativeLayout
+		android:id="@+id/base_hide_pan"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1">
+
+		<LinearLayout
+			android:id="@+id/base_title_content_layout"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/base_loading_line"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/app_bg"
+			android:orientation="vertical"
+			android:gravity="center"
+			android:visibility="gone">
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/base_loading_fail"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/app_bg"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:visibility="gone">
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/base_loading_no_data"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/app_bg"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:visibility="gone">
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/base_tag_layout"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/app_bg"
+			android:orientation="vertical"
+			android:visibility="gone">
+
+		</LinearLayout>
+
+	</RelativeLayout>
+
 </LinearLayout>

@@ -7,7 +7,9 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
+import com.jiujie.base.jk.OnItemClickListen;
 import com.jiujie.base.jk.OnMyPageChangeListener;
 
 import java.lang.ref.WeakReference;
@@ -70,6 +72,7 @@ public class AdvertViewpager extends ViewPager {
     }
 
     private void init(){
+        mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         if(handler==null)handler = new MyHandler(this);
         if(timer==null)timer = new Timer(true);
         if(task==null){
@@ -160,6 +163,8 @@ public class AdvertViewpager extends ViewPager {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
                 downY = ev.getY();
+                finalDownX = downX;
+                finalDownY = ev.getY();
                 isJudge = false;
                 isThisDoTouch = false;
                 if (getChildCount() > 1) {
@@ -187,10 +192,22 @@ public class AdvertViewpager extends ViewPager {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                if(Math.abs(ev.getX()-finalDownX)<mTouchSlop&&Math.abs(ev.getY()-finalDownY)<mTouchSlop){
+                    if(onItemClickListen!=null){
+                        onItemClickListen.click(getCurrentItem());
+                    }
+                }
                 isJudge = false;
                 isThisDoTouch = false;
                 break;
         }
         return super.onTouchEvent(ev);
+    }
+
+    private float finalDownX,finalDownY;
+    private int mTouchSlop;
+    private OnItemClickListen onItemClickListen;
+    public void setOnItemClickListen(OnItemClickListen onItemClickListen) {
+        this.onItemClickListen = onItemClickListen;
     }
 }

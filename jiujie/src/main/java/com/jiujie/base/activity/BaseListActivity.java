@@ -32,14 +32,23 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh {
 	public abstract RecyclerView.Adapter getAdapter();
 
 	private void initView() {
-		recyclerViewUtil = new RecyclerViewUtil(mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter());
+		recyclerViewUtil = new RecyclerViewUtil(mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
 		recyclerViewUtil.setRefreshListen(this);
+	}
+
+	public int getRecycleViewType(){
+		return 0;
+	}
+
+	public int getRecycleViewGridNum(){
+		return 2;
 	}
 
 	/**
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */
 	public void setLoadDataStart(int type){
+		recyclerViewUtil.isLoadingData(true);
 		if(type==0){
 			setLoading();
 			isEnd = false;
@@ -54,15 +63,15 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh {
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */
 	public void setLoadDataEnd(int type){
-		if(isEnd)recyclerViewUtil.setReadEnd();
-		else recyclerViewUtil.setReadMore();
+		recyclerViewUtil.isLoadingData(false);
+		recyclerViewUtil.isEnd(isEnd);
 		if(type==0){
 			setLoadingEnd();
 		}else if(type==1){
 			recyclerViewUtil.setRefreshing(false);
-		}else if(type==2){
-			recyclerViewUtil.setReadEnd();
 		}
+		if(isEnd)recyclerViewUtil.setReadEnd();
+		else recyclerViewUtil.hideFooter();
 		recyclerViewUtil.notifyDataSetChanged();
 	}
 

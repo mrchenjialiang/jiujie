@@ -11,10 +11,10 @@ import java.util.List;
  * Use to Viewpager,with Fragment Item and TabLayout,Of course can use for Fragment Item ViewPager that not use TabLayout
  */
 public class ViewPagerFragmentTabAdapter extends FragmentPagerAdapter {
-    private List<Fragment> fragmentList;
+    private List<?extends Fragment> fragmentList;
     private List<String> listTitle;
 
-    public ViewPagerFragmentTabAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> listTitle) {
+    public ViewPagerFragmentTabAdapter(FragmentManager fm, List<?extends Fragment> fragmentList, List<String> listTitle) {
         super(fm);
         this.fragmentList=fragmentList;
         this.listTitle=listTitle;

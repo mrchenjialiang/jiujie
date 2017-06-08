@@ -174,9 +174,9 @@ public class UpdateManager implements MyHandlerInterface {
 		this.updateListen = updateListen1;
 		// 构造对话框
 		EnsureDialog ensureDialog = new EnsureDialog(mActivity);
-		if(TextUtils.isEmpty(content))content = "检测到有更新版本，建议马上进行更新";
+		if(TextUtils.isEmpty(content))content = "检测到：目前APP必须立即升级，请立即升级，谢谢~";
 		ensureDialog.create()
-				.setText("强制更新："+content)
+				.setText(content)
 				.setBtnLeft("退出APP", new OnBaseDialogClickListener() {
 					@Override
 					public void onClick(BaseDialog dialog, View v) {

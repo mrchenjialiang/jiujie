@@ -125,6 +125,12 @@ public class AutoFillLineViewGroup extends ViewGroup {
                 int resultChildWidth = (widthSize - ((lineNum - 1) * spacing + getPaddingLeft() + getPaddingRight())) / lineNum;
                 if (resultChildWidth > 0) {
                     childWidth = resultChildWidth;
+                    for (int i=0;i<getChildCount();i++){
+                        View childAt = getChildAt(i);
+                        LayoutParams lp = childAt.getLayoutParams();
+                        lp.width = childWidth;
+                        childAt.setLayoutParams(lp);
+                    }
                 }
             } else {
                 spacing = (widthSize - (childWidth * lineNum + getPaddingLeft() + getPaddingRight())) / (lineNum - 1);

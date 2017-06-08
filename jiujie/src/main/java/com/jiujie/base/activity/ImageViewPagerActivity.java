@@ -20,7 +20,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -50,8 +49,6 @@ public class ImageViewPagerActivity extends BaseActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setToolBarBackGround(Color.BLACK);
 
 		waitingDialog = UIHelper.getWaitingDialog(mActivity);
 		ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);

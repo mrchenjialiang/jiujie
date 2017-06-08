@@ -4,16 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.jiujie.base.R;
+import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.widget.SlideLayout;
 
 /**
  * @author : Created by ChenJiaLiang on 2017/3/31.
  *         Email : 576507648@qq.com
  */
-public abstract class BaseSlideActivity extends BaseMostActivity{
+public abstract class BaseSlideActivity extends BaseMostActivity {
 
     private SlideLayout swipeBackLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

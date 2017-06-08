@@ -11,7 +11,7 @@ import com.jiujie.base.util.RecyclerViewUtil;
 /**
  * @author ChenJiaLiang
  */
-public abstract class BaseListFragment extends BaseFragment implements  Refresh {
+public abstract class BaseListFragment extends BaseFragment implements Refresh {
 
 	public boolean isEnd;
 	public RecyclerViewUtil recyclerViewUtil;
@@ -32,8 +32,28 @@ public abstract class BaseListFragment extends BaseFragment implements  Refresh 
 	public abstract BaseRecyclerViewAdapter getAdapter();
 
 	private void initView() {
-		recyclerViewUtil = new RecyclerViewUtil(mActivity,mView,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter());
+		recyclerViewUtil = getRecyclerViewUtil();
 		recyclerViewUtil.setRefreshListen(this);
+	}
+
+	protected RecyclerViewUtil getRecyclerViewUtil(){
+		return new RecyclerViewUtil(mActivity,mView, getSwipeRefreshLayoutId(), getRecyclerViewId(),getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
+	}
+
+	protected int getRecyclerViewId() {
+		return R.id.rr_recyclerView;
+	}
+
+	protected int getSwipeRefreshLayoutId() {
+		return R.id.rr_SwipeRefreshLayout;
+	}
+
+	public int getRecycleViewType(){
+		return 0;
+	}
+
+	public int getRecycleViewGridNum(){
+		return 2;
 	}
 
 	public void setRefreshEnable(boolean isEnable){
@@ -59,6 +79,7 @@ public abstract class BaseListFragment extends BaseFragment implements  Refresh 
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */
 	public void setLoadDataStart(int type){
+		recyclerViewUtil.isLoadingData(true);
 		if(type==0){
 			setLoading();
 			isEnd = false;
@@ -73,15 +94,15 @@ public abstract class BaseListFragment extends BaseFragment implements  Refresh 
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */
 	public void setLoadDataEnd(int type){
-		if(isEnd)recyclerViewUtil.setReadEnd();
-		else recyclerViewUtil.setReadMore();
+		recyclerViewUtil.isLoadingData(false);
+		recyclerViewUtil.isEnd(isEnd);
 		if(type==0){
 			setLoadingEnd();
 		}else if(type==1){
 			recyclerViewUtil.setRefreshing(false);
-		}else if(type==2){
-			recyclerViewUtil.setReadEnd();
 		}
+		if(isEnd)recyclerViewUtil.setReadEnd();
+		else recyclerViewUtil.hideFooter();
 		recyclerViewUtil.notifyDataSetChanged();
 	}
 }

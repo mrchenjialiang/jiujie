@@ -82,12 +82,60 @@ public class GlideUtil {
         builder.into(imageView);
     }
 
+    public void setDefaultImage(Context context, String url, ImageView imageView,int width,int height) {
+        DrawableRequestBuilder<String> builder = Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.logo_gray)
+                .crossFade()
+                .centerCrop()
+                .override(width,height);
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder.into(imageView);
+    }
+
     public void setDefaultImage(Context context, String url, ImageView imageView) {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.logo_gray)
                 .crossFade()
                 .centerCrop();
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder.into(imageView);
+    }
+
+    public void setDefaultImage(Context context, String url, ImageView imageView,boolean isCenterCrop,boolean isShowAnim) {
+        DrawableRequestBuilder<String> builder = Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.logo_gray);
+        if(isCenterCrop){
+            builder.centerCrop();
+        }
+        if(isShowAnim){
+            builder.crossFade();
+        }else{
+            builder.dontAnimate();
+        }
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder.into(imageView);
+    }
+
+    public void setDefaultImage(Context context, String url, ImageView imageView,boolean isShowAnim) {
+        DrawableRequestBuilder<String> builder = Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.logo_gray)
+                .crossFade()
+                .centerCrop();
+        if(isShowAnim){
+            builder.crossFade();
+        }else{
+            builder.dontAnimate();
+        }
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
@@ -209,6 +257,17 @@ public class GlideUtil {
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
+                .transform(new GlideCircleTransform(context.getApplicationContext()))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)//跳过内存缓存
+                .crossFade()
+                .into(imageView);
+    }
+
+    public void setCircleNoCacheImage(Context context, String url, ImageView imageView,int defaultId) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(defaultId)
                 .transform(new GlideCircleTransform(context.getApplicationContext()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)//跳过内存缓存

@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -121,12 +122,12 @@ public class UIHelper {
             return;
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         } else {
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -235,13 +236,18 @@ public class UIHelper {
      * 获取网络状态
      */
     public static boolean getNetWorkStatus(Context context) {
-        boolean netStatus = false;
-        ConnectivityManager cwjManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        cwjManager.getActiveNetworkInfo();
-        if (cwjManager.getActiveNetworkInfo() != null) {
-            netStatus = cwjManager.getActiveNetworkInfo().isAvailable();
-        }
-        return netStatus;
+//        boolean netStatus = false;
+//        ConnectivityManager cwjManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        cwjManager.getActiveNetworkInfo();
+//        if (cwjManager.getActiveNetworkInfo() != null) {
+//            netStatus = cwjManager.getActiveNetworkInfo().isAvailable();
+//        }
+//        return netStatus;
+        //6.0 之后得使用 getApplicationContext()..getSystemService(...)
+        //否则会内存泄漏
+        ConnectivityManager manager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
+        return activeNetworkInfo.isConnected();
     }
 
     /**

@@ -2,6 +2,7 @@ package com.jiujie.base.fragment;
 
 import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,40 +15,74 @@ import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.util.UIHelper;
 
-/**
- * 有标题
- */
 public abstract class BaseFragment extends BaseMostFragment{
 
 	public Title mTitle;
 	public Activity mActivity;
 	public View mView;
-	private View mLoadingLine,mLoadingFail;
+	private LinearLayout mLoadingLine,mLoadingFail;
 	private AnimationDrawable mLoadingAnimation;
-	private LinearLayout contentLayout;
+	protected boolean isShouldReLoad;
+	private LinearLayout mBaseTitleTitleLayout;
+	private LinearLayout mBaseTitleContentLayout;
+	private LinearLayout mTagLayout;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mView = inflater.inflate(R.layout.fragment_base, null);
-		mActivity = getActivity();
-		initView();
-		initBaseTitle();
+		if(mView==null){
+			mView = inflater.inflate(R.layout.fragment_base, null);
+			mActivity = getActivity();
+			initView();
+			isShouldReLoad = true;
+		}else{
+			isShouldReLoad = false;
+		}
 		return mView;
 	}
-	
+
 	@Override
-	public void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
+	public void onDestroyView() {
+		super.onDestroyView();
+		((ViewGroup)mView.getParent()).removeView(mView);
 	}
 
 	private void initBaseTitle() {
-		mTitle = new Title(mActivity,mView);
+		if(isShowTitle()){
+			int customTitleLayoutId = getCustomTitleLayoutId();
+			if(customTitleLayoutId==0){
+				customTitleLayoutId = R.layout.base_title;
+			}
+			View customTitle = LayoutInflater.from(mActivity).inflate(customTitleLayoutId, mBaseTitleTitleLayout, false);
+			mBaseTitleTitleLayout.addView(customTitle, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			if(customTitleLayoutId==R.layout.base_title){
+				mTitle = new Title(mActivity,customTitle);
+			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+				int titleHeight = getResources().getDimensionPixelOffset(R.dimen.height_of_title);
+				int statusBarHeight = UIHelper.getStatusBarHeightByReadR(mActivity);
+				setViewHeight(customTitle, titleHeight+statusBarHeight);
+//					customTitle.setPadding(0,statusBarHeight,0,0);
+			}
+		}else{
+			mBaseTitleTitleLayout.setVisibility(View.GONE);
+		}
+	}
+	
+	public boolean isShowTitle(){
+		return true;
+	}
+
+	public int getCustomTitleLayoutId() {
+		return 0;
+	}
+
+	protected void setViewHeight(View view, int height) {
+		ViewGroup.LayoutParams lp = view.getLayoutParams();
+		if(lp!=null){
+			lp.height = height;
+			view.setLayoutParams(lp);
+		}
 	}
 
 	public abstract int getLayoutId();
@@ -55,74 +90,119 @@ public abstract class BaseFragment extends BaseMostFragment{
 	@SuppressWarnings("deprecation")
 	private void initView() {
 
-		contentLayout = (LinearLayout) mView.findViewById(R.id.base_content);
-		if (getLayoutId() == 0) {
-			return;
-		}
-		View contentView = LayoutInflater.from(mActivity).inflate(getLayoutId(),
-				null);
-		LinearLayout.LayoutParams lpContent = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.FILL_PARENT);
-		contentView.setLayoutParams(lpContent);
-		contentLayout.addView(contentView);
+		mBaseTitleTitleLayout = (LinearLayout) mView.findViewById(R.id.base_title_title_layout);
+		mBaseTitleContentLayout = (LinearLayout) mView.findViewById(R.id.base_title_content_layout);
+		
+		initBaseTitle();
+		initBaseContent();
+		
 		initLoading();
 	}
 
-	public void setContentLayoutBackGroundColor(int color){
-		if(contentLayout!=null)
-			contentLayout.setBackgroundColor(color);
+	private void initBaseContent() {
+		if (getLayoutId() == 0) {
+			return;
+		}
+		View contentView = LayoutInflater.from(mActivity).inflate(getLayoutId(),null);
+		LinearLayout.LayoutParams lpContent = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT);
+		contentView.setLayoutParams(lpContent);
+		mBaseTitleContentLayout.addView(contentView);
 	}
 
 	private void initLoading() {
-		mLoadingLine = mView.findViewById(R.id.base_loading_line);
-		mLoadingFail = mView.findViewById(R.id.base_loading_fail);
+		mLoadingLine = (LinearLayout) mView.findViewById(R.id.base_loading_line);
+		mLoadingFail = (LinearLayout) mView.findViewById(R.id.base_loading_fail);
+		mTagLayout = (LinearLayout)mView.findViewById(R.id.base_tag_layout);
+
+		if(getLoadingLayoutId()!=0){
+			mLoadingLine.addView(LayoutInflater.from(mActivity).inflate(getLoadingLayoutId(),mLoadingLine,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
+		if(getLoadingFailLayoutId()!=0){
+			mLoadingFail.addView(LayoutInflater.from(mActivity).inflate(getLoadingFailLayoutId(),mLoadingFail,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
+
+		if(getTagLayoutId()!=0){
+			mTagLayout.addView(LayoutInflater.from(mActivity).inflate(getTagLayoutId(), mTagLayout,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
 		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
-		mLoadingLine.setOnClickListener(new OnClickListener() {
+		mTagLayout.setVisibility(View.GONE);
+
+		mLoadingLine.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				System.out.println("mLoadingLine-click");
 			}
 		});
-		mView.findViewById(R.id.base_hide_pan).setOnClickListener(new OnClickListener() {
+		mView.findViewById(R.id.base_hide_pan).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				UIHelper.hidePan(mActivity);
 			}
 		});
-		mLoadingFail.setOnClickListener(new OnClickListener() {
+		mLoadingFail.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				initData();
 			}
 		});
 	}
+
+	public int getLoadingLayoutId(){
+		return R.layout.jj_loading_layout;
+	}
+
+	public int getLoadingFailLayoutId(){
+		return R.layout.jj_loading_fail_layout;
+	}
+
+	public int getTagLayoutId(){
+		return 0;
+	}
+
+	public void showTabLayout(boolean isShow){
+		mLoadingLine.setVisibility(View.GONE);
+		mLoadingFail.setVisibility(View.GONE);
+		mTagLayout.setVisibility(isShow?View.VISIBLE:View.GONE);
+	}
 	
 	public abstract void initData();
-	
+
+	@Override
 	public void setLoading(){
-		if(mLoadingAnimation==null){
-			ImageView image = (ImageView) mView.findViewById(R.id.base_loading_image);
-			image.setImageResource(R.drawable.loading);
-			mLoadingAnimation = (AnimationDrawable) image.getDrawable();
+		if(getLoadingLayoutId()==R.layout.jj_loading_layout){
+			if(mLoadingAnimation==null){
+				ImageView image = (ImageView) mView.findViewById(R.id.base_loading_image);
+				image.setImageResource(R.drawable.loading);
+				mLoadingAnimation = (AnimationDrawable) image.getDrawable();
+			}
+			mLoadingAnimation.start();
 		}
 		mLoadingLine.setVisibility(View.VISIBLE);
 		mLoadingFail.setVisibility(View.GONE);
-		mLoadingAnimation.start();
+		mTagLayout.setVisibility(View.GONE);
 	}
-	
+
+	@Override
 	public void setLoadingFail(){
-		setLoadingEnd();
+		if(getLoadingLayoutId()==R.layout.jj_loading_fail_layout){
+			setLoadingEnd();
+		}
+		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.VISIBLE);
+		mTagLayout.setVisibility(View.GONE);
 	}
-	
+
+	@Override
 	public void setLoadingEnd(){
 		if(mLoadingAnimation!=null&&mLoadingAnimation.isRunning()){
 			mLoadingAnimation.stop();
-			mLoadingLine.setVisibility(View.GONE);
 		}
+		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
+		mTagLayout.setVisibility(View.GONE);
 	}
 
 }

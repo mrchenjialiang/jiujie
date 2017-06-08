@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.jk.ICallback;
+import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
@@ -16,12 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -37,7 +41,7 @@ import okhttp3.ResponseBody;
 public abstract class MyOkHttpUtil {
 
     public final OkHttpClient okHttpClient;
-    protected MyOkHttpUtil(){
+    protected MyOkHttpUtil(final Context context){
         //手动创建一个OkHttpClient并设置超时时间
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(getConnectTimeOutSecond(), TimeUnit.SECONDS);
@@ -56,6 +60,39 @@ public abstract class MyOkHttpUtil {
         if (APP.isDeBug) {
             builder.addInterceptor(new LoggerInterceptor("LOG",true));
         }
+        builder.addNetworkInterceptor(new Interceptor() {//添加网络拦截器
+            @Override
+            public Response intercept(Interceptor.Chain chain) throws IOException {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+                if(!UIHelper.getNetWorkStatus(context)){
+                    int maxStale = 60 * 60 * 24 * 7;// 没网 就1周可用
+                    return response.newBuilder()
+                            .removeHeader("Pragma")
+                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                            .build();
+                }else{
+                    return response.newBuilder()
+                            .removeHeader("Pragma")
+                            .header("Cache-Control", CacheControl.FORCE_NETWORK.toString())
+                            .build();
+                }
+//                if (isNetworkConnected(context)) {
+////                    int maxAge = 60 * 60;// 有网 就1个小时可用
+//                    int maxAge = 2;// 有网 就2秒可用
+//                    return response.newBuilder()
+//                            .header("Cache-Control", "public, max-age=" + maxAge)
+//                            .build();
+//                } else {
+//                    int maxStale = 60 * 60 * 24 * 7;// 没网 就1周可用
+//                    return response.newBuilder()
+//                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+//                            .build();
+//                }
+            }
+        });
+        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(context)+"httpCache/");
+        builder .cache(new Cache(cacheFile, 30 * 1024 * 1024));//最大 30m
 
         okHttpClient = builder.build();
     }
@@ -261,7 +298,7 @@ public abstract class MyOkHttpUtil {
     /**
      * 用于表单上传图片
      */
-    public void httpPostFile(final Activity activity, String url, Map<String, String> postParamMap, File file, String keyName, String tag, final ICallback<String> callback) {
+    public void httpPostFile(final Activity activity, String url, Map<String, Object> postParamMap, File file, String keyName, String tag, final ICallback<String> callback) {
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
         if (file != null) {
             // MediaType.parse() 里面是上传的文件类型。
@@ -275,7 +312,8 @@ public abstract class MyOkHttpUtil {
         if (postParamMap != null && postParamMap.size() > 0) {
             // map 里面是请求中所需要的 key 和 value
             for (String key : postParamMap.keySet()) {
-                requestBody.addFormDataPart(key, postParamMap.get(key));
+//                requestBody.addFormDataPart(key, postParamMap.get(key));
+                requestBody.addFormDataPart(key, postParamMap.get(key).toString());
             }
         }
         Request.Builder builder = new Request.Builder();

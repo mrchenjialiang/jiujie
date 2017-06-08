@@ -38,4 +38,15 @@
         android:textSize="16.0sp"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/lf_prepare_text"
+        android:layout_width="fill_parent"
+        android:layout_height="40.0dip"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/list_footer_prepare"
+        android:textColor="#babec1"
+        android:textSize="16.0sp"
+        android:visibility="gone" />
+
 </RelativeLayout>

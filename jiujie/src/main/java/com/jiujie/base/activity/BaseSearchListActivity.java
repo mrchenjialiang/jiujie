@@ -1,6 +1,5 @@
 package com.jiujie.base.activity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import com.jiujie.base.R;
@@ -18,7 +17,6 @@ public abstract class BaseSearchListActivity extends BaseListActivity{
 		super.onCreate(savedInstanceState);
 
 		mTitle = new SearchTitle(this);
-		setToolBarBackGround(Color.parseColor("#efeff4"));
 	}
 
 	@Override

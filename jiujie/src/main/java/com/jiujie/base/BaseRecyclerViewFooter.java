@@ -10,12 +10,13 @@ import android.widget.TextView;
 public class BaseRecyclerViewFooter {
 
 	private View footer,loadingLine;
-	private TextView loadingText,loadEndText;
+	private TextView loadingText,loadEndText,prepareText;
 	public BaseRecyclerViewFooter(View footer){
 		this.footer = footer;
 		loadingLine = footer.findViewById(R.id.lf_loading_line);
 		loadingText = (TextView) footer.findViewById(R.id.lf_loading_text);
 		loadEndText = (TextView) footer.findViewById(R.id.lf_load_end_text);
+		prepareText = (TextView) footer.findViewById(R.id.lf_prepare_text);
 	}
 
 	/**
@@ -25,6 +26,7 @@ public class BaseRecyclerViewFooter {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.VISIBLE);
 		loadEndText.setVisibility(View.GONE);
+		prepareText.setVisibility(View.GONE);
 	}
 
 	/**
@@ -34,6 +36,17 @@ public class BaseRecyclerViewFooter {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.GONE);
 		loadEndText.setVisibility(View.VISIBLE);
+		prepareText.setVisibility(View.GONE);
+	}
+
+	/**
+	 * 显示准备加载下一页
+	 */
+	public void setPrepare() {
+		if(footer.getVisibility()==View.GONE)show();
+		loadingLine.setVisibility(View.GONE);
+		loadEndText.setVisibility(View.GONE);
+		prepareText.setVisibility(View.VISIBLE);
 	}
 
 

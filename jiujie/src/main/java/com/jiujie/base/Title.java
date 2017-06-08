@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,10 +17,11 @@ public class Title {
 	private Activity activity;
 	private View mTitleView;
 	private View title_left_btn;
-	private View title_right_btn;
+	private LinearLayout title_right_btn;
 	private View title_right_btn2;
 	private SelectorImage title_left_btn_image ,title_right_btn_image,title_right_btn_image2;
 	private TextView title_text;
+	private ImageView title_image;
 	private View title_right_text_btn;
 	private TextView title_right_text;
 	private LinearLayout title_custom_line;
@@ -46,8 +48,9 @@ public class Title {
 			mTitleView = rootView.findViewById(R.id.base_title);
 			mDefaultTitle = rootView.findViewById(R.id.base_default_title);
 			title_text = (TextView) rootView.findViewById(R.id.title_text);
+			title_image = (ImageView) rootView.findViewById(R.id.title_image);
 			title_left_btn = rootView.findViewById(R.id.title_left_btn);
-			title_right_btn = rootView.findViewById(R.id.title_right_btn);
+			title_right_btn = (LinearLayout) rootView.findViewById(R.id.title_right_btn);
 			title_left_btn_image = (SelectorImage) rootView.findViewById(R.id.title_left_btn_image);
 			title_right_btn_image = (SelectorImage) rootView.findViewById(R.id.title_right_btn_image);
 
@@ -61,8 +64,9 @@ public class Title {
 			mTitleView = activity.findViewById(R.id.base_title);
 			mDefaultTitle = activity.findViewById(R.id.base_default_title);
 			title_text = (TextView) activity.findViewById(R.id.title_text);
+			title_image = (ImageView) activity.findViewById(R.id.title_image);
 			title_left_btn = activity.findViewById(R.id.title_left_btn);
-			title_right_btn = activity.findViewById(R.id.title_right_btn);
+			title_right_btn = (LinearLayout) activity.findViewById(R.id.title_right_btn);
 			title_left_btn_image = (SelectorImage) activity.findViewById(R.id.title_left_btn_image);
 			title_right_btn_image = (SelectorImage) activity.findViewById(R.id.title_right_btn_image);
 
@@ -86,7 +90,11 @@ public class Title {
 	public void setTitleShow(){
 		mTitleView.setVisibility(View.VISIBLE);
 	}
-	
+
+	public View getTitleView() {
+		return mTitleView;
+	}
+
 	public View setCustomTitle(int id){
 		mDefaultTitle.setVisibility(View.GONE);
 		View customTitle = activity.getLayoutInflater().inflate(id, null);
@@ -95,8 +103,21 @@ public class Title {
 	}
 	
 	public void setTitleText(String title){
-		if(title_text!=null)title_text.setText(title);
+		if(title_text!=null){
+			title_text.setText(title);
+			title_text.setVisibility(View.VISIBLE);
+			title_image.setVisibility(View.GONE);
+		}
 	}
+
+	public void setTitleImage(int drawId){
+		if(title_image!=null){
+			title_image.setImageResource(drawId);
+			title_image.setVisibility(View.VISIBLE);
+			title_text.setVisibility(View.GONE);
+		}
+	}
+
 	public void setLeftButtonImage(int drawId){
 		if(title_left_btn_image!=null&&drawId>0){
 			title_left_btn_image.setImageResource(drawId);
@@ -142,6 +163,8 @@ public class Title {
 		if(title_right_text!=null&&!TextUtils.isEmpty(text)){
 			title_right_text.setText(text);
 			title_right_text_btn.setVisibility(View.VISIBLE);
+		}else{
+			title_right_text_btn.setVisibility(View.GONE);
 		}
 	}
 	public void setRightTextButtonClick(OnClickListener clickListener){
@@ -241,7 +264,7 @@ public class Title {
 		}
 	}
 	
-	public View getRightButton() {
+	public LinearLayout getRightButton() {
 		return title_right_btn;
 	}
 

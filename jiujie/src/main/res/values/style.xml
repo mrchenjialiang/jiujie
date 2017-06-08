@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+
+    <style name="Trans.Status" parent="AppTheme">
+    </style>
+
     <!-- Base application theme. -->
     <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <!--设置TextInputLayout提示语的颜色-->
-        <item name="colorAccent">@color/title_bg</item>
-
+        <item name="colorAccent">@color/black</item>
     </style>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/BaseAppTheme"/>
-
 
     <style name="Dialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -62,6 +64,12 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
     <style name="Slide.trans" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>

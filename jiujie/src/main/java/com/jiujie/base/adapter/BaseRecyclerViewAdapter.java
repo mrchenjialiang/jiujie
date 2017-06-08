@@ -1,6 +1,8 @@
 package com.jiujie.base.adapter;
 
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,7 @@ import java.util.List;
  */
 public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    protected static final int TYPE_ITEM = 0;
+    private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = -1;
     private static final int TYPE_HEADER = -2;
     private BaseRecyclerViewFooter footer;
@@ -28,6 +30,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     private final int Footer_Status_Load_End = 1;
     private final int Footer_Status_Hide = 2;
     private final int Footer_Status_Show = 3;
+    private final int Footer_Status_Prepare = 4;
     private int footerStatus;
 
     @Override
@@ -63,6 +66,35 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             if(header!=null)
                 position--;
             onBindItemViewHolder(holder, position);
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        if(manager instanceof GridLayoutManager) {
+            final GridLayoutManager gridManager = ((GridLayoutManager) manager);
+            gridManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int itemViewType = getItemViewType(position);
+                    return itemViewType<0 ? gridManager.getSpanCount() : 1;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
+        int layoutPosition = holder.getLayoutPosition();
+        int itemViewType = getItemViewType(layoutPosition);
+        if(itemViewType<0 && lp instanceof StaggeredGridLayoutManager.LayoutParams) {
+            StaggeredGridLayoutManager.LayoutParams p = (StaggeredGridLayoutManager.LayoutParams) lp;
+            p.setFullSpan(true);
         }
     }
 
@@ -129,6 +161,12 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             footer.setReadEnd();
         }
     }
+    public final void setPrepare(){
+        footerStatus = Footer_Status_Prepare;
+        if(footer!=null){
+            footer.setPrepare();
+        }
+    }
     public final void setReadMore(){
         footerStatus = Footer_Status_Loading;
         if(footer!=null){
@@ -140,31 +178,27 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         this.header = header;
     }
 
-    boolean isShowFooter = true;
-
     public void hideFooter() {
         footerStatus = Footer_Status_Hide;
-        isShowFooter = false;
         if(footer!=null)
             footer.hide();
     }
 
     public void showFooter() {
         footerStatus = Footer_Status_Show;
-        isShowFooter = true;
         if(footer!=null)
             footer.show();
     }
 
-    class FooterViewHolder extends RecyclerView.ViewHolder {
-        public FooterViewHolder(View view) {
+    private class FooterViewHolder extends RecyclerView.ViewHolder {
+        FooterViewHolder(View view) {
             super(view);
             footer = new BaseRecyclerViewFooter(view);
         }
     }
 
-    class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public HeaderViewHolder(View view) {
+    private class HeaderViewHolder extends RecyclerView.ViewHolder {
+        HeaderViewHolder(View view) {
             super(view);
         }
     }

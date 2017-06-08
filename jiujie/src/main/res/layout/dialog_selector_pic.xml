@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llOp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/dialog_bottom_btn_alum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_bottom_dialog_item_top"
+            android:padding="8dp"
+            android:text="从相册中选择"
+            android:textColor="#2b84fd"
+            android:textSize="20sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#c0bfc5" />
+
+        <Button
+            android:id="@+id/dialog_bottom_btn_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_bottom_dialog_item_bottom"
+            android:padding="8dp"
+            android:text="拍照选择"
+            android:textColor="#2b84fd"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/dialog_bottom_btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_bottom_dialog_item_single"
+            android:padding="8dp"
+            android:text="取消"
+            android:textColor="#2b84fd"
+            android:textSize="20sp"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

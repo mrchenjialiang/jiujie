@@ -16,20 +16,34 @@ import com.jiujie.base.util.UIHelper;
  */
 public abstract class BaseActivity extends BaseTitleActivity {
 
-	private View mLoadingLine,mLoadingFail;
+	private LinearLayout mLoadingLine,mLoadingFail;
 	private AnimationDrawable mLoadingAnimation;
-	public LinearLayout contentLayout;
+	private LinearLayout contentLayout;
 	private LinearLayout mTagLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_base);
 		initView();
 	}
 
+	@Override
+	public int getBaseContentLayoutId() {
+		return R.layout.activity_base;
+	}
+
 	private void initView() {
-		contentLayout = (LinearLayout) findViewById(R.id.base_content);
+		initContentLayout();
+		initLoading();
+	}
+
+	@Override
+	public LinearLayout getBaseContentLayout() {
+		return contentLayout;
+	}
+
+	private void initContentLayout() {
+		contentLayout = (LinearLayout) findViewById(R.id.base_content_layout);
 		View contentView;
 		if (getLayoutId() == 0){
 			contentView = getContentView();
@@ -45,26 +59,27 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		lpContent.weight = 1;
 		contentView.setLayoutParams(lpContent);
 		contentLayout.addView(contentView);
-
-		initLoading();
-	}
-
-	protected void setContentLayoutBackGroundColor(int color){
-		if(contentLayout!=null){
-			contentLayout.setBackgroundColor(color);
-		}
 	}
 
 	private void initLoading() {
-		mLoadingLine = findViewById(R.id.base_loading_line);
-		mLoadingFail = findViewById(R.id.base_loading_fail);
+		mLoadingLine = (LinearLayout) findViewById(R.id.base_loading_line);
+		mLoadingFail = (LinearLayout) findViewById(R.id.base_loading_fail);
 		mTagLayout = (LinearLayout)findViewById(R.id.base_tag_layout);
-		mTagLayout.setVisibility(View.GONE);
+
+		if(getLoadingLayoutId()!=0){
+			mLoadingLine.addView(getLayoutInflater().inflate(getLoadingLayoutId(),mLoadingLine,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
+		if(getLoadingFailLayoutId()!=0){
+			mLoadingFail.addView(getLayoutInflater().inflate(getLoadingFailLayoutId(),mLoadingFail,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		}
+
 		if(getTagLayoutId()!=0){
 			mTagLayout.addView(getLayoutInflater().inflate(getTagLayoutId(),mTagLayout,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 		}
 		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
+		mTagLayout.setVisibility(View.GONE);
+
 		mLoadingLine.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -85,11 +100,21 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		});
 	}
 
+	public int getLoadingLayoutId(){
+		return R.layout.jj_loading_layout;
+	}
+
+	public int getLoadingFailLayoutId(){
+		return R.layout.jj_loading_fail_layout;
+	}
+
 	public int getTagLayoutId(){
 		return 0;
 	}
 
 	public void showTabLayout(boolean isShow){
+		mLoadingLine.setVisibility(View.GONE);
+		mLoadingFail.setVisibility(View.GONE);
 		mTagLayout.setVisibility(isShow?View.VISIBLE:View.GONE);
 	}
 
@@ -99,27 +124,38 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		return null;
 	}
 
+	@Override
 	public void setLoading(){
-		if(mLoadingAnimation==null){
-			ImageView image = (ImageView) findViewById(R.id.base_loading_image);
-			image.setImageResource(R.drawable.loading);
-			mLoadingAnimation = (AnimationDrawable) image.getDrawable();
+		if(getLoadingLayoutId()==R.layout.jj_loading_layout){
+			if(mLoadingAnimation==null){
+				ImageView image = (ImageView) findViewById(R.id.base_loading_image);
+				image.setImageResource(R.drawable.loading);
+				mLoadingAnimation = (AnimationDrawable) image.getDrawable();
+			}
+			mLoadingAnimation.start();
 		}
 		mLoadingLine.setVisibility(View.VISIBLE);
 		mLoadingFail.setVisibility(View.GONE);
-		mLoadingAnimation.start();
+		mTagLayout.setVisibility(View.GONE);
 	}
 
+	@Override
 	public void setLoadingFail(){
-		setLoadingEnd();
+		if(getLoadingLayoutId()==R.layout.jj_loading_fail_layout){
+			setLoadingEnd();
+		}
+		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.VISIBLE);
+		mTagLayout.setVisibility(View.GONE);
 	}
 
+	@Override
 	public void setLoadingEnd(){
 		if(mLoadingAnimation!=null&&mLoadingAnimation.isRunning()){
 			mLoadingAnimation.stop();
-			mLoadingLine.setVisibility(View.GONE);
 		}
+		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
+		mTagLayout.setVisibility(View.GONE);
 	}
 }

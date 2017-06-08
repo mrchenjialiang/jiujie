@@ -45,17 +45,25 @@ public abstract class BaseAdvertAdapter extends PagerAdapter {
 	public boolean isViewFromObject(View arg0, Object arg1) {
 		return arg0==arg1;//官方提示这样写
 	}
+
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
-		position = position%getSize();
+		int size = getSize();
+		position = position% size;
 		View view;
 
-		if(viewMap.containsKey(position)){
-			view = viewMap.get(position);
-		}else{
+
+		if(size==3){
 			view = getView(container, position);
 			bindView(view, position);
-			viewMap.put(position, view);
+		}else{
+			if(viewMap.containsKey(position)){
+				view = viewMap.get(position);
+			}else{
+				view = getView(container, position);
+				bindView(view, position);
+				viewMap.put(position, view);
+			}
 		}
 		if(view.getParent()!=null){
 			container.removeView(view);
@@ -69,7 +77,7 @@ public abstract class BaseAdvertAdapter extends PagerAdapter {
 	public abstract void bindView(View view, int position);
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object) {
-//		container.removeView((View) object);
+		container.removeView((View) object);
 //		position = position%getSize();
 //		if(viewMap.containsKey(position)){
 //			viewMap.remove(position);
