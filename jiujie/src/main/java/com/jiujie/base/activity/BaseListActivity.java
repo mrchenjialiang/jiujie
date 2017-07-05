@@ -71,7 +71,7 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh {
 			recyclerViewUtil.setRefreshing(false);
 		}
 		if(isEnd)recyclerViewUtil.setReadEnd();
-		else recyclerViewUtil.hideFooter();
+		else recyclerViewUtil.setReadMore();
 		recyclerViewUtil.notifyDataSetChanged();
 	}
 

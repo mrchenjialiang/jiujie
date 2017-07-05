@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.jiujie.base.R;
 import com.jiujie.base.jk.OnChooseEnsure;
-import com.jiujie.base.jk.onSelectListener;
+import com.jiujie.base.jk.OnSelectListener;
 import com.jiujie.base.util.DateUtil;
 import com.jiujie.base.widget.PickerView;
 
@@ -84,7 +84,7 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
         }
         mPickerDay.setData(mDataListDay, mSelectDay - 1);
 
-        mPickerYear.setOnSelectListener(new onSelectListener() {
+        mPickerYear.setOnSelectListener(new OnSelectListener() {
             @Override
             public void onSelect(int position) {
 //                mSelectYear = currentCalendar.get(Calendar.YEAR) - position;
@@ -102,7 +102,7 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
                 mPickerDay.setData(mDataListDay, mSelectDay - 1);
             }
         });
-        mPickerMonth.setOnSelectListener(new onSelectListener() {
+        mPickerMonth.setOnSelectListener(new OnSelectListener() {
             @Override
             public void onSelect(int position) {
 //                mSelectMonth = position + 1;
@@ -120,7 +120,7 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
                 mPickerDay.setData(mDataListDay, mSelectDay - 1);
             }
         });
-        mPickerDay.setOnSelectListener(new onSelectListener() {
+        mPickerDay.setOnSelectListener(new OnSelectListener() {
             @Override
             public void onSelect(int position) {
                 mSelectDay = position + 1;

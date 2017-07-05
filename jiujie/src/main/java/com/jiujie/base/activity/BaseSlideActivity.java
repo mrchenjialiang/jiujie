@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.jiujie.base.R;
-import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.widget.SlideLayout;
 
 /**
@@ -22,15 +21,15 @@ public abstract class BaseSlideActivity extends BaseMostActivity {
             swipeBackLayout.attachToActivity(this);
         }
     }
-
-    @Override
-    public void setTheme(int resid) {
-        if(isOpenSlideBack()){
-            super.setTheme(R.style.Slide_trans);
-        }else{
-            super.setTheme(resid);
-        }
-    }
+//
+//    @Override
+//    public void setTheme(int resid) {
+//        if(isOpenSlideBack()){
+//            super.setTheme(R.style.Slide_trans);
+//        }else{
+//            super.setTheme(resid);
+//        }
+//    }
 
     protected boolean isOpenSlideBack(){
         return true;

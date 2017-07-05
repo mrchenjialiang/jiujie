@@ -5,6 +5,6 @@ package com.jiujie.base.jk;
  *         Email : 576507648@qq.com
  */
 
-public interface onSelectListener {
+public interface OnSelectListener {
     void onSelect(int position);
 }

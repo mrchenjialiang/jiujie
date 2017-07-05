@@ -42,7 +42,17 @@ public class GlideCacheUtil {
             return getFormatSize(getFolderSize(new File(context.getCacheDir() + "/" + GLIDE_CACHE_DIR)));
         } catch (Exception e) {
             e.printStackTrace();
-            return "获取失败";
+            return "0M";
+        }
+    }
+
+    // 获取Glide磁盘缓存大小
+    public String getSimpleCacheSize() {
+        try {
+            return getSimpleFormatSize(getFolderSize(new File(context.getCacheDir() + "/" + GLIDE_CACHE_DIR)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "0M";
         }
     }
 
@@ -114,10 +124,32 @@ public class GlideCacheUtil {
     }
 
     // 格式化单位
+    private static String getSimpleFormatSize(double size) {
+        long kb = 1024;
+        long mb = kb * 1024;
+        long gb = mb * 1024;
+
+        if (size == 0) {
+            return "0M";
+        }
+
+        if (size >= gb) {
+            return String.format("%.1fG", (float) size / gb);
+        } else if (size >= mb) {
+            float f = (float) size / mb;
+            return String.format(f > 100 ? "%.0fM" : "%.1fM", f);
+        } else if (size >= kb) {
+            float f = (float) size / kb;
+            return String.format(f > 100 ? "%.0fK" : "%.1fK", f);
+        } else
+            return String.format("%dB", size);
+    }
+
+    // 格式化单位
     private static String getFormatSize(double size) {
         double kiloByte = size / 1024;
         if (kiloByte < 1) {
-            return size + "Byte";
+            return size + "B";
         }
         double megaByte = kiloByte / 1024;
         if (megaByte < 1) {
@@ -127,15 +159,15 @@ public class GlideCacheUtil {
         double gigaByte = megaByte / 1024;
         if (gigaByte < 1) {
             BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
-            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "M";
         }
         double teraBytes = gigaByte / 1024;
         if (teraBytes < 1) {
             BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
-            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "G";
         }
         BigDecimal result4 = new BigDecimal(teraBytes);
-        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
+        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "T";
     }
 
     // 按目录删除文件夹文件方法

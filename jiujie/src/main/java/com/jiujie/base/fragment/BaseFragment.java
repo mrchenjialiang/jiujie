@@ -1,12 +1,11 @@
 package com.jiujie.base.fragment;
 
-import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,17 +14,21 @@ import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.util.UIHelper;
 
-public abstract class BaseFragment extends BaseMostFragment{
+public abstract class BaseFragment extends BaseMostFragment {
 
 	public Title mTitle;
-	public Activity mActivity;
+	public FragmentActivity mActivity;
 	public View mView;
 	private LinearLayout mLoadingLine,mLoadingFail;
 	private AnimationDrawable mLoadingAnimation;
-	protected boolean isShouldReLoad;
 	private LinearLayout mBaseTitleTitleLayout;
 	private LinearLayout mBaseTitleContentLayout;
 	private LinearLayout mTagLayout;
+	private final int Status_Loaded = 0;
+	private final int Status_Loading = 1;
+	private final int Status_Load_Fail = 2;
+	private final int Status_Tag = 3;
+	private int Status = Status_Loaded;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,12 +37,13 @@ public abstract class BaseFragment extends BaseMostFragment{
 			mView = inflater.inflate(R.layout.fragment_base, null);
 			mActivity = getActivity();
 			initView();
-			isShouldReLoad = true;
-		}else{
-			isShouldReLoad = false;
+			initUI();
+			initData();
 		}
 		return mView;
 	}
+
+	protected abstract void initUI();
 
 	@Override
 	public void onDestroyView() {
@@ -55,7 +59,7 @@ public abstract class BaseFragment extends BaseMostFragment{
 			}
 			View customTitle = LayoutInflater.from(mActivity).inflate(customTitleLayoutId, mBaseTitleTitleLayout, false);
 			mBaseTitleTitleLayout.addView(customTitle, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-			if(customTitleLayoutId==R.layout.base_title){
+			if(customTitleLayoutId== R.layout.base_title){
 				mTitle = new Title(mActivity,customTitle);
 			}
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
@@ -86,10 +90,16 @@ public abstract class BaseFragment extends BaseMostFragment{
 	}
 
 	public abstract int getLayoutId();
-	
-	@SuppressWarnings("deprecation")
-	private void initView() {
 
+	public LinearLayout getBaseTitleContentLayout() {
+		return mBaseTitleContentLayout;
+	}
+
+	public LinearLayout getBaseTitleTitleLayout() {
+		return mBaseTitleTitleLayout;
+	}
+
+	protected void initView() {
 		mBaseTitleTitleLayout = (LinearLayout) mView.findViewById(R.id.base_title_title_layout);
 		mBaseTitleContentLayout = (LinearLayout) mView.findViewById(R.id.base_title_content_layout);
 		
@@ -126,9 +136,9 @@ public abstract class BaseFragment extends BaseMostFragment{
 		if(getTagLayoutId()!=0){
 			mTagLayout.addView(LayoutInflater.from(mActivity).inflate(getTagLayoutId(), mTagLayout,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 		}
-		mLoadingLine.setVisibility(View.GONE);
-		mLoadingFail.setVisibility(View.GONE);
-		mTagLayout.setVisibility(View.GONE);
+		mLoadingLine.setVisibility(Status==Status_Loading?View.VISIBLE:View.GONE);
+		mLoadingFail.setVisibility(Status==Status_Load_Fail?View.VISIBLE:View.GONE);
+		mTagLayout.setVisibility(Status==Status_Tag?View.VISIBLE:View.GONE);
 
 		mLoadingLine.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -163,6 +173,9 @@ public abstract class BaseFragment extends BaseMostFragment{
 	}
 
 	public void showTabLayout(boolean isShow){
+		if(isShow){
+			Status = Status_Tag;
+		}
 		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
 		mTagLayout.setVisibility(isShow?View.VISIBLE:View.GONE);
@@ -172,7 +185,8 @@ public abstract class BaseFragment extends BaseMostFragment{
 
 	@Override
 	public void setLoading(){
-		if(getLoadingLayoutId()==R.layout.jj_loading_layout){
+		Status = Status_Loading;
+		if(getLoadingLayoutId()== R.layout.jj_loading_layout){
 			if(mLoadingAnimation==null){
 				ImageView image = (ImageView) mView.findViewById(R.id.base_loading_image);
 				image.setImageResource(R.drawable.loading);
@@ -187,7 +201,8 @@ public abstract class BaseFragment extends BaseMostFragment{
 
 	@Override
 	public void setLoadingFail(){
-		if(getLoadingLayoutId()==R.layout.jj_loading_fail_layout){
+		Status = Status_Load_Fail;
+		if(getLoadingLayoutId()== R.layout.jj_loading_fail_layout){
 			setLoadingEnd();
 		}
 		mLoadingLine.setVisibility(View.GONE);
@@ -197,6 +212,7 @@ public abstract class BaseFragment extends BaseMostFragment{
 
 	@Override
 	public void setLoadingEnd(){
+		Status = Status_Loaded;
 		if(mLoadingAnimation!=null&&mLoadingAnimation.isRunning()){
 			mLoadingAnimation.stop();
 		}

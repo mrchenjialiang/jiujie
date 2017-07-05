@@ -24,6 +24,11 @@ import android.os.Looper;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.ClipboardManager;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -999,6 +1004,29 @@ public class UIHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     *  初始化RecyclerView
+     * @param type 0:普通列表，1：普通GridView样式，2：瀑布流样式
+     * @param gNum 如果type = 1 或 2，则该值表示列数
+     */
+    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum) {
+        mRecyclerView.setHasFixedSize(true);
+        if(type==0){
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(context.getApplicationContext());
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }else if(type==1){
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context.getApplicationContext(), gNum);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        }else{
+            StaggeredGridLayoutManager staggeredGridLayoutManager =
+                    new StaggeredGridLayoutManager(gNum, LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+        }
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setSupportsChangeAnimations(false);
+        mRecyclerView.setItemAnimator(animator);
     }
 
 }

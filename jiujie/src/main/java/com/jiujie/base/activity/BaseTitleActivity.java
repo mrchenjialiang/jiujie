@@ -140,6 +140,14 @@ public abstract class BaseTitleActivity extends BaseSlideActivity implements Loa
             view.setLayoutParams(lp);
         }
     }
+    protected void setViewSize(View view, int width,int height) {
+        ViewGroup.LayoutParams lp = view.getLayoutParams();
+        if(lp!=null){
+            lp.height = height;
+            lp.width = width;
+            view.setLayoutParams(lp);
+        }
+    }
 
     @Override
     public final void setContentView(@LayoutRes int layoutResID) {

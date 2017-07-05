@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.jiujie.base.R;
-import com.jiujie.base.jk.onSelectListener;
+import com.jiujie.base.jk.OnSelectListener;
 import com.jiujie.base.util.UIHelper;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class PickerView extends View {
     private int mViewWidth;
     private int mCenterTextTextSize = 40;
     private float JG = 8;
-    private onSelectListener mSelectListener;
+    private OnSelectListener mSelectListener;
 
     public PickerView(Context context) {
         super(context);
@@ -297,7 +297,7 @@ public class PickerView extends View {
         }
     }
 
-    public void setOnSelectListener(onSelectListener listener) {
+    public void setOnSelectListener(OnSelectListener listener) {
         mSelectListener = listener;
     }
 

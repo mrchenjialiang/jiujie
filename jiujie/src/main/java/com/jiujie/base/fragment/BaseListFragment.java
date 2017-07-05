@@ -1,7 +1,5 @@
 package com.jiujie.base.fragment;
 
-import android.os.Bundle;
-
 import com.jiujie.base.R;
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
 import com.jiujie.base.jk.Refresh;
@@ -19,19 +17,15 @@ public abstract class BaseListFragment extends BaseFragment implements Refresh {
 	public int size = 20;
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		initView();
-	}
-
-	@Override
 	public int getLayoutId() {
 		return R.layout.refresh_recyclerview;
 	}
 
 	public abstract BaseRecyclerViewAdapter getAdapter();
 
-	private void initView() {
+	@Override
+	protected void initView() {
+		super.initView();
 		recyclerViewUtil = getRecyclerViewUtil();
 		recyclerViewUtil.setRefreshListen(this);
 	}
@@ -79,6 +73,7 @@ public abstract class BaseListFragment extends BaseFragment implements Refresh {
 	 * @param type 0:first,1:refresh,2:loadNextPage
 	 */
 	public void setLoadDataStart(int type){
+		if(recyclerViewUtil==null)return;
 		recyclerViewUtil.isLoadingData(true);
 		if(type==0){
 			setLoading();
@@ -102,7 +97,7 @@ public abstract class BaseListFragment extends BaseFragment implements Refresh {
 			recyclerViewUtil.setRefreshing(false);
 		}
 		if(isEnd)recyclerViewUtil.setReadEnd();
-		else recyclerViewUtil.hideFooter();
+		else recyclerViewUtil.setReadMore();
 		recyclerViewUtil.notifyDataSetChanged();
 	}
 }

@@ -2,8 +2,6 @@ package com.jiujie.base.util;
 
 import android.app.Activity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -150,10 +148,8 @@ public class RecyclerViewUtil {
                         if(!isEnd){
                             if (refresh != null&&!isLoadingData) {
                                 refresh.loadMore();
-                                setReadMore();
-                            }else{
-                                hideFooter();
                             }
+                            setReadMore();
                         }else{
                             setReadEnd();
                         }
@@ -161,7 +157,7 @@ public class RecyclerViewUtil {
                         if(isEnd){
                             setReadEnd();
                         }else{
-                            setPrepare();
+                            setReadMore();
                         }
                     }
                 }
@@ -209,19 +205,7 @@ public class RecyclerViewUtil {
     }
 
     private void initRecyclerView() {
-        mRecyclerView.setHasFixedSize(true);
-        if(type==0){
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(mActivity.getApplicationContext());
-            mRecyclerView.setLayoutManager(mLayoutManager);
-        }else if(type==1){
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(mActivity.getApplicationContext(), num);
-            mRecyclerView.setLayoutManager(gridLayoutManager);
-        }else{
-            StaggeredGridLayoutManager staggeredGridLayoutManager =
-                    new StaggeredGridLayoutManager(num, LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
-        }
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        UIHelper.initRecyclerView(mActivity,mRecyclerView,type,num);
     }
 
     public void setRefreshListen(Refresh refresh){
@@ -246,27 +230,9 @@ public class RecyclerViewUtil {
         }
     }
 
-    public void setPrepare(){
-        if(adapter!=null&&adapter instanceof BaseRecyclerViewAdapter){
-            ((BaseRecyclerViewAdapter) adapter).setPrepare();
-        }
-    }
-
     public void setReadMore(){
         if(adapter!=null&&adapter instanceof BaseRecyclerViewAdapter){
             ((BaseRecyclerViewAdapter) adapter).setReadMore();
-        }
-    }
-
-    public void hideFooter(){
-        if(adapter!=null&&adapter instanceof BaseRecyclerViewAdapter){
-            ((BaseRecyclerViewAdapter) adapter).hideFooter();
-        }
-    }
-
-    public void showFooter(){
-        if(adapter!=null&&adapter instanceof BaseRecyclerViewAdapter){
-            ((BaseRecyclerViewAdapter) adapter).showFooter();
         }
     }
 
@@ -285,8 +251,13 @@ public class RecyclerViewUtil {
     }
 
     public void notifyDataSetChanged(){
-        if(adapter!=null)
-            adapter.notifyDataSetChanged();
+        if(adapter!=null){
+            if(adapter instanceof BaseRecyclerViewAdapter){
+                ((BaseRecyclerViewAdapter) adapter).notifyDataSetChanged1();
+            }else{
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     public RecyclerView getRecyclerView() {

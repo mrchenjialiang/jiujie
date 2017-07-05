@@ -10,7 +10,7 @@ import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.util.PermissionsManager;
 import com.umeng.analytics.MobclickAgent;
 
-public abstract class BaseMostFragment extends Fragment  implements LoadStatus {
+public abstract class BaseMostFragment extends Fragment implements LoadStatus {
 
     @Override
     public void startActivity(Intent intent) {

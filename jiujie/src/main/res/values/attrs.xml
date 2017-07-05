@@ -21,6 +21,9 @@
     <attr name="scaleHeight" format="float"/>
     <attr name="scaleWidth" format="float"/>
     <attr name="lineSpacing" format="dimension"/>
+    <attr name="spacing" format="dimension"/>
+    <attr name="textSize" format="dimension"/>
+    <attr name="text" format="string"/>
 
 
     <declare-styleable name="SwitchButton">
@@ -90,25 +93,42 @@
 
     <declare-styleable name="LabelViewGroup">
         <attr name="lineSpacing"/>
-        <attr name="spacing" format="dimension"/>
+        <attr name="spacing"/>
     </declare-styleable>
 
     <declare-styleable name="AutoFillLineViewGroup">
         <attr name="lineNum" format="integer"/>
         <attr name="lineSpacing"/>
+        <attr name="spacing"/>
+    </declare-styleable>
+
+    <declare-styleable name="JJSimpleButton">
+        <attr name="bgColor_p" format="color"/>
+        <attr name="bgColor_n" format="color"/>
+        <attr name="lineColor_p" format="color"/>
+        <attr name="lineColor_n" format="color"/>
+        <attr name="conner" format="dimension"/>
+        <attr name="lineWidth" format="dimension"/>
+        <attr name="textColor_n"/>
+        <attr name="textColor_p"/>
+        <attr name="checkEnable" format="boolean"/>
+        <attr name="isChecked" format="boolean"/>
+        <attr name="text"/>
+        <attr name="textSize"/>
+        <attr name="textWidth" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="RoundProgressBar">
         <attr name="roundColor" format="color"/>
         <attr name="roundProgressColor" format="color"/>
-        <attr name="roundWidth" format="dimension"></attr>
+        <attr name="roundWidth" format="dimension"/>
         <attr name="textColor" format="color" />
-        <attr name="textSize" format="dimension" />
-        <attr name="max" format="integer"></attr>
-        <attr name="textIsDisplayable" format="boolean"></attr>
+        <attr name="textSize"/>
+        <attr name="max" format="integer"/>
+        <attr name="textIsDisplayable" format="boolean"/>
         <attr name="style">
-            <enum name="STROKE" value="0"></enum>
-            <enum name="FILL" value="1"></enum>
+            <enum name="STROKE" value="0"/>
+            <enum name="FILL" value="1"/>
         </attr>
     </declare-styleable>
 </resources>

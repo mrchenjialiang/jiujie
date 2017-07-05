@@ -45,6 +45,7 @@ public class AutoFillLineViewGroup extends ViewGroup {
                     R.styleable.AutoFillLineViewGroup);
             lineSpacing = (int) a.getDimension(R.styleable.AutoFillLineViewGroup_lineSpacing, lineSpacing);
             lineNum = a.getInteger(R.styleable.AutoFillLineViewGroup_lineNum, lineNum);
+            spacing = (int) a.getDimension(R.styleable.AutoFillLineViewGroup_spacing, spacing);
             a.recycle();
         }
     }
@@ -63,7 +64,7 @@ public class AutoFillLineViewGroup extends ViewGroup {
         }
     }
 
-    public void setChildViewList(List<View> childViewList) {
+    public void setChildViewList(List<?extends View> childViewList) {
         removeAllViews();
         for (View view : childViewList) {
             addView(view);

@@ -416,7 +416,7 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
                 }
                 isTouching = false;
                 if(moveX!=0){
-                    if(Math.abs(moveX) >=getWidth()/2){
+                    if(Math.abs(moveX) >=getWidth()/3){
                         if(moveX>0){
                             startAnim(moveX,getWidth(),1);
                         }else{

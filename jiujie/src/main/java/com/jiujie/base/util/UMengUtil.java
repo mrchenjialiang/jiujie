@@ -2,6 +2,7 @@ package com.jiujie.base.util;
 
 import android.content.Context;
 
+import com.jiujie.base.APP;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.Map;
@@ -25,6 +26,6 @@ public class UMengUtil {
     }
 
     public void addEvent(Context mContext, String eventId, Map<String,String> eventMap){
-        MobclickAgent.onEvent(mContext, eventId, eventMap);
+        if(!APP.isDeBug)MobclickAgent.onEvent(mContext, eventId, eventMap);
     }
 }

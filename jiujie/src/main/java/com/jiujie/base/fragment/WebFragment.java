@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.webkit.WebSettings;
@@ -18,19 +17,18 @@ import com.jiujie.base.R;
  * WebView页面，需要传参 String url,String title
  * @author ChenJiaLiang
  */
-public class WebFragment extends BaseFragment{
+public class WebFragment extends BaseFragment {
 	
 	private WebView webView;
 	private String title;
 	private String url;
-	
+
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	protected void initUI() {
 		initTitle();
 		initWebView();
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();

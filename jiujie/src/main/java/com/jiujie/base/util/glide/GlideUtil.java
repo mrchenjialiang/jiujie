@@ -107,6 +107,18 @@ public class GlideUtil {
         builder.into(imageView);
     }
 
+    public void setDefaultImage(Context context, int id, ImageView imageView) {
+        DrawableRequestBuilder<Integer> builder = Glide.with(context)
+                .load(id)
+                .placeholder(R.drawable.logo_gray)
+                .crossFade()
+                .centerCrop();
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder.into(imageView);
+    }
+
     public void setDefaultImage(Context context, String url, ImageView imageView,boolean isCenterCrop,boolean isShowAnim) {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)

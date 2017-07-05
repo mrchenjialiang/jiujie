@@ -19,8 +19,8 @@ import java.util.List;
 public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_ITEM = 0;
-    private static final int TYPE_FOOTER = -1;
-    private static final int TYPE_HEADER = -2;
+    private static final int TYPE_FOOTER = -10;
+    private static final int TYPE_HEADER = -11;
     private BaseRecyclerViewFooter footer;
     private View header;
     private FooterViewHolder footerViewHolder;
@@ -28,26 +28,48 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 
     private final int Footer_Status_Loading = 0;
     private final int Footer_Status_Load_End = 1;
-    private final int Footer_Status_Hide = 2;
-    private final int Footer_Status_Show = 3;
-    private final int Footer_Status_Prepare = 4;
     private int footerStatus;
+    private boolean isFooterEnable = getFooterEnable();
+    private int oldItemCount;
+
+    public void notifyDataSetChanged1(){
+        int itemCount = getItemCount();
+        if(oldItemCount==0||oldItemCount >= itemCount){
+            notifyDataSetChanged();
+        }else{
+            int startPosition = oldItemCount -1;
+            notifyItemRangeChanged(startPosition, itemCount);
+        }
+        oldItemCount = itemCount;
+    }
 
     @Override
     public final int getItemCount() {
-        if(header!=null)
-            return getCount() + 2;
-        else
-            return getCount() + 1;
+        int count = getCount();
+        if(header!=null){
+            count++;
+        }
+        if(isFooterEnable){
+            count++;
+        }
+        return count;
     }
 
     public abstract int getCount();
 
     public final RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType){
-        View view = LayoutInflater.from(parent.getContext()).inflate(getItemLayoutId(viewType), null);
+        int itemLayoutId = getItemLayoutId(viewType);
+        if(itemLayoutId==0){
+            throw new RuntimeException("getItemLayoutId should not return 0 in " + this.getClass().getName());
+        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(itemLayoutId, null);
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        return getItemViewHolder(view,viewType);
+        RecyclerView.ViewHolder itemViewHolder = getItemViewHolder(view, viewType);
+        if(itemViewHolder==null){
+            throw new RuntimeException("getItemViewHolder should not return null in " + this.getClass().getName());
+        }
+        return itemViewHolder;
     }
 
     public abstract RecyclerView.ViewHolder getItemViewHolder(View view, int viewType);
@@ -60,12 +82,14 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     }
 
     @Override
-    public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position){
-        int itemViewType = getItemViewType(position);
+    public final void onBindViewHolder(final RecyclerView.ViewHolder holder, int position){
+        final int itemViewType = getItemViewType(position);
         if(itemViewType !=TYPE_HEADER&&itemViewType!=TYPE_FOOTER){
-            if(header!=null)
-                position--;
-            onBindItemViewHolder(holder, position);
+            int p = position;
+            if(header!=null){
+                p--;
+            }
+            onBindItemViewHolder(holder, p);
         }
     }
 
@@ -109,7 +133,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         // 最后一个item设置为footerView
         if(position==0&&header!=null){
             return TYPE_HEADER;
-        }else if (position + 1 == getItemCount()) {
+        }else if (isFooterEnable && position + 1 == getItemCount()) {
             return TYPE_FOOTER;
         } else {
             if(header!=null)position--;
@@ -130,12 +154,6 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
                        break;
                    case Footer_Status_Load_End:
                        footer.setReadEnd();
-                       break;
-                   case Footer_Status_Hide:
-                       footer.hide();
-                       break;
-                   case Footer_Status_Show:
-                       footer.show();
                        break;
                }
            }
@@ -161,12 +179,6 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             footer.setReadEnd();
         }
     }
-    public final void setPrepare(){
-        footerStatus = Footer_Status_Prepare;
-        if(footer!=null){
-            footer.setPrepare();
-        }
-    }
     public final void setReadMore(){
         footerStatus = Footer_Status_Loading;
         if(footer!=null){
@@ -178,16 +190,12 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         this.header = header;
     }
 
-    public void hideFooter() {
-        footerStatus = Footer_Status_Hide;
-        if(footer!=null)
-            footer.hide();
+    public void setFooterEnable(boolean isFooterEnable){
+        this.isFooterEnable = isFooterEnable;
     }
 
-    public void showFooter() {
-        footerStatus = Footer_Status_Show;
-        if(footer!=null)
-            footer.show();
+    public boolean getFooterEnable(){
+        return true;
     }
 
     private class FooterViewHolder extends RecyclerView.ViewHolder {

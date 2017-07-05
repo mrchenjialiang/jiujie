@@ -1,6 +1,5 @@
 package com.jiujie.base.fragment;
 
-import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -9,53 +8,49 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
+import com.jiujie.base.fragment.BaseFragment;
 
-
-public abstract class BaseScrollKeepHeaderFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
+/**
+ * @author Created by ChenJiaLiang on 2016/4/21.
+ */
+public abstract class BaseScrollKeepHeaderFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener, SwipeRefreshLayout.OnRefreshListener {
     private LinearLayout mMissLine,mKeepTopLine,mScrollLine;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mView = super.onCreateView(inflater, container, savedInstanceState);
-        if(isShouldReLoad){
-            if(mView==null)return null;
-            AppBarLayout appBarLayout = (AppBarLayout) mView.findViewById(R.id.base_appBar);
-            appBarLayout.addOnOffsetChangedListener(this);
-
-            mSwipeRefreshLayout = (SwipeRefreshLayout) mView.findViewById(R.id.base_swipeRefreshLayout);
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    BaseScrollKeepHeaderFragment.this.onRefresh();
-                }
-            });
-
-
-            mMissLine = (LinearLayout) mView.findViewById(R.id.base_dissmiss_line);
-            mKeepTopLine = (LinearLayout) mView.findViewById(R.id.base_keep_top_line);
-            mScrollLine = (LinearLayout) mView.findViewById(R.id.base_scroll_line);
-
-            if(getDisMissHeaderLayoutId()>0) mMissLine.addView(inflater.inflate(getDisMissHeaderLayoutId(),null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            else mMissLine.setVisibility(View.GONE);
-
-            if(getKeepTopHeaderLayoutId()>0)mKeepTopLine.addView(inflater.inflate(getKeepTopHeaderLayoutId(),null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            else mKeepTopLine.setVisibility(View.GONE);
-
-            if(getScrollLayoutId()>0)mScrollLine.addView(inflater.inflate(getScrollLayoutId(),null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            else mScrollLine.setVisibility(View.GONE);
-        }
-        return mView;
+    public boolean isShowTitle() {
+        return false;
     }
 
-    protected void setRefreshEnable(boolean isEnable){
-        if(mSwipeRefreshLayout!=null)mSwipeRefreshLayout.setEnabled(isEnable);
+    public void setRefreshing(boolean isRefreshing){
+        mSwipeRefreshLayout.setRefreshing(isRefreshing);
     }
 
-    protected abstract void onRefresh();
+    public void setRefreshEnable(boolean isEnable){
+        mSwipeRefreshLayout.setEnabled(isEnable);
+    }
 
-    protected void setRefreshing(boolean isRefreshing){
-        if(mSwipeRefreshLayout!=null)mSwipeRefreshLayout.setRefreshing(isRefreshing);
+    @Override
+    protected void initView() {
+        super.initView();
+        AppBarLayout appBarLayout = (AppBarLayout) mView.findViewById(R.id.bskh_appBar);
+        appBarLayout.addOnOffsetChangedListener(this);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) mView.findViewById(R.id.bskh_swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mMissLine = (LinearLayout) mView.findViewById(R.id.bskh_dissmiss_line);
+        mKeepTopLine = (LinearLayout) mView.findViewById(R.id.bskh_keep_top_line);
+        mScrollLine = (LinearLayout) mView.findViewById(R.id.bskh_scroll_line);
+
+        if(getDisMissHeaderLayoutId()>0) mMissLine.addView(LayoutInflater.from(mActivity).inflate(getDisMissHeaderLayoutId(), null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        else mMissLine.setVisibility(View.GONE);
+
+        if(getKeepTopHeaderLayoutId()>0)mKeepTopLine.addView(LayoutInflater.from(mActivity).inflate(getKeepTopHeaderLayoutId(), null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        else mKeepTopLine.setVisibility(View.GONE);
+
+        if(getScrollLayoutId()>0)mScrollLine.addView(LayoutInflater.from(mActivity).inflate(getScrollLayoutId(), null), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        else mScrollLine.setVisibility(View.GONE);
     }
 
     public View getMissLine(){
@@ -79,10 +74,5 @@ public abstract class BaseScrollKeepHeaderFragment extends BaseFragment implemen
     @Override
     public int getLayoutId() {
         return R.layout.activity_base_scroll_keep_header;
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        setRefreshEnable(verticalOffset==0);
     }
 }
