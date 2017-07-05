@@ -16,7 +16,8 @@
         <ScrollView
             android:id="@+id/dbl_scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/dialog_list_bg">
 
             <LinearLayout
                 android:id="@+id/dbl_list"
@@ -24,11 +25,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <include layout="@layout/dialog_center_list_item"/>
-                <include layout="@layout/dialog_center_list_item"/>
-                <include layout="@layout/dialog_center_list_item"/>
-                <include layout="@layout/dialog_center_list_item"/>
-                <include layout="@layout/dialog_center_list_item"/>
                 <include layout="@layout/dialog_center_list_item"/>
                 <include layout="@layout/dialog_center_list_item"/>
                 <include layout="@layout/dialog_center_list_item"/>

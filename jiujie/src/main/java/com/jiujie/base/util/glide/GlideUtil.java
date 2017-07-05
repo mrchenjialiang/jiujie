@@ -10,6 +10,8 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.jiujie.base.R;
 import com.jiujie.base.util.UIHelper;
@@ -96,33 +98,24 @@ public class GlideUtil {
     }
 
     public void setDefaultImage(Context context, String url, ImageView imageView) {
-        DrawableRequestBuilder<String> builder = Glide.with(context)
-                .load(url)
-                .placeholder(R.drawable.logo_gray)
-                .crossFade()
-                .centerCrop();
-        if (!isKeepInMemory) {
-            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        builder.into(imageView);
+        setDefaultImage(context,url,imageView,0,true,true,null);
     }
 
-    public void setDefaultImage(Context context, int id, ImageView imageView) {
-        DrawableRequestBuilder<Integer> builder = Glide.with(context)
-                .load(id)
-                .placeholder(R.drawable.logo_gray)
-                .crossFade()
-                .centerCrop();
-        if (!isKeepInMemory) {
-            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        builder.into(imageView);
+    public void setDefaultImage(Context context, String url, ImageView imageView,int defaultId) {
+        setDefaultImage(context,url,imageView,defaultId,true,true,null);
     }
 
     public void setDefaultImage(Context context, String url, ImageView imageView,boolean isCenterCrop,boolean isShowAnim) {
+        setDefaultImage(context,url,imageView,0,isCenterCrop,isShowAnim,null);
+    }
+
+    public void setDefaultImage(Context context, String url, ImageView imageView,int defaultId,boolean isCenterCrop,boolean isShowAnim,RequestListener<String, GlideDrawable> listener) {
+        if(defaultId<=0){
+            defaultId = R.drawable.logo_gray;
+        }
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray);
+                .placeholder(defaultId);
         if(isCenterCrop){
             builder.centerCrop();
         }
@@ -130,6 +123,9 @@ public class GlideUtil {
             builder.crossFade();
         }else{
             builder.dontAnimate();
+        }
+        if(listener!=null){
+            builder.listener(listener);
         }
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -345,6 +341,20 @@ public class GlideUtil {
                 .load(url)
                 .placeholder(R.drawable.logo_gray_conner)
                 .transform(new GlideRoundTransform(context.getApplicationContext(), dp))
+                .crossFade();
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder
+//                .centerCrop()//不能这样，否则会变成方形
+                .into(imageView);
+    }
+
+    public void setConnerImage(Context context, String url, ImageView imageView, int dp,float scaleHeight) {
+        DrawableRequestBuilder<String> builder = Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.logo_gray_conner)
+                .transform(new GlideRoundTransform(context.getApplicationContext(), dp,scaleHeight))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);

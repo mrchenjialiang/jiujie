@@ -117,12 +117,12 @@ public class ImageUtil {
             if (split.length > 0) {
                 String name = split[split.length - 1];
                 if (name.contains(".")) {
-                    saveImageToLocal(imageUrl, getImageLocalDic(activity), name, bitmap, sp);
+                    saveImageToLocalAsJpg(imageUrl, getImageLocalDic(activity), name, bitmap, sp);
                 } else {
-                    saveImageToLocal(imageUrl, getImageLocalDic(activity), getImageName(), bitmap, sp);
+                    saveImageToLocalAsJpg(imageUrl, getImageLocalDic(activity), getImagePngName(), bitmap, sp);
                 }
             } else {
-                saveImageToLocal(imageUrl, getImageLocalDic(activity), getImageName(), bitmap, sp);
+                saveImageToLocalAsJpg(imageUrl, getImageLocalDic(activity), getImagePngName(), bitmap, sp);
             }
         }
 
@@ -223,7 +223,7 @@ public class ImageUtil {
     }
 
     private int calculateInSampleSize(BitmapFactory.Options options,
-                                             int reqWidth, int reqHeight) {
+                                      int reqWidth, int reqHeight) {
         // raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -258,19 +258,28 @@ public class ImageUtil {
     /**
      * 当前日期 年_月_日_时_分_秒.png
      */
-    public String getImageName() {
+    public String getImagePngName() {
         long currentTimeMillis = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         return sdf.format(new Date(currentTimeMillis)) + ".png";
     }
 
     /**
+     * 当前日期 年_月_日_时_分_秒.png
+     */
+    public String getImageJpgName() {
+        long currentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        return sdf.format(new Date(currentTimeMillis)) + ".jpg";
+    }
+
+    /**
      * @param fileName 要保存的文件文件名,包括格式
      * @param bitmap   要保存的图片
      */
-    public void saveImageToLocal(String imageUrl, String fileDic, String fileName,
-                                 Bitmap bitmap, SharedPreferences sp) {
-        saveImageToLocal(fileDic, fileName, bitmap);
+    public void saveImageToLocalAsJpg(String imageUrl, String fileDic, String fileName,
+                                      Bitmap bitmap, SharedPreferences sp) {
+        saveImageToLocalAsJpg(fileDic, fileName, bitmap);
         if (sp != null) sp.edit().putString(imageUrl, fileDic + fileName).apply();
     }
 
@@ -278,7 +287,7 @@ public class ImageUtil {
      * @param fileName 要保存的文件文件名,包括格式
      * @param bitmap   要保存的图片
      */
-    public void saveImageToLocal(String fileDic, String fileName, Bitmap bitmap) {
+    public void saveImageToLocalAsJpg(String fileDic, String fileName, Bitmap bitmap) {
         if (!Environment.MEDIA_MOUNTED.equals(Environment
                 .getExternalStorageState())) {
             return;
@@ -298,6 +307,35 @@ public class ImageUtil {
             }
             FileOutputStream fos = new FileOutputStream(file);
             bitmap.compress(CompressFormat.JPEG, 100, fos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param fileName 要保存的文件文件名,包括格式
+     * @param bitmap   要保存的图片
+     */
+    public void saveImageToLocalAsPng(String fileDic, String fileName, Bitmap bitmap) {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment
+                .getExternalStorageState())) {
+            return;
+        }
+        File dir = new File(fileDic);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                return;
+            }
+        }
+        File file = new File(fileDic, fileName);
+        try {
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    return;
+                }
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(CompressFormat.PNG, 100, fos);
         } catch (IOException e) {
             e.printStackTrace();
         }

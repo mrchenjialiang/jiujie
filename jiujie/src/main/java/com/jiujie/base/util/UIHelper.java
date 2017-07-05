@@ -250,9 +250,10 @@ public class UIHelper {
 //        return netStatus;
         //6.0 之后得使用 getApplicationContext()..getSystemService(...)
         //否则会内存泄漏
-        ConnectivityManager manager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (context == null) return false;
+        ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
-        return activeNetworkInfo.isConnected();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     /**
@@ -618,7 +619,7 @@ public class UIHelper {
     public static String getFormatSize(double size) {
         double kiloByte = size / 1024;
         if (kiloByte < 1) {
-//         return size + "Byte";  
+//         return size + "Byte";
             return "0KB";
         }
         double megaByte = kiloByte / 1024;
@@ -884,7 +885,7 @@ public class UIHelper {
         return content;
     }
 
-//    public static boolean isMobilePhone(String mobiles){
+    //    public static boolean isMobilePhone(String mobiles){
 //        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
 //        Matcher m = p.matcher(mobiles);
 //        return m.matches();
@@ -1004,6 +1005,41 @@ public class UIHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * 判断微信是否可用
+     */
+    public static boolean isWeixinAvilible(Context context) {
+        final PackageManager packageManager = context.getPackageManager();// 获取packagemanager
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);// 获取所有已安装程序的包信息
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mm")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断qq是否可用
+     */
+    public static boolean isQQClientAvailable(Context context) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mobileqq")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

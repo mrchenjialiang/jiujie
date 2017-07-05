@@ -7,8 +7,10 @@ import android.text.TextUtils;
 import com.jiujie.base.APP;
 import com.jiujie.base.http.okhttp.LoggerInterceptor;
 import com.jiujie.base.jk.ICallback;
+import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.UIHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -16,12 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -67,8 +72,41 @@ public abstract class BaseHttpMethods<T> {
             }
         });
         if (APP.isDeBug) {
-            builder.addInterceptor(new LoggerInterceptor("LOG"));
+            builder.addInterceptor(new LoggerInterceptor("LOG",true));
         }
+        builder.addNetworkInterceptor(new Interceptor() {//添加网络拦截器
+            @Override
+            public Response intercept(Interceptor.Chain chain) throws IOException {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+                if(!UIHelper.getNetWorkStatus(APP.getContext())){
+                    int maxStale = 60 * 60 * 24 * 7;// 没网 就1周可用
+                    return response.newBuilder()
+                            .removeHeader("Pragma")
+                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                            .build();
+                }else{
+                    return response.newBuilder()
+                            .removeHeader("Pragma")
+                            .header("Cache-Control", CacheControl.FORCE_NETWORK.toString())
+                            .build();
+                }
+//                if (isNetworkConnected(context)) {
+////                    int maxAge = 60 * 60;// 有网 就1个小时可用
+//                    int maxAge = 2;// 有网 就2秒可用
+//                    return response.newBuilder()
+//                            .header("Cache-Control", "public, max-age=" + maxAge)
+//                            .build();
+//                } else {
+//                    int maxStale = 60 * 60 * 24 * 7;// 没网 就1周可用
+//                    return response.newBuilder()
+//                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+//                            .build();
+//                }
+            }
+        });
+        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(APP.getContext())+"httpCache/");
+        builder .cache(new Cache(cacheFile, 30 * 1024 * 1024));//最大 30m
 
         okHttpClient = builder.build();
         Retrofit retrofit = new Retrofit.Builder()

@@ -214,7 +214,7 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
                 }
                 if(!isPause&&!isTouching){
                     TIME++;
-                    if(TIME%3==0){
+                    if(TIME%4==0){
                         myHandler.sendEmptyMessage(0);
                     }
                     if(TIME>=3000){

@@ -102,6 +102,16 @@
         <attr name="spacing"/>
     </declare-styleable>
 
+    <declare-styleable name="TouchLayout">
+        <attr name="jj_index" format="integer"/>
+        <attr name="jj_style">
+            <enum name="left" value="0"/>
+            <enum name="top" value="1"/>
+            <enum name="right" value="2"/>
+            <enum name="bottom" value="3"/>
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="JJSimpleButton">
         <attr name="bgColor_p" format="color"/>
         <attr name="bgColor_n" format="color"/>

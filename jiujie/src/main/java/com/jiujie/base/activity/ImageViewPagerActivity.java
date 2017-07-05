@@ -68,7 +68,7 @@ public class ImageViewPagerActivity extends BaseActivity {
 				UIHelper.setJumpAnimation(mActivity, 2);
 			}
 		});
-    }
+	}
 
 	@Override
 	public boolean isShowTitle() {
@@ -114,12 +114,12 @@ public class ImageViewPagerActivity extends BaseActivity {
 								waitingDialog.show();
 								final ImageUtil imageUtil = ImageUtil.instance();
 								final String imageLocalDic = imageUtil.getImageLocalDic(mActivity);
-								final String imageName = imageUtil.getImageName();
+								final String imageName = imageUtil.getImagePngName();
 								new AsyncTask<Void,Void,Void>(){
 									@Override
 									protected Void doInBackground(Void... params) {
 										Bitmap bitmap = ImageUtil.instance().getImageBitmapFromNet(mActivity, dataList.get(position));
-										imageUtil.saveImageToLocal(imageLocalDic, imageName,bitmap);
+										imageUtil.saveImageToLocalAsJpg(imageLocalDic, imageName,bitmap);
 										return null;
 									}
 
@@ -137,8 +137,8 @@ public class ImageViewPagerActivity extends BaseActivity {
 					return false;
 				}
 			});
-	        
-	        photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+
+			photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
 				@Override
 				public void onPhotoTap(View arg0, float arg1, float arg2) {
 //					System.out.println("photoView被点击了");
@@ -146,7 +146,7 @@ public class ImageViewPagerActivity extends BaseActivity {
 					UIHelper.setJumpAnimation(mActivity, 2);
 				}
 			});
-	        
+
 			container.addView(layout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 			return layout;
@@ -159,9 +159,9 @@ public class ImageViewPagerActivity extends BaseActivity {
 		public boolean isViewFromObject(View view, Object object) {
 			return view == object;
 		}
-		@Override  
+		@Override
 		public int getItemPosition(Object object) {
-			return POSITION_NONE;  
+			return POSITION_NONE;
 		}
 	}
 	@Override

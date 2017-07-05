@@ -5,7 +5,7 @@ import android.app.Dialog;
 
 import com.google.gson.Gson;
 import com.jiujie.base.APP;
-import com.jiujie.base.jk.LoadingCallBack;
+import com.jiujie.base.jk.ICallback;
 import com.jiujie.base.util.UIHelper;
 
 import java.net.ConnectException;
@@ -18,55 +18,54 @@ import rx.Subscriber;
  * 在Http请求结束是，关闭ProgressDialog
  * 调用者自己对请求数据进行处理
  */
-public class ProgressSubscriber<T> extends Subscriber<T>{
+public abstract class ProgressSubscriber<T> extends Subscriber<T> implements ICallback<T> {
 
     private boolean isShowDialog = true;
-    public LoadingCallBack<T> mLoadingCallBack;
     private String message;
     private Activity activity;
     private Dialog waitingDialog;
 
-    public ProgressSubscriber(Activity activity,LoadingCallBack<T> mLoadingCallBack) {
-        if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
-        this.mLoadingCallBack = mLoadingCallBack;
+    public ProgressSubscriber(Activity activity) {
         this.activity = activity;
-        waitingDialog = UIHelper.getWaitingDialog(activity);
-        waitingDialog.setCanceledOnTouchOutside(false);
     }
 
-    public ProgressSubscriber(Activity activity,boolean isShowDialog,LoadingCallBack<T> mLoadingCallBack) {
-        if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
-        this.mLoadingCallBack = mLoadingCallBack;
+    public ProgressSubscriber(Activity activity,boolean isShowDialog) {
         this.activity = activity;
         this.isShowDialog = isShowDialog;
-        if(isShowDialog){
-            waitingDialog = UIHelper.getWaitingDialog(activity);
-            waitingDialog.setCanceledOnTouchOutside(false);
-        }
     }
 
-    public ProgressSubscriber( Activity activity, String message,LoadingCallBack<T> mLoadingCallBack) {
-        if(mLoadingCallBack==null) throw new NullPointerException("LoadingCallBack should not be null");
-        this.mLoadingCallBack = mLoadingCallBack;
+    public ProgressSubscriber( Activity activity, String message) {
         this.activity = activity;
         this.message = message;
-        waitingDialog = UIHelper.getWaitingDialog(activity);
-        waitingDialog.setCanceledOnTouchOutside(false);
     }
 
     @Override
     public void onStart() {
-        if(isShowDialog&&activity!=null&&!activity.isFinishing())waitingDialog.show();
+        if(isShowDialog)showDialog();
+    }
+
+    protected void showDialog() {
+        if(activity!=null&&!activity.isFinishing()){
+            if(waitingDialog==null){
+                waitingDialog = UIHelper.getWaitingDialog(activity);
+                waitingDialog.setCanceledOnTouchOutside(false);
+            }
+            waitingDialog.show();
+        }
+    }
+
+    protected void hideDialog() {
+        if(activity!=null&&!activity.isFinishing()&&waitingDialog!=null&&waitingDialog.isShowing())waitingDialog.dismiss();
     }
 
     @Override
     public void onCompleted() {
-        if(isShowDialog&&activity!=null&&!activity.isFinishing()&&waitingDialog.isShowing())waitingDialog.dismiss();
+        if(isShowDialog)hideDialog();
     }
 
     @Override
     public void onError(Throwable e) {
-        if(isShowDialog&&activity!=null&&!activity.isFinishing()&&waitingDialog.isShowing())waitingDialog.dismiss();
+        if(isShowDialog)hideDialog();
         String error;
         if (e instanceof SocketTimeoutException) {
             error = "连接超时，请检查您的网络状态";
@@ -75,8 +74,11 @@ public class ProgressSubscriber<T> extends Subscriber<T>{
         } else {
             error = "服务器异常，请稍候再试";
         }
-        mLoadingCallBack.onLoadError(error);
         UIHelper.showLog("httpResult error:" + error);
+        if(activity==null||activity.isFinishing()){
+            return;
+        }
+        onFail(error);
     }
 
     @Override
@@ -84,8 +86,11 @@ public class ProgressSubscriber<T> extends Subscriber<T>{
         if(APP.isDeBug){
             String toJson = new Gson().toJson(t);
             UIHelper.showLog("httpResult data:" + toJson);
-            UIHelper.showLogInFile(toJson);
+//            UIHelper.showLogInFile(toJson);
         }
-        mLoadingCallBack.onLoadSuccess(t);
+        if(activity==null||activity.isFinishing()){
+            return;
+        }
+        onSucceed(t);
     }
 }

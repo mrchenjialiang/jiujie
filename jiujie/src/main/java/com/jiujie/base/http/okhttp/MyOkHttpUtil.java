@@ -40,8 +40,8 @@ import okhttp3.ResponseBody;
  */
 public abstract class MyOkHttpUtil {
 
-    public final OkHttpClient okHttpClient;
-    protected MyOkHttpUtil(final Context context){
+    private final OkHttpClient okHttpClient;
+    protected MyOkHttpUtil(){
         //手动创建一个OkHttpClient并设置超时时间
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(getConnectTimeOutSecond(), TimeUnit.SECONDS);
@@ -65,7 +65,7 @@ public abstract class MyOkHttpUtil {
             public Response intercept(Interceptor.Chain chain) throws IOException {
                 Request request = chain.request();
                 Response response = chain.proceed(request);
-                if(!UIHelper.getNetWorkStatus(context)){
+                if(!UIHelper.getNetWorkStatus(APP.getContext())){
                     int maxStale = 60 * 60 * 24 * 7;// 没网 就1周可用
                     return response.newBuilder()
                             .removeHeader("Pragma")
@@ -91,7 +91,7 @@ public abstract class MyOkHttpUtil {
 //                }
             }
         });
-        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(context)+"httpCache/");
+        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(APP.getContext())+"httpCache/");
         builder .cache(new Cache(cacheFile, 30 * 1024 * 1024));//最大 30m
 
         okHttpClient = builder.build();
@@ -298,11 +298,19 @@ public abstract class MyOkHttpUtil {
     /**
      * 用于表单上传图片
      */
-    public void httpPostFile(final Activity activity, String url, Map<String, Object> postParamMap, File file, String keyName, String tag, final ICallback<String> callback) {
-        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+    protected void httpPostFile(final Activity activity, String url, Map<String, Object> postParamMap, File file, String keyName, final ICallback<String> callback) {
+        httpPostFile(activity,url,postParamMap,file,null,keyName,null,callback);
+    }
+
+    /**
+     * 用于表单上传图片
+     */
+    private void httpPostFile(final Activity activity, String url, Map<String, Object> postParamMap, File file, String fileType, String keyName, String tag, final ICallback<String> callback) {
+        MultipartBody.Builder requestBody = new MultipartBody.Builder();
+        requestBody.setType(MultipartBody.FORM);
         if (file != null) {
             // MediaType.parse() 里面是上传的文件类型。
-            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+            RequestBody body = RequestBody.create(MediaType.parse("image/"+(TextUtils.isEmpty(fileType)?"*":fileType)), file);
             // 参数分别为， 请求key ，文件名称 ， RequestBody
             if (TextUtils.isEmpty(keyName)) {
                 keyName = "uploadedfile";
@@ -317,13 +325,20 @@ public abstract class MyOkHttpUtil {
             }
         }
         Request.Builder builder = new Request.Builder();
+        builder.addHeader("Connection", "close");
+        builder.addHeader("Content-Type","multipart/form-data");
         builder.url(url).post(requestBody.build());
         if(!TextUtils.isEmpty(tag)){
             builder.tag(tag);
         }
         Request request = builder.build();
 
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
+        OkHttpClient mOkHttpClient = okHttpBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).writeTimeout(10,TimeUnit.SECONDS).build();
+        if (APP.isDeBug) {
+            okHttpBuilder.addInterceptor(new LoggerInterceptor("LOG",true));
+        }
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 if (activity != null && !activity.isFinishing() && callback != null) {
@@ -343,9 +358,11 @@ public abstract class MyOkHttpUtil {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
-                            ResponseBody body = response.body();
-                            final String decode = UIHelper.decode(body.string());
-                            body.close();
+                            final String decode = response.newBuilder().build().body().string();
+//                            ResponseBody body = response.body();
+//                            final String decode = UIHelper.decode(body.string());
+                            UIHelper.showLog(decode);
+//                            body.close();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {

@@ -1,8 +1,6 @@
 package com.jiujie.base.activity.cropimage;
 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,43 +12,39 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jiujie.base.R;
+import com.jiujie.base.activity.BaseActivity;
+import com.jiujie.base.jk.MyHandlerInterface;
+import com.jiujie.base.util.MyHandler;
 import com.jiujie.base.util.UIHelper;
 
 
 /**
  * 裁剪界面
- *
  */
-public class CropImageActivity extends Activity implements OnClickListener{
-	
+public class CropImageActivity extends BaseActivity implements OnClickListener, MyHandlerInterface {
+
 	private CropImageView mImageView;
 	private Bitmap mBitmap;
-	
 	private CropImage mCrop;
-	
-	private Button mSave;
-	private Button mCancel,rotateLeft,rotateRight;
-	private String mPath = "CropImageActivity";
 	public int screenWidth = 0;
 	public int screenHeight = 0;
-	
 	private ProgressBar mProgressBar;
-	
 	public static final int SHOW_PROGRESS = 2000;
-
 	public static final int REMOVE_PROGRESS = 2001;
-	@SuppressLint("HandlerLeak")
-	private Handler mHandler = new Handler(){
-		@Override
-		public void handleMessage(Message msg) {
+	private Handler mHandler;
+	private int mWidth;
+	private int mHeight;
+	private String savePath;
+	private String saveName;
 
-			switch (msg.what) {
+	@Override
+	public void handleMessage(Message msg) {
+		switch (msg.what) {
 			case SHOW_PROGRESS:
 				mProgressBar.setVisibility(View.VISIBLE);
 				break;
@@ -58,90 +52,103 @@ public class CropImageActivity extends Activity implements OnClickListener{
 				mHandler.removeMessages(SHOW_PROGRESS);
 				mProgressBar.setVisibility(View.INVISIBLE);
 				break;
-			}
-
 		}
-	};
-	private int mWidth;
-	private int mHeight;
-	private String savePath;
-	private String saveName;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.gl_modify_avatar);
-        init();
-    }
-    @Override
-    protected void onStop(){
-    	super.onStop();
-    	if(mBitmap!=null){
-    		mBitmap=null;
-    	}
-    }
-    
-    private void init()
-    {
-    	getWindowWH();
-    	Intent intent = getIntent();
-		mPath = intent.getStringExtra("path");
+	}
+
+	@Override
+	public boolean isShowTitle() {
+		return false;
+	}
+
+	@Override
+	protected boolean isOpenSlideBack() {
+		return false;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		init();
+	}
+
+	@Override
+	public void initData() {
+
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.gl_modify_avatar;
+	}
+
+	@Override
+	protected void onStop(){
+		super.onStop();
+		if(mBitmap!=null){
+			mBitmap=null;
+		}
+	}
+
+	private void init(){
+		mHandler = new MyHandler(this);
+		getWindowWH();
+		Intent intent = getIntent();
+		String mPath = intent.getStringExtra("path");
 		mWidth = intent.getIntExtra("width", 150);
 		mHeight = intent.getIntExtra("height", 150);
 		savePath = intent.getStringExtra("savePath");
 		saveName = intent.getStringExtra("saveName");
 		UIHelper.showLog("用来截图的图片路径是 = " + mPath);
-        mImageView = (CropImageView) findViewById(R.id.gl_modify_avatar_image);
-        mSave = (Button) this.findViewById(R.id.gl_modify_avatar_save);
-        mCancel = (Button) this.findViewById(R.id.gl_modify_avatar_cancel);
-        rotateLeft = (Button) this.findViewById(R.id.gl_modify_avatar_rotate_left);
-        rotateRight = (Button) this.findViewById(R.id.gl_modify_avatar_rotate_right);
-        mSave.setOnClickListener(this);
-        mCancel.setOnClickListener(this);
-        rotateLeft.setOnClickListener(this);
-        rotateRight.setOnClickListener(this);
-        try{
-            mBitmap = createBitmap(mPath,screenWidth,screenHeight);
-            
-            if(mBitmap==null){
-            	Toast.makeText(CropImageActivity.this, "没有找到图片", Toast.LENGTH_SHORT).show();
-    			finish();
-            }else{
-            	resetImageView(mBitmap);
-            }
-        }catch (Exception e) {
-        	Toast.makeText(CropImageActivity.this, "没有找到图片", Toast.LENGTH_SHORT).show();
+		mImageView = (CropImageView) findViewById(R.id.gl_modify_avatar_image);
+
+		findViewById(R.id.gl_modify_avatar_save).setOnClickListener(this);
+		findViewById(R.id.gl_modify_avatar_cancel).setOnClickListener(this);
+		findViewById(R.id.gl_modify_avatar_rotate_left).setOnClickListener(this);
+		findViewById(R.id.gl_modify_avatar_rotate_right).setOnClickListener(this);
+
+		try{
+			mBitmap = createBitmap(mPath,screenWidth,screenHeight);
+
+			if(mBitmap==null){
+				Toast.makeText(CropImageActivity.this, "没有找到图片", Toast.LENGTH_SHORT).show();
+				finish();
+			}else{
+				resetImageView(mBitmap);
+			}
+		}catch (Exception e) {
+			Toast.makeText(CropImageActivity.this, "没有找到图片", Toast.LENGTH_SHORT).show();
 			finish();
 		}
-        addProgressbar();       
-    }
-    /**
-     * 获取屏幕的高和宽
-     */
-    private void getWindowWH(){
+		addProgressbar();
+	}
+	/**
+	 * 获取屏幕的高和宽
+	 */
+	private void getWindowWH(){
 		DisplayMetrics dm=new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		screenWidth=dm.widthPixels;
 		screenHeight=dm.heightPixels;
 	}
-    private void resetImageView(Bitmap b){
-    	 mImageView.clear();
-    	 mImageView.setImageBitmap(b);
-         mImageView.setImageBitmapResetBase(b, true);
+	private void resetImageView(Bitmap b){
+		mImageView.clear();
+		mImageView.setImageBitmap(b);
+		mImageView.setImageBitmapResetBase(b, true);
 //         if(TextUtils.isEmpty(savePath)||TextUtils.isEmpty(saveName)){
 //        	 mCrop = new CropImage(this, mImageView,mHandler);
 //         }else{
-        	 mCrop = new CropImage(this, mImageView,mHandler,mWidth,mHeight,savePath,saveName);
+		mCrop = new CropImage(this, mImageView,mHandler,mWidth,mHeight,savePath,saveName);
 //         }
-         mCrop.crop(b);
-    }
-    
-    @Override
+		mCrop.crop(b);
+	}
+
+	@Override
 	public void onClick(View v)
-    {
-    	int id = v.getId();
+	{
+		int id = v.getId();
 		if (id == R.id.gl_modify_avatar_cancel) {
 			//    		mCrop.cropCancel();
-    		finish();
+			finish();
 		} else if (id == R.id.gl_modify_avatar_save) {
 			String path = mCrop.saveToLocal(mCrop.cropAndSave());
 			UIHelper.showLog("截取后图片的路径是 = " + path);
@@ -154,8 +161,8 @@ public class CropImageActivity extends Activity implements OnClickListener{
 		} else if (id == R.id.gl_modify_avatar_rotate_right) {
 			mCrop.startRotate(90.f);
 		}
-    }
-    protected void addProgressbar() {
+	}
+	protected void addProgressbar() {
 		mProgressBar = new ProgressBar(this);
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -163,19 +170,19 @@ public class CropImageActivity extends Activity implements OnClickListener{
 		addContentView(mProgressBar, params);
 		mProgressBar.setVisibility(View.INVISIBLE);
 	}
-    
-    public Bitmap createBitmap(String path,int w,int h){
-    	try{
+
+	public Bitmap createBitmap(String path,int w,int h){
+		try{
 			BitmapFactory.Options opts = new BitmapFactory.Options();
 			opts.inJustDecodeBounds = true;
 			// 这里是整个方法的关键，inJustDecodeBounds设为true时将不为图片分配内存。
 			BitmapFactory.decodeFile(path, opts);
 			int srcWidth = opts.outWidth;// 获取图片的原始宽度
 			int srcHeight = opts.outHeight;// 获取图片原始高度
-			int destWidth = 0;
-			int destHeight = 0;
+			int destWidth;
+			int destHeight;
 			// 缩放的比例
-			double ratio = 0.0;
+			double ratio;
 			if (srcWidth < w || srcHeight < h) {
 				ratio = 0.0;
 				destWidth = srcWidth;
@@ -200,9 +207,8 @@ public class CropImageActivity extends Activity implements OnClickListener{
 			// 获取缩放后图片
 			return BitmapFactory.decodeFile(path, newOpts);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return null;
 		}
-    }
-   
+	}
+
 }

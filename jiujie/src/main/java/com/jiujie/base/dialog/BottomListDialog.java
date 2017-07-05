@@ -25,8 +25,8 @@ public class BottomListDialog extends BaseDialog {
 
     private final Activity mActivity;
     private List<String> dataList;
-    LinearLayout list;
-    View scrollView;
+    private LinearLayout list;
+    private View scrollView;
     private OnItemClickListen onItemClickListen;
 
     public BottomListDialog(Activity activity) {
@@ -51,6 +51,7 @@ public class BottomListDialog extends BaseDialog {
     public void setOrRefreshDataList(List<String> dataList) {
         list.removeAllViews();
         if(dataList.size()==1){
+            scrollView.setPadding(0,0,0,0);
             View itemView = getListItemView(dataList.get(0), ItemType.Single, 0);
             list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -63,20 +64,42 @@ public class BottomListDialog extends BaseDialog {
                 }
             });
         }else{
+
+            boolean isShouldSetPadding = false;
+            int height = UIHelper.dip2px(getContext(), 50)*dataList.size();
+            int maxHeight = UIHelper.getScreenHeight(mActivity)*3/5;
+            if(height>maxHeight){
+                isShouldSetPadding = true;
+                int dp4 = UIHelper.dip2px(getContext(), 4);
+                scrollView.setPadding(0,dp4,0,dp4);
+
+                ViewGroup.LayoutParams lp = scrollView.getLayoutParams();
+                lp.height = maxHeight;
+                scrollView.setLayoutParams(lp);
+            }else{
+                scrollView.setPadding(0,0,0,0);
+            }
             for (int i = 0;i<dataList.size();i++){
                 View itemView;
-                if(i==0){
-                    itemView = getListItemView(dataList.get(i), ItemType.Top , i);
-                    list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    list.addView(getLine(), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                }else if(i==dataList.size()-1){
-                    itemView = getListItemView(dataList.get(i), ItemType.Bottom, i);
-                    list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                }else{
+                if(isShouldSetPadding){
                     itemView = getListItemView(dataList.get(i), ItemType.Center, i);
                     list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     list.addView(getLine(), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                }else{
+                    if(i==0){
+                        itemView = getListItemView(dataList.get(i), ItemType.Top , i);
+                        list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        list.addView(getLine(), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }else if(i==dataList.size()-1){
+                        itemView = getListItemView(dataList.get(i), ItemType.Bottom, i);
+                        list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }else{
+                        itemView = getListItemView(dataList.get(i), ItemType.Center, i);
+                        list.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        list.addView(getLine(), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }
                 }
+
                 final int finalI = i;
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -87,14 +110,6 @@ public class BottomListDialog extends BaseDialog {
                         }
                     }
                 });
-            }
-
-            int height = UIHelper.dip2px(getContext(), 50)*dataList.size();
-            int maxHeight = UIHelper.getScreenHeight(mActivity)*3/5;
-            if(height>maxHeight){
-                ViewGroup.LayoutParams lp = scrollView.getLayoutParams();
-                lp.height = maxHeight;
-                scrollView.setLayoutParams(lp);
             }
         }
     }

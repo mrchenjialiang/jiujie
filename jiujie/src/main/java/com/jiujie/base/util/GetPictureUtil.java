@@ -16,7 +16,7 @@ import com.jiujie.base.jk.ICallBackNoParam;
 import java.io.File;
 
 /**
- * 
+ *
  * @author QQ576507648 从手机相册中或者拍照来获取图片
  */
 public class GetPictureUtil {
@@ -63,13 +63,12 @@ public class GetPictureUtil {
 
 			@Override
 			public void onFail() {
-				com.jiujie.base.util.UIHelper.showToastShort(activity, "用户已拒绝读取图片");
+				UIHelper.showToastShort(activity, "用户已拒绝读取图片");
 			}
 		});
-
 	}
 
-	private static  void getPicFromAlbumReal(Activity activity,int ALBUM){
+	private static void getPicFromAlbumReal(Activity activity,int ALBUM){
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_PICK);
 		intent.setType("image/*");

@@ -110,7 +110,7 @@ public class RecyclerViewUtil {
     private void init() {
         initRecyclerView();
         if(adapter!=null)
-        mRecyclerView.setAdapter(adapter);
+            mRecyclerView.setAdapter(adapter);
         setReadMore();
 
         if(mSwipeRefreshWidget!=null){

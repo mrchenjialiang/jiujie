@@ -18,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 public class GlideRoundTransform extends BitmapTransformation {
 
     private static float radius = 0f;
+    private static float scaleHeight = 0;
 
     public GlideRoundTransform(Context context) {
         this(context, 4);
@@ -28,6 +29,12 @@ public class GlideRoundTransform extends BitmapTransformation {
         radius = Resources.getSystem().getDisplayMetrics().density * dp;
     }
 
+    public GlideRoundTransform(Context context, int dp,float scaleHeight) {
+        super(context);
+        radius = Resources.getSystem().getDisplayMetrics().density * dp;
+        GlideRoundTransform.scaleHeight = scaleHeight;
+    }
+
     @Override
     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
         return roundCrop(pool, toTransform);
@@ -36,16 +43,30 @@ public class GlideRoundTransform extends BitmapTransformation {
     private static Bitmap roundCrop(BitmapPool pool, Bitmap source) {
         if (source == null) return null;
 
-        Bitmap result = pool.get(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap result;
+        if(scaleHeight!=0){
+            result = pool.get(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.ARGB_8888);
+        }else{
+            result = pool.get(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+        }
         if (result == null) {
-            result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+            if(scaleHeight!=0){
+                result = Bitmap.createBitmap(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.ARGB_8888);
+            }else{
+                result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+            }
         }
 
         Canvas canvas = new Canvas(result);
         Paint paint = new Paint();
         paint.setShader(new BitmapShader(source, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP));
         paint.setAntiAlias(true);
-        RectF rectF = new RectF(0f, 0f, source.getWidth(), source.getHeight());
+        RectF rectF;
+        if(scaleHeight!=0){
+            rectF = new RectF(0f, 0f, source.getWidth(), source.getWidth()*scaleHeight);
+        }else{
+            rectF = new RectF(0f, 0f, source.getWidth(), source.getHeight());
+        }
         canvas.drawRoundRect(rectF, radius, radius, paint);
         return result;
     }

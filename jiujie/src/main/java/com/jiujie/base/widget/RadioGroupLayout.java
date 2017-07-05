@@ -49,6 +49,19 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         check(mCurrentPosition,true);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        childViewList.clear();
+        for (int i = 0;i<getChildCount();i++){
+            View childAt = getChildAt(i);
+            childAt.setTag(i);
+            childAt.setOnClickListener(this);
+            childViewList.add(childAt);
+        }
+    }
+
     public void check(int position){
         check(position,false);
     }

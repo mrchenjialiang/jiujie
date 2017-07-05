@@ -18,8 +18,8 @@ import java.io.ObjectOutputStream;
 public class SharePHelper {
 
 	private final Context context;
-	public SharedPreferences sp;
-	String fileName;
+	private SharedPreferences sp;
+	private String fileName;
 	private static SharePHelper sharePHelper;
 
 	protected SharePHelper(Context context){
@@ -30,8 +30,8 @@ public class SharePHelper {
 		if(TextUtils.isEmpty(fileName))
 			fileName = "jiujie_key";
 		this.fileName = fileName;
-		this.context = context;
-		sp = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+		this.context = context.getApplicationContext();
+		sp = this.context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
 	}
 
 	public long getCacheSize(){
@@ -61,13 +61,16 @@ public class SharePHelper {
 		}
 		return sharePHelper;
 	}
-	
+
 	public SharedPreferences getSp(){
 		return sp;
 	}
-	
+
 	public void saveObject(String key, Object object) {
-		if(object==null) return;
+		if(object==null) {
+			remove(key);
+			return;
+		}
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -81,7 +84,7 @@ public class SharePHelper {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> T readObject(String key) {
 		if(!sp.contains(key)){
@@ -94,7 +97,7 @@ public class SharePHelper {
 		Object object;
 		byte[] base64 = Base64.decode(string.getBytes(), Base64.DEFAULT);
 		ByteArrayInputStream is = new ByteArrayInputStream(base64);
-		T object1 = null;
+		T object1;
 		try {
 			ObjectInputStream bis = new ObjectInputStream(is);
 			object = bis.readObject();
@@ -102,6 +105,7 @@ public class SharePHelper {
 		} catch (Exception e) {
 			UIHelper.showLog("Exception SharePHelper readObject:"+e.getMessage());
 			e.printStackTrace();
+			return null;
 		}
 		return object1;
 	}

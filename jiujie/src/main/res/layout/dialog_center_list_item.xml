@@ -14,6 +14,8 @@
         android:textColor="#2D97EB"/>
 
     <View style="@style/HLine"
-        android:id="@+id/dcli_line"/>
+        android:id="@+id/dcli_line"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
 
 </LinearLayout>

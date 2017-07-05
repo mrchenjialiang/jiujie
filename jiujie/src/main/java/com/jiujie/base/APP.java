@@ -16,8 +16,10 @@ public class APP {
     public static boolean isCrashError;
     public static boolean isDeBug;
     public static String defaultDoMain;
+    private static Context context;
 
     public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug){
+        APP.context = context;
         APP.isUseUMeng = isUseUMeng;
         APP.isCrashError = isCrashError;
         APP.isDeBug = isDeBug;
@@ -39,4 +41,7 @@ public class APP {
         MobclickAgent.openActivityDurationTrack(true);//页面统计
     }
 
+    public static Context getContext() {
+        return context;
+    }
 }
