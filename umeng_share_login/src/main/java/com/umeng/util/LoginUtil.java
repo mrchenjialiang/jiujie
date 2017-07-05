@@ -46,8 +46,29 @@ public class LoginUtil {
 // language=语言,
 // expires_in=123456465}
     public static void loginWxGetUserInfo(Activity activity,UMAuthListener umAuthListener){
+        loginGetUserInfo(activity,SHARE_MEDIA.WEIXIN,umAuthListener);
+    }
+
+
+    //QQ:  {unionid=, is_yellow_vip=0, screen_name=昵称, msg=, vip=0, 
+    // city=, accessToken=796DA480B4668504B7739A0A5810FC56, gender=男, province=, 
+    // is_yellow_year_vip=0, openid=C28920E3DB700C643F384070995029ED, yellow_vip_level=0, 
+    // profile_image_url=http://q.qlogo.cn/qqapp/1106103078/C28920E3DB700C643F384070995029ED/100, 
+    // access_token=796DA480B4668504B7739A0A5810FC56, iconurl=http://q.qlogo.cn/qqapp/1106103078/C28920E3DB700C643F384070995029ED/100, 
+    // name=昵称, uid=C28920E3DB700C643F384070995029ED, expiration=1505267914803, 
+    // expires_in=1505267914803, ret=0, level=0}
+    public static void loginQqGetUserInfo(Activity activity,UMAuthListener umAuthListener){
+        loginGetUserInfo(activity,SHARE_MEDIA.QQ,umAuthListener);
+    }
+
+    public static void loginSinaGetUserInfo(Activity activity,UMAuthListener umAuthListener){
+        loginGetUserInfo(activity,SHARE_MEDIA.SINA,umAuthListener);
+    }
+
+
+    private static void loginGetUserInfo(Activity activity,SHARE_MEDIA type,UMAuthListener umAuthListener){
         UMShareAPI mShareAPI = UMShareAPI.get(activity);
-        mShareAPI.getPlatformInfo(activity, SHARE_MEDIA.WEIXIN, umAuthListener);
+        mShareAPI.getPlatformInfo(activity, type, umAuthListener);
     }
 
 

@@ -7,3 +7,5 @@
 		super.onActivityResult(requestCode, resultCode, data);
 		UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
 	}
+
+5，WBShareActivity 调用新浪需在包名下配置
