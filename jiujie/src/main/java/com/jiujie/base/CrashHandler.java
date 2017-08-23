@@ -7,13 +7,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jiujie.base.util.ImageUtil;
+import com.jiujie.base.util.FileUtil;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
@@ -177,32 +176,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
       try {
           String time = formatter.format(new Date());
           String fileName = "crash_" + time + ".txt";
-          if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {  
-              String path = ImageUtil.instance().getCacheSDDic(mContext)+"errorLog/";
-              File dir = new File(path);
-              boolean isContinue = true;
-              if (!dir.exists()) {
-                  isContinue = dir.mkdirs();
-              }
-              if(!isContinue){
-                  Log.e(TAG, "File dir mkdirs fail");
-                  return;
-              }
-              File file = new File(path,fileName);
-              //创建的是文件夹。。。
-//              if (!file.exists()) {
-//                  file.mkdirs();
-//              }
-              //创建文件
-              if (!file.exists()) {
-                  isContinue = file.createNewFile();
-              }
-              if(!isContinue){
-                  Log.e(TAG, "createNewFile fail");
+          if (UIHelper.isSdCardExist()) {
+              File file = FileUtil.createLogFile(mContext, fileName);
+              if(file==null||!file.exists()){
                   return;
               }
               FileOutputStream fos = new FileOutputStream(file,true);
-//              FileOutputStream fos = new FileOutputStream(path + fileName);
               sb.append(UIHelper.timeLongHaoMiaoToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss")).append("\n===END===\n");
               fos.write(sb.toString().getBytes());
               fos.close();  

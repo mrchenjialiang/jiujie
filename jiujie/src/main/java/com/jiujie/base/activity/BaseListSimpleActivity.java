@@ -19,6 +19,7 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
         public MyCallback(int type) {
             this.type = type;
             setLoadDataStart(type);
+//            setCanReadCache(type==0);
         }
 
         @Override
@@ -29,9 +30,13 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
             List<V> list = analysisData(result);
             if(list!=null){
                 dataList.addAll(list);
-                isEnd = list.size()<size;
+                if(isEndFromSize()){
+                    setEnd(list.size()<size);
+                }else{
+                    setEnd(list.size()<1);
+                }
             }else{
-                isEnd = true;
+                setEnd(true);
             }
             setLoadDataEnd(type);
         }
@@ -39,12 +44,20 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
         @Override
         public void onFail(String error) {
             if(type==0){
-                setLoadingFail();
-            }
-            if(type==2){
+                if(dataList.size()==0){
+                    setLoadingFail();
+                }else{
+                    setLoadingEnd();
+                }
+            }else if(type==2){
                 page--;
+                recyclerViewUtil.setReadFail();
+                notifyDataSetChanged();
+                setLoadDataEnd(type);
+            }else if(type==1){
+                recyclerViewUtil.setRefreshing(false);
+                UIHelper.showToastShort(mActivity,error);
             }
-            UIHelper.showToastShort(mActivity,error);
         }
     }
 

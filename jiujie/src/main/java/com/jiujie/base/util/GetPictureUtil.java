@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
@@ -26,21 +25,17 @@ public class GetPictureUtil {
 
 	/**
 	 * 拍照获取清晰图片,用此方法,返回的intent data 是空的!
-	 * @param saveDirectory 存放目录
-	 * @param saveName  存储文件名
 	 * @param CAMERA 请求码
 	 */
-	public static String getPicFromCamera(Activity activity,String saveDirectory,String saveName,int CAMERA){
-		String status = Environment.getExternalStorageState();
-		if (!status.equals(Environment.MEDIA_MOUNTED)) {
+	public static String getPicFromCamera(Activity activity,int CAMERA){
+		if (!UIHelper.isSdCardExist()) {
 			Toast.makeText(activity, "请检查您的SD卡", Toast.LENGTH_LONG).show();
 			return null;
 		}
-		File fileDic = new File(saveDirectory);
-		if(!fileDic.exists()){
-			fileDic.mkdirs();
+		File file = FileUtil.createCameraFile(activity, null);
+		if(file==null||!file.exists()){
+			return null;
 		}
-		File file = new File(fileDic, saveName);
 		Intent intent = new Intent();
 		Uri uri = Uri.fromFile(file);
 		intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);

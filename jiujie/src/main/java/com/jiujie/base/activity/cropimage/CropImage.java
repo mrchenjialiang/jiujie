@@ -43,9 +43,9 @@ public class CropImage
 	private int mWidth;
 	private int mHeight;
 	
-//	public CropImage(Context context, CropImageView imageView,Handler handler)
+//	public CropImage(Context activity, CropImageView imageView,Handler handler)
 //	{
-//		mContext = context;
+//		mContext = activity;
 //		mImageView = imageView;
 //		mImageView.setCropImage(this);
 //		mHandler = handler;

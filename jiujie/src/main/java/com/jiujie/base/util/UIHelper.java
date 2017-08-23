@@ -1,22 +1,29 @@
 package com.jiujie.base.util;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.Signature;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
@@ -29,16 +36,22 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +60,7 @@ import android.widget.Toast;
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.WaitingDialog;
+import com.jiujie.base.jk.InputAction;
 import com.jiujie.base.util.appupdate.NotificationUtil;
 
 import java.io.BufferedReader;
@@ -55,6 +69,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -65,13 +80,18 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 
 @SuppressWarnings("deprecation")
 @SuppressLint("SimpleDateFormat")
@@ -119,6 +139,16 @@ public class UIHelper {
             return info.versionName;
         } catch (Exception e) {
             return "1.0.0";
+        }
+    }
+
+    public static String getImei(Context context){
+        try {
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            return tm.getDeviceId();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -174,33 +204,9 @@ public class UIHelper {
         if(TextUtils.isEmpty(fileName)){
             return;
         }
-        File file = new File(fileDic);
-        if(!file.exists()){
-            boolean mkdirs = file.mkdirs();
-            if(!mkdirs){
-                UIHelper.showLog("writeStringToFile mkdirs File " + file.getPath() + " fail");
-                return;
-            }
-        }
-        file = new File(fileDic,fileName);
-
-        if(file.exists()) {
-            boolean delete = file.delete();
-            if(!delete){
-                UIHelper.showLog("writeStringToFile delete File " + file.getPath() + " fail");
-                return;
-            }
-        }
-        if(!file.exists()){
-            try {
-                boolean newFile = file.createNewFile();
-                if(!newFile){
-                    UIHelper.showLog("writeStringToFile newFile File " + file.getPath() + " fail");
-                    return;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        File file = FileUtil.createFile(fileDic, fileName);
+        if(file==null){
+            return;
         }
         FileOutputStream fos;
         try {
@@ -242,7 +248,7 @@ public class UIHelper {
      */
     public static boolean getNetWorkStatus(Context context) {
 //        boolean netStatus = false;
-//        ConnectivityManager cwjManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        ConnectivityManager cwjManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        cwjManager.getActiveNetworkInfo();
 //        if (cwjManager.getActiveNetworkInfo() != null) {
 //            netStatus = cwjManager.getActiveNetworkInfo().isAvailable();
@@ -254,6 +260,71 @@ public class UIHelper {
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static int getNetworkSimpleType(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+//                return "WIFI";
+                return 1;
+            } else {
+//                return "GPRS";
+                return 2;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 获取网络状态
+     */
+    public static String getNetworkType(Context context){
+        String strNetworkType = "";
+        ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()){
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI){
+                strNetworkType = "WIFI";
+            }else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
+                String _strSubTypeName = networkInfo.getSubtypeName();
+                // TD-SCDMA   networkType is 17
+                int networkType = networkInfo.getSubtype();
+                switch (networkType) {
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                    case TelephonyManager.NETWORK_TYPE_CDMA:
+                    case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    case TelephonyManager.NETWORK_TYPE_IDEN: //api<8 : replace by 11
+                        strNetworkType = "2G";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B: //api<9 : replace by 14
+                    case TelephonyManager.NETWORK_TYPE_EHRPD:  //api<11 : replace by 12
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:  //api<13 : replace by 15
+                        strNetworkType = "3G";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_LTE:    //api<11 : replace by 13
+                        strNetworkType = "4G";
+                        break;
+                    default:
+                        // http://baike.baidu.com/item/TD-SCDMA 中国移动 联通 电信 三种3G制式
+                        if (_strSubTypeName.equalsIgnoreCase("TD-SCDMA") || _strSubTypeName.equalsIgnoreCase("WCDMA") || _strSubTypeName.equalsIgnoreCase("CDMA2000")){
+                            strNetworkType = "3G";
+                        }else{
+                            strNetworkType = _strSubTypeName;
+                        }
+                        break;
+                }
+            }
+        }
+        return strNetworkType;
     }
 
     /**
@@ -806,7 +877,8 @@ public class UIHelper {
     public static void refreshSystemImage(Context context, File newImageFile) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri uri = Uri.fromFile(newImageFile);
+//            Uri uri = Uri.fromFile(newImageFile);
+            Uri uri = UriUtil.getUri(context,intent,newImageFile);
             intent.setData(uri);
             context.sendBroadcast(intent);
         } else {
@@ -941,7 +1013,7 @@ public class UIHelper {
         long blockSize = stat.getBlockSize();
         long totalBlocks = stat.getBlockCount();
         return blockSize * totalBlocks;
-//        return Formatter.formatFileSize(context, blockSize * totalBlocks);
+//        return Formatter.formatFileSize(activity, blockSize * totalBlocks);
     }
 
     /**
@@ -953,7 +1025,7 @@ public class UIHelper {
         long blockSize = stat.getBlockSize();
         long availableBlocks = stat.getAvailableBlocks();
         return blockSize * availableBlocks;
-//        return Formatter.formatFileSize(context, blockSize * availableBlocks);
+//        return Formatter.formatFileSize(activity, blockSize * availableBlocks);
     }
 
     /**
@@ -965,7 +1037,7 @@ public class UIHelper {
         long blockSize = stat.getBlockSize();
         long totalBlocks = stat.getBlockCount();
         return blockSize * totalBlocks;
-//        return Formatter.formatFileSize(context, blockSize * totalBlocks);
+//        return Formatter.formatFileSize(activity, blockSize * totalBlocks);
     }
 
     /**
@@ -977,7 +1049,7 @@ public class UIHelper {
         long blockSize = stat.getBlockSize();
         long availableBlocks = stat.getAvailableBlocks();
         return blockSize * availableBlocks;
-//        return Formatter.formatFileSize(context, blockSize * availableBlocks);
+//        return Formatter.formatFileSize(activity, blockSize * availableBlocks);
     }
 
     public static long getFileSize(File file){
@@ -1041,28 +1113,204 @@ public class UIHelper {
         }
         return false;
     }
+    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum) {
+        initRecyclerView(context, mRecyclerView, type, gNum,1);
+    }
 
     /**
      *  初始化RecyclerView
      * @param type 0:普通列表，1：普通GridView样式，2：瀑布流样式
      * @param gNum 如果type = 1 或 2，则该值表示列数
+     * @param orient 0:水平，1垂直
      */
-    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum) {
+    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum,int orient) {
         mRecyclerView.setHasFixedSize(true);
         if(type==0){
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(context.getApplicationContext());
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(context.getApplicationContext(),orient==0?LinearLayoutManager.HORIZONTAL:LinearLayoutManager.VERTICAL,false);
             mRecyclerView.setLayoutManager(mLayoutManager);
         }else if(type==1){
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(context.getApplicationContext(), gNum);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context.getApplicationContext(), gNum,orient==0?GridLayoutManager.HORIZONTAL:GridLayoutManager.VERTICAL,false);
             mRecyclerView.setLayoutManager(gridLayoutManager);
         }else{
             StaggeredGridLayoutManager staggeredGridLayoutManager =
-                    new StaggeredGridLayoutManager(gNum, LinearLayoutManager.VERTICAL);
+                    new StaggeredGridLayoutManager(gNum, orient==0?StaggeredGridLayoutManager.HORIZONTAL:StaggeredGridLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         }
         DefaultItemAnimator animator = new DefaultItemAnimator();
         animator.setSupportsChangeAnimations(false);
         mRecyclerView.setItemAnimator(animator);
+    }
+
+    /**
+     * 获取应用的签名
+     */
+    public static String getAPPSHA1Value() {
+        //获取包管理器
+        PackageManager pm = APP.getContext().getPackageManager();
+
+        //获取当前要获取 SHA1 值的包名，也可以用其他的包名，但需要注意，
+        //在用其他包名的前提是，此方法传递的参数 Context 应该是对应包的上下文。
+        String packageName = APP.getContext().getPackageName();
+
+        //返回包括在包中的签名信息
+        int flags = PackageManager.GET_SIGNATURES;
+
+        try {
+            //获得包的所有内容信息类
+            PackageInfo packageInfo = pm.getPackageInfo(packageName, flags);
+            //签名信息
+            Signature[] signatures = packageInfo.signatures;
+            byte[] cert = signatures[0].toByteArray();
+
+            //将签名转换为字节数组流
+            InputStream input = new ByteArrayInputStream(cert);
+
+            //证书工厂类，这个类实现了出厂合格证算法的功能
+            CertificateFactory cf = CertificateFactory.getInstance("X509");
+            X509Certificate c = (X509Certificate) cf.generateCertificate(input);
+            String hexString;
+            //加密算法的类，这里的参数可以使 MD4,MD5 等加密算法
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+
+            //获得公钥
+            byte[] publicKey = md.digest(c.getEncoded());
+
+            //字节到十六进制的格式转换
+            hexString = byte2HexFormatted(publicKey);
+            return hexString;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    //这里是将获取到得编码进行16 进制转换
+    private static String byte2HexFormatted(byte[] arr) {
+        StringBuilder str = new StringBuilder(arr.length * 2);
+        for (int i = 0; i <arr.length; i++) {
+            String h = Integer.toHexString(arr[i]);
+            int l =h.length();
+            if (l == 1)
+                h = "0" + h;
+            if (l > 2)
+                h = h.substring(l - 2, l);
+            str.append(h.toUpperCase());
+            if (i < (arr.length - 1))
+                str.append(':');
+        }
+        return str.toString();
+    }
+
+    public static void setEditTextAction(final Activity activity, final EditText editText, final InputAction inputAction){
+        editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH||actionId == EditorInfo.IME_ACTION_DONE||actionId == EditorInfo.IME_ACTION_UNSPECIFIED||actionId == EditorInfo.IME_ACTION_GO) {
+                    if(activity!=null) UIHelper.hidePan(activity);
+                    if(inputAction!=null) {
+                        Editable text = editText.getText();
+                        if(TextUtils.isEmpty(text.toString().trim())){
+                            inputAction.send("");
+                        }else{
+                            inputAction.send(editText.getText().toString().trim());
+                            editText.setSelection(text.length());
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    /**
+     * 获取视频的缩略图
+     * 先通过ThumbnailUtils来创建一个视频的缩略图，然后再利用ThumbnailUtils来生成指定大小的缩略图。
+     * 如果想要的缩略图的宽和高都小于MICRO_KIND，则类型要使用MICRO_KIND作为kind的值，这样会节省内存。
+     * @param videoPath 视频的路径
+     * width 指定输出视频缩略图的宽度
+     * height 指定输出视频缩略图的高度度
+     * kind 参照MediaStore.Images(Video).Thumbnails类中的常量MINI_KIND和MICRO_KIND。
+     *            其中，MINI_KIND: 512 x 384，MICRO_KIND: 96 x 96
+     *  指定大小的视频缩略图
+     */
+    public static void setVideoThumbLocal(String videoPath,ImageView imageView,int width,int height){
+        Bitmap bitmap;
+        // 获取视频的缩略图
+        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, MINI_KIND);
+        if(bitmap!= null){
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            imageView.setImageBitmap(bitmap);
+        }
+    }
+
+    /**
+     * 获取视频的预览图的方法要调用的方法
+     */
+    public static void setVideoThumbnail(final String url,final ImageView imageView){
+        if(TextUtils.isEmpty(url)||imageView==null)return;
+
+        final long tagStart = System.currentTimeMillis();
+        imageView.setTag(tagStart);
+        new AsyncTask<Void, Void, Bitmap>(){
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                return createVideoThumbnail(url);
+            }
+            @Override
+            protected void onPostExecute(Bitmap result) {
+                long tag = (long) imageView.getTag();
+                if(tag==tagStart&&result!=null){
+                    imageView.setImageBitmap(result);
+                }
+            };
+        }.execute();
+    }
+
+    /**
+     * 获取视频预览图
+     */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public static Bitmap createVideoThumbnail(String url) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            if (Build.VERSION.SDK_INT >= 14) {
+                retriever.setDataSource(url, new HashMap<String, String>());
+            } else {
+                retriever.setDataSource(url);
+            }
+            return retriever.getFrameAtTime();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        } finally {
+            try {
+                retriever.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        if (bitmap != null) {
+//            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+//                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+//        }
+//        return bitmap;
+    }
+
+    public static void setDialogNoDismissByTouchAndBackPress(Dialog dialog) {
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK){
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    public static boolean isSdCardExist(){
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
 }

@@ -86,6 +86,12 @@ public abstract class BaseActivity extends BaseTitleActivity {
 				System.out.println("mLoadingLine-click");
 			}
 		});
+		mTagLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				System.out.println("mTagLayout-click");
+			}
+		});
 		findViewById(R.id.base_hide_pan).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -157,5 +163,9 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		mLoadingLine.setVisibility(View.GONE);
 		mLoadingFail.setVisibility(View.GONE);
 		mTagLayout.setVisibility(View.GONE);
+	}
+
+	public LinearLayout getLoadingLine() {
+		return mLoadingLine;
 	}
 }

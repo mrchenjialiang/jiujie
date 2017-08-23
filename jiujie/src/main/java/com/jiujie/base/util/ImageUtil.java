@@ -4,21 +4,31 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.jiujie.base.jk.ICallbackSimple;
+import com.jiujie.base.model.Image;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +39,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -288,25 +302,15 @@ public class ImageUtil {
      * @param bitmap   要保存的图片
      */
     public void saveImageToLocalAsJpg(String fileDic, String fileName, Bitmap bitmap) {
-        if (!Environment.MEDIA_MOUNTED.equals(Environment
-                .getExternalStorageState())) {
+        if (!UIHelper.isSdCardExist()) {
             return;
         }
-        File dir = new File(fileDic);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                return;
-            }
-        }
-        File file = new File(fileDic, fileName);
         try {
-            if (!file.exists()) {
-                if (!file.createNewFile()) {
-                    return;
-                }
+            File file = FileUtil.createFile(fileDic, fileName);
+            if(file!=null){
+                FileOutputStream fos = new FileOutputStream(file);
+                bitmap.compress(CompressFormat.JPEG, 100, fos);
             }
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(CompressFormat.JPEG, 100, fos);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -317,25 +321,15 @@ public class ImageUtil {
      * @param bitmap   要保存的图片
      */
     public void saveImageToLocalAsPng(String fileDic, String fileName, Bitmap bitmap) {
-        if (!Environment.MEDIA_MOUNTED.equals(Environment
-                .getExternalStorageState())) {
+        if (!UIHelper.isSdCardExist()) {
             return;
         }
-        File dir = new File(fileDic);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                return;
-            }
-        }
-        File file = new File(fileDic, fileName);
         try {
-            if (!file.exists()) {
-                if (!file.createNewFile()) {
-                    return;
-                }
+            File file = FileUtil.createFile(fileDic, fileName);
+            if(file!=null){
+                FileOutputStream fos = new FileOutputStream(file);
+                bitmap.compress(CompressFormat.PNG, 100, fos);
             }
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(CompressFormat.PNG, 100, fos);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -416,5 +410,90 @@ public class ImageUtil {
             Log.e("ImageUtil", "getImageFromRes error:" + e.getMessage());
         }
         return bitmap;
+    }
+
+    public Bitmap cropImage(Bitmap bm,int resultWidth,int resultHeight,int fromLeft,int fromTop,int fromRight,int fromBottom){
+        Rect r = new Rect(fromLeft,fromTop,fromRight,fromBottom);
+        if(resultWidth<=0||resultHeight<=0){
+            return bm;
+        }
+        Bitmap croppedImage = Bitmap.createBitmap(resultWidth, resultHeight, Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(croppedImage);
+        Rect dstRect = new Rect(0, 0, resultWidth, resultHeight);
+        canvas.drawBitmap(bm, r, dstRect, null);
+        return croppedImage;
+    }
+
+    public void getAllImageFromLocal(final FragmentActivity activity, final ICallbackSimple<Map<String,Image>> callback){
+        final String[] IMAGE_PROJECTION = {
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media._ID };
+
+        activity.getSupportLoaderManager().restartLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                return new CursorLoader(activity,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
+                        IMAGE_PROJECTION[4]+">0 AND "+IMAGE_PROJECTION[3]+"=? OR "+IMAGE_PROJECTION[3]+"=? ",
+                        new String[]{"image/jpeg", "image/png"}, IMAGE_PROJECTION[2] + " DESC");
+            }
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                Map<String,Image> imageMap = new LinkedHashMap<>();
+                if (data != null) {
+                    if (data.getCount() > 0) {
+                        data.moveToFirst();
+
+                        Image allImageImage = new Image();
+                        String allImagePath = Environment.getExternalStorageDirectory()+"";
+                        allImageImage.setPath(allImagePath);
+                        allImageImage.setName("全部照片");
+                        allImageImage.setDir(true);
+                        List<Image> allImageImageList = new ArrayList<>();
+                        allImageImage.setImageList(allImageImageList);
+                        imageMap.put(allImagePath,allImageImage);
+
+                        do{
+                            String path = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
+                            String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
+                            if(!fileExist(path)){continue;}
+                            File dirFile = new File(path).getParentFile();
+                            if(dirFile==null||!dirFile.exists())continue;
+                            String dirPath = dirFile.getAbsolutePath();
+                            if(!imageMap.containsKey(dirPath)){
+                                Image image = new Image();
+                                image.setPath(dirPath);
+                                image.setName(dirFile.getName());
+                                image.setDir(true);
+                                imageMap.put(dirPath,image);
+                            }
+                            Image imageDir = imageMap.get(dirPath);
+                            List<Image> imageList = imageDir.getImageList();
+                            if(imageList==null){
+                                imageList = new ArrayList<>();
+                            }
+                            Image image = new Image();
+                            image.setPath(path);
+                            image.setName(name);
+                            imageList.add(image);
+                            allImageImageList.add(image);
+                            imageDir.setImageList(imageList);
+                        }while(data.moveToNext());
+                    }
+                }
+                callback.onSucceed(imageMap);
+            }
+
+            private boolean fileExist(String path) {
+                return !TextUtils.isEmpty(path) && new File(path).exists();
+            }
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+            }
+        });
     }
 }

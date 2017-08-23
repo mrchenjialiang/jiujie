@@ -143,8 +143,7 @@ public class CropImageActivity extends BaseActivity implements OnClickListener, 
 	}
 
 	@Override
-	public void onClick(View v)
-	{
+	public void onClick(View v){
 		int id = v.getId();
 		if (id == R.id.gl_modify_avatar_cancel) {
 			//    		mCrop.cropCancel();
@@ -209,6 +208,11 @@ public class CropImageActivity extends BaseActivity implements OnClickListener, 
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	protected String getPageName() {
+		return "裁剪图片";
 	}
 
 }

@@ -45,7 +45,7 @@ public class JJColorTextView extends TextView{
     private void init(Context context, AttributeSet attrs) {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 //        if(attrs!=null){
-//            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JJSimpleButton);
+//            TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.JJSimpleButton);
 //
 //            //获取自定义属性和默认值
 //            bgColor_n = a.getColor(R.styleable.JJSimpleButton_bgColor_n, getBgColor_n());

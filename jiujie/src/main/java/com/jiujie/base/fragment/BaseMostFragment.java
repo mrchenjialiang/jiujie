@@ -24,6 +24,10 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
         PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    public String getClassName(){
+        return this.getClass().getName();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -41,7 +45,9 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
     }
 
     public String getPageName(){
-        return "未定义";
+        String className = getClassName();
+        if(className.contains("."))className = className.substring(className.lastIndexOf(".")+1);
+        return className;
     }
 
 }

@@ -39,7 +39,7 @@ public class SharePHelper {
 	}
 
 	public String getDataCachePath() {
-//		context.getFilesDir().getPath()
+//		activity.getFilesDir().getPath()
 //		/data/data/com.jiujie.cs/files
 		return "/data/data/" + context.getPackageName() + "/shared_prefs/"+getFileName()+".xml";
 	}

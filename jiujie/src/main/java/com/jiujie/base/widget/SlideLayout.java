@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +15,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
@@ -118,6 +118,24 @@ public class SlideLayout extends FrameLayout {
 					if(horizontalScrollView.getScrollX()>0){
 						return super.onInterceptTouchEvent(ev);
 					}
+				}else if(touchView instanceof RecyclerView){
+					//RecyclerView判断不出touchView是RecyclerView
+
+//					RecyclerView recyclerView = (RecyclerView) touchView;
+//					RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+//					if(layoutManager instanceof LinearLayoutManager){
+//						LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+//						int orientation = linearLayoutManager.getOrientation();
+//						if(orientation==0){
+//							return super.onInterceptTouchEvent(ev);
+//						}
+//					}else if(layoutManager instanceof StaggeredGridLayoutManager){
+//						StaggeredGridLayoutManager linearLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+//						int orientation = linearLayoutManager.getOrientation();
+//						if(orientation==0){
+//							return super.onInterceptTouchEvent(ev);
+//						}
+//					}
 				}else{
 					if(touchView instanceof TextView||touchView instanceof ImageView){
 

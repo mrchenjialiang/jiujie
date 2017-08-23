@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#ffffff</color>
-    <color name="white1">#F6F6F6</color>
-    <color name="white2">#efeff4</color>
+    <color name="white1">#1affffff</color>
+    <color name="white2">#32ffffff</color>
+    <color name="white3">#4dffffff</color>
+    <color name="white4">#66ffffff</color>
+    <color name="white5">#80ffffff</color>
+    <color name="white6">#99ffffff</color>
+    <color name="white7">#b3ffffff</color>
+    <color name="white8">#ccffffff</color>
+    <color name="white9">#e6ffffff</color>
     <color name="black">#000000</color>
-    <color name="black1">#464646</color>
+    <color name="black1">#1a000000</color>
+    <color name="black2">#32000000</color>
+    <color name="black3">#4d000000</color>
+    <color name="black4">#66000000</color>
+    <color name="black5">#80000000</color>
+    <color name="black6">#99000000</color>
+    <color name="black7">#b3000000</color>
+    <color name="black8">#cc000000</color>
+    <color name="black9">#e6000000</color>
     <color name="black_tab">#212121</color>
     <color name="trans">#00000000</color>
     <color name="trans_8">#80000000</color>
@@ -15,7 +30,9 @@
     <color name="gray1">#dddddd</color>
 
 
-    <color name="line">#c1c1c1</color>
+    <color name="line">#D9D9D9</color>
+    <color name="line_dark">#c1c1c1</color>
+    <color name="line_light">@color/app_bg</color>
     <color name="app_bg">#e5e5e5</color>
 
     <color name="title_bg">#df3031</color>

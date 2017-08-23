@@ -1,6 +1,7 @@
 package com.jiujie.base.util;
 
 import android.app.Activity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,8 @@ import android.view.View;
 
 import com.jiujie.base.R;
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
+import com.jiujie.base.jk.LoadStatus;
+import com.jiujie.base.jk.OnScrollPositionListener;
 import com.jiujie.base.jk.OnScrolledListen;
 import com.jiujie.base.jk.Refresh;
 
@@ -31,6 +34,7 @@ public class RecyclerViewUtil {
     private boolean isLoadingData;
     private boolean isEnd;
     private boolean isFooterEnable = true;
+    private int advanceSize;
 
     public RecyclerViewUtil(Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter,int type,int num,View header){
         this.mActivity = mActivity;
@@ -107,6 +111,10 @@ public class RecyclerViewUtil {
         if(mSwipeRefreshWidget!=null) mSwipeRefreshWidget.setEnabled(isEnable);
     }
 
+    public void setAdvanceSize(int advanceSize){
+        this.advanceSize = advanceSize;
+    }
+
     private void init() {
         initRecyclerView();
         if(adapter!=null)
@@ -114,7 +122,7 @@ public class RecyclerViewUtil {
         setReadMore();
 
         if(mSwipeRefreshWidget!=null){
-            mSwipeRefreshWidget.setColorSchemeColors(mActivity.getResources().getColor(R.color.title_bg));
+            mSwipeRefreshWidget.setColorSchemeColors(ContextCompat.getColor(mActivity,R.color.title_bg));
             mSwipeRefreshWidget.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -129,38 +137,13 @@ public class RecyclerViewUtil {
 
         mRecyclerView.clearOnScrollListeners();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int lastVisibleItem;
+            int lastVisiblePosition;
             long time = 0;
+            int firstVisibleItemPosition;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(lastVisibleItem + 1 == adapter.getItemCount()){
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if(!isFooterEnable)return;
-
-                        long current = System.currentTimeMillis();
-                        if(current-time<10){
-                            time = current;
-                            return;
-                        }
-                        time = current;
-
-                        if(!isEnd){
-                            if (refresh != null&&!isLoadingData) {
-                                refresh.loadMore();
-                            }
-                            setReadMore();
-                        }else{
-                            setReadEnd();
-                        }
-                    }else{
-                        if(isEnd){
-                            setReadEnd();
-                        }else{
-                            setReadMore();
-                        }
-                    }
-                }
+                checkLoadMore();
             }
 
             @Override
@@ -169,16 +152,55 @@ public class RecyclerViewUtil {
                 RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
                 if(layoutManager instanceof LinearLayoutManager){
                     LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                    lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition();
+                    firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
                 }else if(layoutManager instanceof StaggeredGridLayoutManager){
                     StaggeredGridLayoutManager layoutManager1 = (StaggeredGridLayoutManager) layoutManager;
                     int[] lastPositions = new int[layoutManager1.getSpanCount()];
                     layoutManager1.findLastCompletelyVisibleItemPositions(lastPositions);
-                    lastVisibleItem = findMax(lastPositions);
+                    lastVisiblePosition = findMax(lastPositions);
+                    int[] firstPositions = new int[layoutManager1.getSpanCount()];
+                    layoutManager1.findFirstVisibleItemPositions(firstPositions);
+                    firstVisibleItemPosition = findMin(firstPositions);
                 }
                 if(onScrolledListen!=null)onScrolledListen.onScrolled(recyclerView,dx,dy);
+                if(onScrollPositionListener!=null)onScrollPositionListener.onScroll(firstVisibleItemPosition, lastVisiblePosition);
+
+                checkLoadMore();
+            }
+
+            private void checkLoadMore() {
+                if(adapter instanceof BaseRecyclerViewAdapter &&!isEnd){
+                    BaseRecyclerViewAdapter mAdapter = (BaseRecyclerViewAdapter) adapter;
+                    if(mAdapter.getCount()>0){
+                        if(mAdapter.getLastPosition() + 1 >= adapter.getItemCount()- advanceSize) {
+                            if (!isFooterEnable) return;
+
+                            long current = System.currentTimeMillis();
+                            if (current - time < 10) {
+                                time = current;
+                                return;
+                            }
+                            time = current;
+
+                            if (refresh != null && !isLoadingData) {
+                                refresh.loadMore();
+                                isLoadingData = true;
+                            }
+                            setReadMore();
+                        }
+                    }
+                }else{
+                    setReadEnd();
+                }
             }
         });
+    }
+
+    private OnScrollPositionListener onScrollPositionListener;
+
+    public void setOnScrollPositionListener(OnScrollPositionListener onScrollPositionListener) {
+        this.onScrollPositionListener = onScrollPositionListener;
     }
 
     //To find the maximum value in the array
@@ -191,13 +213,26 @@ public class RecyclerViewUtil {
         }
         return max;
     }
+    private int findMin(int[] firstPositions) {
+        int min = firstPositions[0];
+        for (int value : firstPositions) {
+            if (value < min) {
+                min = value;
+            }
+        }
+        return min;
+    }
 
     public void isLoadingData(boolean isLoadingData) {
         this.isLoadingData = isLoadingData;
     }
 
-    public void isEnd(boolean isEnd) {
+    public void setEnd(boolean isEnd) {
         this.isEnd = isEnd;
+    }
+
+    public boolean isEnd(){
+        return isEnd;
     }
 
     public void setOnScrolledListen(OnScrolledListen onScrolledListen) {
@@ -236,6 +271,12 @@ public class RecyclerViewUtil {
         }
     }
 
+    public void setReadFail(){
+        if(adapter!=null&&adapter instanceof BaseRecyclerViewAdapter){
+            ((BaseRecyclerViewAdapter) adapter).setReadFail();
+        }
+    }
+
     public void setFooterEnable(boolean isFooterEnable){
         this.isFooterEnable = isFooterEnable;
     }
@@ -251,16 +292,49 @@ public class RecyclerViewUtil {
     }
 
     public void notifyDataSetChanged(){
+        notifyDataSetChanged(false);
+    }
+
+    public void notifyDataSetChanged(boolean isForceNotifyAll){
         if(adapter!=null){
-            if(adapter instanceof BaseRecyclerViewAdapter){
-                ((BaseRecyclerViewAdapter) adapter).notifyDataSetChanged1();
-            }else{
+            if(isForceNotifyAll){
                 adapter.notifyDataSetChanged();
+            }else{
+                if(adapter instanceof BaseRecyclerViewAdapter){
+                    ((BaseRecyclerViewAdapter) adapter).notifyDataSetChanged1();
+                }else{
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
 
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
+    }
+
+    public void setLoadDataStart(int type, LoadStatus loadStatus) {
+        isLoadingData(true);
+        if(type==0){
+            loadStatus.setLoading();
+            setEnd(false);
+        }else if(type==1){
+            setRefreshing(true);
+            setEnd(false);
+        }else if(type==2){
+            setReadMore();
+        }
+    }
+
+    public void setLoadDataEnd(int type, LoadStatus loadStatus) {
+        isLoadingData(false);
+        if(type==0){
+            loadStatus.setLoadingEnd();
+        }else if(type==1){
+            setRefreshing(false);
+        }
+        if(isEnd)setReadEnd();
+        else setReadMore();
+        notifyDataSetChanged(type==0||type==1);
     }
 }

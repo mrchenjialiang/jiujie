@@ -1,7 +1,9 @@
 package com.jiujie.base;
 
 import android.content.Context;
+import android.os.Build;
 
+import com.jiujie.base.util.UIHelper;
 import com.umeng.analytics.MobclickAgent;
 
 
@@ -17,6 +19,8 @@ public class APP {
     public static boolean isDeBug;
     public static String defaultDoMain;
     private static Context context;
+    private static int statusBarHeightByReadR;
+    private static int titleHeight;
 
     public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug){
         APP.context = context;
@@ -43,5 +47,29 @@ public class APP {
 
     public static Context getContext() {
         return context;
+    }
+
+    public static void setContext(Context context) {
+        APP.context = context;
+    }
+
+    public static boolean isTitleContainStatusBar(){
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    }
+
+    public static int getStatusBarHeight(){
+        if(statusBarHeightByReadR!=0){
+            return statusBarHeightByReadR;
+        }
+        statusBarHeightByReadR = UIHelper.getStatusBarHeightByReadR(getContext());
+        return statusBarHeightByReadR;
+    }
+
+    public static int getTitleHeight(){
+        if(titleHeight!=0){
+            return titleHeight;
+        }
+        titleHeight = getContext().getResources().getDimensionPixelOffset(R.dimen.height_of_title);
+        return titleHeight;
     }
 }

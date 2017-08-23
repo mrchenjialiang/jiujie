@@ -70,7 +70,7 @@
 //	 */
 //	public void setLoadDataEnd(int type){
 //		recyclerViewUtil.isLoadingData(false);
-//		recyclerViewUtil.isEnd(isEnd);
+//		recyclerViewUtil.setEnd(setEnd);
 //		if(type==0){
 //			setLoadingEnd();
 //		}else if(type==1){

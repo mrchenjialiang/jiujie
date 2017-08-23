@@ -18,6 +18,7 @@ import com.jiujie.base.jk.UpdateListen;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.MyHandler;
 import com.jiujie.base.util.UIHelper;
+import com.jiujie.base.util.UriUtil;
 
 import java.io.File;
 
@@ -103,6 +104,7 @@ public class UpdateManager implements MyHandlerInterface {
 								Intent intent = new Intent();
 								intent.setAction("android.intent.action.VIEW");
 								Uri content_url = Uri.parse(TextUtils.isEmpty(downLoadPageUrl)?appUrl:downLoadPageUrl);
+
 								intent.setData(content_url);
 								mActivity.startActivity(intent);
 							}
@@ -263,8 +265,9 @@ public class UpdateManager implements MyHandlerInterface {
 		}
 		// 通过Intent安装APK文件
 		Intent i = new Intent(Intent.ACTION_VIEW);
-		i.setDataAndType(Uri.parse("file://" + apkFile.toString()),
-				"application/vnd.android.package-archive");
+//		Uri uri = Uri.parse("file://" + apkFile.toString());
+		Uri uri = UriUtil.getUri(mActivity,i,apkFile);
+		i.setDataAndType(uri,"application/vnd.android.package-archive");
 //		mActivity.startActivity(i);
 		mActivity.startActivityForResult(i, UpdateAppRequestCode);
 		notificationUtil.clearNotification();

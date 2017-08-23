@@ -1,11 +1,14 @@
 package com.jiujie.base.adapter;
 
+import android.animation.Animator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import com.jiujie.base.BaseRecyclerViewFooter;
 import com.jiujie.base.R;
@@ -28,9 +31,13 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 
     private final int Footer_Status_Loading = 0;
     private final int Footer_Status_Load_End = 1;
+    private final int Footer_Status_Load_Fail = 2;
     private int footerStatus;
     private boolean isFooterEnable = getFooterEnable();
     private int oldItemCount;
+    private int mDuration = 300;
+    private Interpolator mInterpolator = new LinearInterpolator();
+    private int mLastPosition = -1;
 
     public void notifyDataSetChanged1(){
         int itemCount = getItemCount();
@@ -38,7 +45,11 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             notifyDataSetChanged();
         }else{
             int startPosition = oldItemCount -1;
-            notifyItemRangeChanged(startPosition, itemCount);
+            for (int position = startPosition;position<itemCount;position++){
+                notifyItemInserted(position++);
+            }
+
+//            notifyItemRangeChanged(startPosition, itemCount);
         }
         oldItemCount = itemCount;
     }
@@ -53,6 +64,14 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             count++;
         }
         return count;
+    }
+
+    public boolean isFullLine(int position){
+        return getItemViewType(position)<0;
+    }
+
+    public View getHeader() {
+        return header;
     }
 
     public abstract int getCount();
@@ -91,6 +110,26 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             }
             onBindItemViewHolder(holder, p);
         }
+
+        int adapterPosition = holder.getAdapterPosition();
+        if (adapterPosition > mLastPosition) {
+            Animator[] itemViewAnim = getItemViewAnim(holder.itemView);
+            if(itemViewAnim!=null){
+                for (Animator anim : itemViewAnim) {
+                    anim.setDuration(mDuration).start();
+                    anim.setInterpolator(mInterpolator);
+                }
+            }
+            mLastPosition = adapterPosition;
+        }
+    }
+
+    public int getLastPosition(){
+        return mLastPosition;
+    }
+
+    public Animator[] getItemViewAnim(View view){
+        return null;
     }
 
     @Override
@@ -155,6 +194,9 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
                    case Footer_Status_Load_End:
                        footer.setReadEnd();
                        break;
+                   case Footer_Status_Load_Fail:
+                       footer.setReadFail();
+                       break;
                }
            }
            return footerViewHolder;
@@ -174,15 +216,30 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     }
 
     public final void setReadEnd(){
+        if(footerStatus==Footer_Status_Load_End){
+            return;
+        }
         footerStatus = Footer_Status_Load_End;
         if(footer!=null){
             footer.setReadEnd();
         }
     }
     public final void setReadMore(){
+        if(footerStatus==Footer_Status_Loading){
+            return;
+        }
         footerStatus = Footer_Status_Loading;
         if(footer!=null){
             footer.setReadMore();
+        }
+    }
+    public final void setReadFail(){
+        if(footerStatus==Footer_Status_Loading){
+            return;
+        }
+        footerStatus = Footer_Status_Load_Fail;
+        if(footer!=null){
+            footer.setReadFail();
         }
     }
 

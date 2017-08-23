@@ -1,5 +1,6 @@
 package com.jiujie.base.widget;
 
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +11,7 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
 import com.jiujie.base.R;
+import com.jiujie.base.util.UIHelper;
 
 
 /**
@@ -34,6 +36,16 @@ public class TouchLayout extends FrameLayout{
     private int childHeight;
     private ValueAnimator scrollAnimator;
     private boolean isOpen;
+    private OnTouchListen onTouchListen;
+
+    public void setOnTouchListen(OnTouchListen onTouchListen) {
+        this.onTouchListen = onTouchListen;
+    }
+
+    public interface OnTouchListen{
+        void onClose();
+        void onOpen();
+    }
 
     public TouchLayout(Context context) {
         super(context);
@@ -109,6 +121,7 @@ public class TouchLayout extends FrameLayout{
                 downY = finalDownY = event.getRawY();
                 isPanDuan = false;
                 isShouldDoTouch = false;
+                currentMoveTime = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
                 float currentY = event.getRawY();
@@ -126,9 +139,12 @@ public class TouchLayout extends FrameLayout{
                         }
                     }
                 }
+
                 if(isShouldDoTouch){
                     downX = currentX;
                     downY = currentY;
+                    lastMoveTime = currentMoveTime;
+                    currentMoveTime = System.currentTimeMillis();
                     if (style == STYLE_TOP || style == STYLE_BOTTOM) {
                         if (Math.abs(deltaY) > Math.abs(deltaX)) {
                             moveYSum += deltaY;
@@ -147,6 +163,7 @@ public class TouchLayout extends FrameLayout{
                                 }
                                 childView.layout(0, moveYSum + top - childHeight, childWidth, moveYSum + top);
                             }
+                            shouldMoveLength = (int) (200*deltaY/(currentMoveTime-lastMoveTime));
                         }
                     } else {
                         if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -167,6 +184,7 @@ public class TouchLayout extends FrameLayout{
                                 childView.layout(right + moveXSum, 0, right + moveXSum + childWidth, childHeight);
 //                            childView.layout(-moveXSum,0, -moveXSum+childWidth, childHeight);
                             }
+                            shouldMoveLength = (int) (200*deltaX/(currentMoveTime-lastMoveTime));
                         }
                     }
                 }
@@ -181,50 +199,56 @@ public class TouchLayout extends FrameLayout{
         return true;
     }
 
+    private long lastMoveTime,currentMoveTime;
+    private int shouldMoveLength;
+
     private void onTouchEnd(MotionEvent event) {
+        UIHelper.showLog("shouldMoveLength:"+shouldMoveLength);
         float moveY = event.getRawY() - finalDownY;
         float moveX = event.getRawX() - finalDownX;
         if(style==STYLE_TOP||style==STYLE_BOTTOM){
             if(Math.abs(moveY)>Math.abs(moveX)){
-                if(moveY>0){
-                    //向下滑动
-                    if(style == STYLE_BOTTOM){
-                        close();
-//                    startScroll(moveYSum,0);
-                    }else{
-                        open();
-//                    startScroll(moveYSum,childHeight);
-                    }
-                }else{
-                    if(style == STYLE_BOTTOM){
-                        open();
-//                    startScroll(moveYSum,-childHeight);
-                    }else{
-                        close();
-//                    startScroll(moveYSum,0);
-                    }
-                }
+                startScroll(moveYSum,moveYSum+shouldMoveLength);
+//                if(moveY>0){
+//                    //向下滑动
+//                    if(style == STYLE_BOTTOM){
+//                        close();
+////                    startScroll(moveYSum,0);
+//                    }else{
+//                        open();
+////                    startScroll(moveYSum,childHeight);
+//                    }
+//                }else{
+//                    if(style == STYLE_BOTTOM){
+//                        open();
+////                    startScroll(moveYSum,-childHeight);
+//                    }else{
+//                        close();
+////                    startScroll(moveYSum,0);
+//                    }
+//                }
             }
         }else{
             if(Math.abs(moveX)>Math.abs(moveY)){
-                if(moveX>0){
-                    //向右滑动
-                    if(style == STYLE_LEFT){
-                        open();
-//                    startScroll(moveXSum,childWidth);
-                    }else{
-                        close();
-//                    startScroll(moveYSum,0);
-                    }
-                }else{
-                    if(style == STYLE_LEFT){
-                        close();
-//                    startScroll(moveYSum,0);
-                    }else{
-                        open();
-//                    startScroll(moveYSum,-childWidth);
-                    }
-                }
+                startScroll(moveXSum,moveXSum+shouldMoveLength);
+//                if(moveX>0){
+//                    //向右滑动
+//                    if(style == STYLE_LEFT){
+//                        open();
+////                    startScroll(moveXSum,childWidth);
+//                    }else{
+//                        close();
+////                    startScroll(moveYSum,0);
+//                    }
+//                }else{
+//                    if(style == STYLE_LEFT){
+//                        close();
+////                    startScroll(moveYSum,0);
+//                    }else{
+//                        open();
+////                    startScroll(moveYSum,-childWidth);
+//                    }
+//                }
             }
         }
     }
@@ -240,6 +264,7 @@ public class TouchLayout extends FrameLayout{
             startScroll(moveXSum,-childWidth);
         }
         isOpen = true;
+        if(onTouchListen!=null)onTouchListen.onOpen();
     }
 
     public void close(){
@@ -253,17 +278,30 @@ public class TouchLayout extends FrameLayout{
             startScroll(moveXSum,0);
         }
         isOpen = false;
+        if(onTouchListen!=null)onTouchListen.onClose();
     }
 
     public boolean isOpen() {
         return isOpen;
     }
 
-    private void startScroll(float startValue, final float endValue){
+    private void startScroll(float startValue, float endValue){
+        if(endValue>childHeight){
+            endValue = childHeight;
+        }
+        if(endValue<-childHeight){
+            endValue = -childHeight;
+        }
         if(scrollAnimator!=null&&scrollAnimator.isRunning()){
             scrollAnimator.cancel();
         }
         scrollAnimator = ValueAnimator.ofFloat(startValue, endValue);
+//        scrollAnimator.setInterpolator(new TimeInterpolator() {
+//            @Override
+//            public float getInterpolation(float input) {
+//                return 0;
+//            }
+//        });
         final float allTime = 200;
         float time;
         if(style==STYLE_TOP||style==STYLE_BOTTOM){

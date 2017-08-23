@@ -3,6 +3,8 @@ package com.jiujie.base;
 import android.view.View;
 import android.widget.TextView;
 
+import com.jiujie.base.util.UIHelper;
+
 
 /**
  * 列表页的底部加载中、加载完
@@ -10,13 +12,13 @@ import android.widget.TextView;
 public class BaseRecyclerViewFooter {
 
 	private View footer,loadingLine;
-	private TextView loadingText,loadEndText,prepareText;
+	private TextView loadingText,loadEndText, loadFailText;
 	public BaseRecyclerViewFooter(View footer){
 		this.footer = footer;
 		loadingLine = footer.findViewById(R.id.lf_loading_line);
 		loadingText = (TextView) footer.findViewById(R.id.lf_loading_text);
 		loadEndText = (TextView) footer.findViewById(R.id.lf_load_end_text);
-		prepareText = (TextView) footer.findViewById(R.id.lf_prepare_text);
+		loadFailText = (TextView) footer.findViewById(R.id.lf_load_fail);
 	}
 
 	/**
@@ -26,7 +28,7 @@ public class BaseRecyclerViewFooter {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.VISIBLE);
 		loadEndText.setVisibility(View.GONE);
-		prepareText.setVisibility(View.GONE);
+		loadFailText.setVisibility(View.GONE);
 	}
 
 	/**
@@ -36,17 +38,18 @@ public class BaseRecyclerViewFooter {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.GONE);
 		loadEndText.setVisibility(View.VISIBLE);
-		prepareText.setVisibility(View.GONE);
+		loadFailText.setVisibility(View.GONE);
 	}
 
 	/**
-	 * 显示准备加载下一页
+	 * 显示加载错误
 	 */
-	public void setPrepare() {
+	public void setReadFail() {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.GONE);
 		loadEndText.setVisibility(View.GONE);
-		prepareText.setVisibility(View.VISIBLE);
+		loadFailText.setVisibility(View.VISIBLE);
+		UIHelper.showLog("setReadFail");
 	}
 
 

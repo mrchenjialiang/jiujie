@@ -2,12 +2,12 @@ package com.jiujie.base.http.rx;
 
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.http.okhttp.LoggerInterceptor;
 import com.jiujie.base.jk.ICallback;
-import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
@@ -40,8 +40,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class BaseHttpMethods<T> {
 
-    public T httpService;
-    public final OkHttpClient okHttpClient;
+    protected T httpService;
+    private final OkHttpClient okHttpClient;
 
     protected BaseHttpMethods() {
         if (TextUtils.isEmpty(getBaseUrl())) {
@@ -91,7 +91,7 @@ public abstract class BaseHttpMethods<T> {
                             .header("Cache-Control", CacheControl.FORCE_NETWORK.toString())
                             .build();
                 }
-//                if (isNetworkConnected(context)) {
+//                if (isNetworkConnected(activity)) {
 ////                    int maxAge = 60 * 60;// 有网 就1个小时可用
 //                    int maxAge = 2;// 有网 就2秒可用
 //                    return response.newBuilder()
@@ -105,8 +105,12 @@ public abstract class BaseHttpMethods<T> {
 //                }
             }
         });
-        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(APP.getContext())+"httpCache/");
-        builder .cache(new Cache(cacheFile, 30 * 1024 * 1024));//最大 30m
+        //data下
+        Cache cache = new Cache(getHttpCacheFile(), getMaxCacheSize());
+        builder.cache(cache);
+        //sd卡下
+//        File cacheFile = new File(ImageUtil.instance().getCacheSDDic(APP.getContext())+"httpCache/");
+//        builder.cache(new Cache(cacheFile, 30 * 1024 * 1024));//最大 30m
 
         okHttpClient = builder.build();
         Retrofit retrofit = new Retrofit.Builder()
@@ -119,6 +123,29 @@ public abstract class BaseHttpMethods<T> {
                 .build();
 
         httpService = retrofit.create(getServiceClass());
+
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+//        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+//        filter.addAction("android.net.wifi.STATE_CHANGE");
+//        APP.getContext().registerReceiver(new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                reset();
+//            }
+//        },filter);
+
+    }
+
+    public abstract void reset();
+
+    protected int getMaxCacheSize() {
+        return 1024 * 1024 * 30;
+    }
+
+    @NonNull
+    public File getHttpCacheFile() {
+        return new File(APP.getContext().getCacheDir(), "HttpCache");
     }
 
     public Converter.Factory getConverterFactory() {
@@ -273,7 +300,7 @@ public abstract class BaseHttpMethods<T> {
         });
     }
 
-    private String getGetUrl(String url, Map<String, Object> paramMap) {
+    public String getGetUrl(String url, Map<String, Object> paramMap) {
         if (paramMap != null && paramMap.size() > 0) {
             StringBuilder sb = new StringBuilder(url);
             sb.append("?");

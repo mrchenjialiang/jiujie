@@ -2,12 +2,14 @@ package com.jiujie.base.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jiujie.base.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,13 +75,14 @@ public class AutoFillLineViewGroup extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (getChildCount() > 0) {
+        List<View> visibleChildList = getVisibleChildList();
+        if (visibleChildList.size() > 0) {
             int paddingLeft = getPaddingLeft();
             int paddingTop = getPaddingTop();
             int left, top = 0, right = 0, bottom;
 
-            for (int i = 0; i < getChildCount(); i++) {
-                View child = getChildAt(i);
+            for (int i = 0; i < visibleChildList.size(); i++) {
+                View child = visibleChildList.get(i);
                 if (i % lineNum == 0) {
                     //一行第一个
                     left = paddingLeft;
@@ -94,6 +97,18 @@ public class AutoFillLineViewGroup extends ViewGroup {
         }
     }
 
+    @NonNull
+    private List<View> getVisibleChildList() {
+        List<View> visibleChildList = new ArrayList<>();
+        for (int i = 0; i< getChildCount(); i++){
+            View child = getChildAt(i);
+            if(child.getVisibility()!=GONE){
+                visibleChildList.add(child);
+            }
+        }
+        return visibleChildList;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -101,6 +116,8 @@ public class AutoFillLineViewGroup extends ViewGroup {
 //        MeasureSpec.EXACTLY:1073741824
 //        MeasureSpec.AT_MOST:-2147483648
 //        MeasureSpec.UNSPECIFIED:0
+
+        List<View> visibleChildList = getVisibleChildList();
 
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -110,7 +127,7 @@ public class AutoFillLineViewGroup extends ViewGroup {
 
         int width;
         int height = getPaddingBottom() + getPaddingTop();
-        if (getChildCount() == 0) {
+        if (visibleChildList.size() == 0) {
             if (widthMode == MeasureSpec.AT_MOST) {
                 //wrap_content
                 width = getPaddingLeft() + getPaddingRight();
@@ -119,15 +136,15 @@ public class AutoFillLineViewGroup extends ViewGroup {
             }
             setMeasuredDimension(width, height);
         } else {
-            View child = getChildAt(0);
-            childHeight = child.getMeasuredHeight();
-            childWidth = child.getMeasuredWidth();
+            View firstVisibleChild = visibleChildList.get(0);
+            childHeight = firstVisibleChild.getMeasuredHeight();
+            childWidth = firstVisibleChild.getMeasuredWidth();
             if (childWidth * lineNum + getPaddingLeft() + getPaddingRight() + (lineNum - 1) * spacing > widthSize) {
                 int resultChildWidth = (widthSize - ((lineNum - 1) * spacing + getPaddingLeft() + getPaddingRight())) / lineNum;
                 if (resultChildWidth > 0) {
                     childWidth = resultChildWidth;
-                    for (int i=0;i<getChildCount();i++){
-                        View childAt = getChildAt(i);
+                    for (int i = 0; i< visibleChildList.size(); i++){
+                        View childAt = visibleChildList.get(i);
                         LayoutParams lp = childAt.getLayoutParams();
                         lp.width = childWidth;
                         childAt.setLayoutParams(lp);
@@ -136,11 +153,11 @@ public class AutoFillLineViewGroup extends ViewGroup {
             } else {
                 spacing = (widthSize - (childWidth * lineNum + getPaddingLeft() + getPaddingRight())) / (lineNum - 1);
             }
-            int lineCount = getChildCount() / lineNum + (getChildCount() % lineNum == 0 ? 0 : 1);
+            int lineCount = visibleChildList.size() / lineNum + (visibleChildList.size() % lineNum == 0 ? 0 : 1);
             height += childHeight * lineCount;
             height += lineSpacing * (lineCount - 1);
             if (widthMode == MeasureSpec.AT_MOST) {
-                int showLineNum = Math.min(lineNum, getChildCount());
+                int showLineNum = Math.min(lineNum, visibleChildList.size());
                 width = getPaddingLeft() + getPaddingRight() + showLineNum * childWidth + spacing * (showLineNum - 1);
             } else {
                 width = widthSize;

@@ -18,24 +18,24 @@
 // */
 //public class HttpMethods extends BaseHttpMethods<HttpService>{
 //
-//    private final Context context;
+//    private final Context activity;
 //    private Cookie SESSION_COOKIE;
 //    private static HttpMethods httpMethods;
 //
-//    protected HttpMethods(Context context) {
-//        this.context = context.getApplicationContext();
+//    protected HttpMethods(Context activity) {
+//        this.activity = activity.getApplicationContext();
 //    }
 //
-//    public static HttpMethods instance(Context context){
+//    public static HttpMethods instance(Context activity){
 //        if(httpMethods ==null){
-//            httpMethods = new HttpMethods(context);
+//            httpMethods = new HttpMethods(activity);
 //        }
 //        return httpMethods;
 //    }
 //
 //    public void logoff() {
 //        SESSION_COOKIE = null;
-//        SharePHelper.instance(context).remove("LoginCookie");
+//        SharePHelper.instance(activity).remove("LoginCookie");
 //    }
 //
 //    @Override
@@ -68,7 +68,7 @@
 //                    if (path.contains("/api/app-login")) {
 //                        SESSION_COOKIE = cookie;
 //                        MyCookie myCookie = new MyCookie(cookie.name(), cookie.value(), cookie.expiresAt(), cookie.domain(), cookie.path(), cookie.secure(), cookie.httpOnly(), cookie.hostOnly(), cookie.persistent());
-//                        SharePHelper.instance(context).saveObject("LoginCookie",myCookie);
+//                        SharePHelper.instance(activity).saveObject("LoginCookie",myCookie);
 //                    }
 //                }
 //            }
@@ -83,7 +83,7 @@
 //        }
 //        List<Cookie> cookies = new ArrayList<>();
 //        if(SESSION_COOKIE==null){
-//            MyCookie myCookie = SharePHelper.instance(context).readObject("LoginCookie");
+//            MyCookie myCookie = SharePHelper.instance(activity).readObject("LoginCookie");
 //            if(myCookie!=null){
 //                SESSION_COOKIE = myCookie.toCookie();
 //            }

@@ -1,73 +1,98 @@
-/*******************************************************************************
- * Copyright 2011, 2012 Chris Banes.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *******************************************************************************/
 package com.jiujie.base.activity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.R;
-import com.jiujie.base.util.ImageUtil;
-import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.glide.GlideUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-
-
 public class ImageViewPagerActivity extends BaseActivity {
 
-	private ArrayList<String> dataList = new ArrayList<>();
-	private Dialog waitingDialog;
+	protected ArrayList<String> imageList = new ArrayList<>();
+	protected ViewPager mViewPager;
+	private int index;
+	protected TextView mTvTitle;
+	private SamplePagerAdapter adapter;
+
+	public static void launch(Activity activity, int index, List<String> imageList){
+		Intent intent = new Intent(activity, ImageViewPagerActivity.class);
+		intent.putExtra("index",index);
+		intent.putExtra("imageList",new ArrayList<>(imageList));
+		activity.startActivity(intent);
+		activity.overridePendingTransition(R.anim.center_0_to_max, R.anim.alpha_null);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initUI();
+		getIntentData();
+		initData();
+	}
 
-		waitingDialog = UIHelper.getWaitingDialog(mActivity);
-		ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
-
+	protected void getIntentData() {
 		Intent intent = getIntent();
-		String currentUrl = intent.getStringExtra("url");
-		dataList = intent.getStringArrayListExtra("urlList");
-		int currentPosition = dataList.indexOf(currentUrl);
-		if(currentUrl!=null&&dataList.size()>0){
-			mViewPager.setAdapter(new SamplePagerAdapter());
-			mViewPager.setCurrentItem(currentPosition);
+		index = intent.getIntExtra("index",0);
+		imageList = intent.getStringArrayListExtra("imageList");
+		if(index <0){
+			index = 0;
 		}
-		mViewPager.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-				UIHelper.setJumpAnimation(mActivity, 2);
+		if(index > imageList.size()-1){
+			index = imageList.size()-1;
+		}
+	}
+
+	protected void initUI() {
+		mViewPager = (ViewPager) findViewById(R.id.iv_ViewPager);
+		View mTitleLayout = findViewById(R.id.iv_title_layout);
+		boolean showTitleLayout = isShowTitleLayout();
+		if(showTitleLayout){
+			mTitleLayout.setVisibility(View.VISIBLE);
+			if(APP.isTitleContainStatusBar()){
+				mTitleLayout.setPadding(0,APP.getStatusBarHeight(),0,0);
 			}
-		});
+			mTvTitle = (TextView) findViewById(R.id.iv_title);
+			findViewById(R.id.iv_back).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					finish(true);
+				}
+			});
+			View mBtnDel = findViewById(R.id.iv_delete);
+			OnClickListener delAction = getDelAction();
+			if(delAction==null){
+				mBtnDel.setVisibility(View.GONE);
+			}else{
+				mBtnDel.setVisibility(View.VISIBLE);
+				mBtnDel.setOnClickListener(delAction);
+			}
+		}else{
+			mTitleLayout.setVisibility(View.GONE);
+		}
+	}
+
+	protected OnClickListener getDelAction(){
+		return null;
+	}
+
+	protected boolean isShowTitleLayout(){
+		return true;
 	}
 
 	@Override
@@ -77,79 +102,45 @@ public class ImageViewPagerActivity extends BaseActivity {
 
 	@Override
 	public int getLayoutId() {
-		return R.layout.activity_view_pager;
+		return R.layout.activity_image_viewpager;
 	}
 
 	@Override
 	public void initData() {
+		if(imageList.size()>0){
+			adapter = new SamplePagerAdapter();
+			mViewPager.setAdapter(adapter);
+			if(index >0) mViewPager.setCurrentItem(index,false);
+		}
+		mViewPager.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		mTvTitle.setText("(" + (index + 1) + "/" + imageList.size() + ")");
+		mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+			@Override
+			public void onPageSelected(int position) {
+				super.onPageSelected(position);
+				index = position;
+				mTvTitle.setText("(" + (position + 1) + "/" + imageList.size() + ")");
+			}
+		});
+	}
 
+	protected int getCurrentIndex(){
+		return index;
 	}
 
 	class SamplePagerAdapter extends PagerAdapter {
 		@Override
 		public int getCount() {
-			return dataList==null?0:dataList.size();
+			return ImageViewPagerActivity.this.getCount();
 		}
 		@Override
 		public View instantiateItem(ViewGroup container, final int position) {
-			if(position>=dataList.size()){
-				return null;
-			}
-
-			View layout = getLayoutInflater().inflate(R.layout.rela_viewpager, container,false);
-			final PhotoView photoView = (PhotoView) layout.findViewById(R.id.rela_viewpager_photoView);
-
-			GlideUtil.instance().setDefaultNoCenterCropImage(mActivity, dataList.get(position), photoView);
-
-
-			photoView.setOnLongClickListener(new View.OnLongClickListener() {
-				AlertDialog alertDialog;
-				@Override
-				public boolean onLongClick(View v) {
-					if(alertDialog==null){
-						alertDialog = new AlertDialog.Builder(v.getContext()).setItems(new String[]{"保存到手机"}, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-								waitingDialog.show();
-								final ImageUtil imageUtil = ImageUtil.instance();
-								final String imageLocalDic = imageUtil.getImageLocalDic(mActivity);
-								final String imageName = imageUtil.getImagePngName();
-								new AsyncTask<Void,Void,Void>(){
-									@Override
-									protected Void doInBackground(Void... params) {
-										Bitmap bitmap = ImageUtil.instance().getImageBitmapFromNet(mActivity, dataList.get(position));
-										imageUtil.saveImageToLocalAsJpg(imageLocalDic, imageName,bitmap);
-										return null;
-									}
-
-									@Override
-									protected void onPostExecute(Void aVoid) {
-										super.onPostExecute(aVoid);
-										waitingDialog.dismiss();
-										UIHelper.showToastShort(mActivity,"图片已保存至"+imageLocalDic+imageName);
-									}
-								}.execute();
-							}
-						}).create();
-					}
-					alertDialog.show();
-					return false;
-				}
-			});
-
-			photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
-				@Override
-				public void onPhotoTap(View arg0, float arg1, float arg2) {
-//					System.out.println("photoView被点击了");
-					mActivity.finish();
-					UIHelper.setJumpAnimation(mActivity, 2);
-				}
-			});
-
-			container.addView(layout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-			return layout;
+			return getItemView(container, position);
 		}
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
@@ -164,10 +155,42 @@ public class ImageViewPagerActivity extends BaseActivity {
 			return POSITION_NONE;
 		}
 	}
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		UIHelper.setJumpAnimation(mActivity, 2);
+
+	protected int getCount() {
+		return imageList ==null?0: imageList.size();
 	}
 
+	@NonNull
+	protected View getItemView(ViewGroup container, int position) {
+		View layout = getLayoutInflater().inflate(R.layout.rela_viewpager, container,false);
+		final PhotoView photoView = (PhotoView) layout.findViewById(R.id.rela_viewpager_photoView);
+		GlideUtil.instance().setDefaultImage(mActivity,getUrl(position), photoView,R.drawable.trans,false,true,null);
+		photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+            @Override
+            public void onPhotoTap(View arg0, float arg1, float arg2) {
+                finish(true);
+            }
+        });
+		container.addView(layout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		return layout;
+	}
+
+	protected String getUrl(int position) {
+		return imageList.get(position);
+	}
+
+	protected void finish(boolean isFinishByClick){
+		finish();
+		if(isFinishByClick)
+			overridePendingTransition(R.anim.alpha_null, R.anim.zoom_out_exit);
+	}
+
+	protected void notifyDataSetChanged(){
+		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	protected String getPageName() {
+		return "看大图";
+	}
 }

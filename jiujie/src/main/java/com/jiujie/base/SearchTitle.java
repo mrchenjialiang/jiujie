@@ -16,10 +16,10 @@ import com.jiujie.base.util.UIHelper;
 public class SearchTitle {
 
 	private Activity activity;
-	private EditText mSearchText;
+	private EditText mSearchEd;
 	private View mTitleView;
-	private View mLeftBtn;
-	private View mSearchBtn;
+	private View mBtnBack;
+	private View mBtnSearch;
 
 	public SearchTitle(Activity activity) {
 		this.activity = activity;
@@ -28,13 +28,13 @@ public class SearchTitle {
 
 	private void initUI() {
 		mTitleView = activity.findViewById(R.id.ts_base_title);
-		mLeftBtn = activity.findViewById(R.id.ts_title_back);
-		mSearchBtn = activity.findViewById(R.id.ts_title_search);
-		mSearchText = (EditText) activity.findViewById(R.id.ts_title_search_text);
+		mBtnBack = activity.findViewById(R.id.ts_btn_back);
+		mBtnSearch = activity.findViewById(R.id.ts_btn_search);
+		mSearchEd = (EditText) activity.findViewById(R.id.ts_ed_text);
 	}
 
 	public EditText getSearchText() {
-		return mSearchText;
+		return mSearchEd;
 	}
 
 	public void setTitleHide(){
@@ -45,7 +45,7 @@ public class SearchTitle {
 	}
 	
 	public void setLeftButtonBack(){
-		if(mLeftBtn!=null)mLeftBtn.setOnClickListener(new OnClickListener() {
+		if(mBtnBack !=null) mBtnBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(activity!=null) activity.finish();
@@ -54,32 +54,32 @@ public class SearchTitle {
 	}
 	
 	public void setSearchAction(final InputAction inputAction){
-		if(mSearchBtn!=null)mSearchBtn.setOnClickListener(new OnClickListener() {
+		if(mBtnSearch !=null) mBtnSearch.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(activity!=null) UIHelper.hidePan(activity);
 				if(inputAction!=null) {
-					Editable text = mSearchText.getText();
-					if(TextUtils.isEmpty(text)){
+					Editable text = mSearchEd.getText();
+					if(TextUtils.isEmpty(text.toString().trim())){
 						inputAction.send("");
 					}else{
-						inputAction.send(mSearchText.getText().toString());
+						inputAction.send(mSearchEd.getText().toString().trim());
 					}
 				}
 			}
 		});
 		
-		mSearchText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+		mSearchEd.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH||actionId == EditorInfo.IME_ACTION_DONE||actionId == EditorInfo.IME_ACTION_UNSPECIFIED||actionId == EditorInfo.IME_ACTION_GO) {
     				if(activity!=null) UIHelper.hidePan(activity);
                 	if(inputAction!=null) {
-    					Editable text = mSearchText.getText();
-    					if(TextUtils.isEmpty(text)){
+    					Editable text = mSearchEd.getText();
+    					if(TextUtils.isEmpty(text.toString().trim())){
     						inputAction.send("");
     					}else{
-    						inputAction.send(mSearchText.getText().toString());
+    						inputAction.send(mSearchEd.getText().toString().trim());
     					}
     				}
                 }
@@ -90,7 +90,7 @@ public class SearchTitle {
 	}
 
 	public void setHintText(String hint) {
-		mSearchText.setHint(hint);
+		mSearchEd.setHint(hint);
 	}
 
 }

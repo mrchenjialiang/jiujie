@@ -1,7 +1,6 @@
 package com.jiujie.base.http.okhttp;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.jiujie.base.APP;
@@ -32,7 +31,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * author : Created by ChenJiaLiang on 2016/6/24.
@@ -41,7 +39,14 @@ import okhttp3.ResponseBody;
 public abstract class MyOkHttpUtil {
 
     private final OkHttpClient okHttpClient;
+    private final boolean isNeedDecode;
+
     protected MyOkHttpUtil(){
+        this(false);
+    }
+
+    protected MyOkHttpUtil(boolean isNeedDecode){
+        this.isNeedDecode = isNeedDecode;
         //手动创建一个OkHttpClient并设置超时时间
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(getConnectTimeOutSecond(), TimeUnit.SECONDS);
@@ -77,7 +82,7 @@ public abstract class MyOkHttpUtil {
                             .header("Cache-Control", CacheControl.FORCE_NETWORK.toString())
                             .build();
                 }
-//                if (isNetworkConnected(context)) {
+//                if (isNetworkConnected(activity)) {
 ////                    int maxAge = 60 * 60;// 有网 就1个小时可用
 //                    int maxAge = 2;// 有网 就2秒可用
 //                    return response.newBuilder()
@@ -108,14 +113,16 @@ public abstract class MyOkHttpUtil {
             StringBuilder sb = new StringBuilder(url);
             sb.append("?");
             for (String key : paramMap.keySet()) {
+                if(paramMap.get(key)==null){
+                    continue;
+                }
                 if (sb.length() != (url.length() + 1)) {
                     sb.append("&");
                 }
                 try {
                     sb.append(key)
                             .append("=")
-                            .append(URLEncoder.encode(paramMap.get(key)
-                                    .toString(), "UTF-8"));
+                            .append(URLEncoder.encode(paramMap.get(key).toString(), "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -156,13 +163,15 @@ public abstract class MyOkHttpUtil {
                 if (activity != null && !activity.isFinishing() && callback != null) {
                     try {
                         if (response.isSuccessful()) {
-                            ResponseBody body = response.body();
-                            final String decode = UIHelper.decode(body.string());
-                            body.close();
+                            final String string = response.newBuilder().build().body().string();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(decode);
+                                    if(isNeedDecode){
+                                        callback.onSucceed(UIHelper.decode(string));
+                                    }else{
+                                        callback.onSucceed(string);
+                                    }
                                 }
                             });
                         } else {
@@ -189,9 +198,19 @@ public abstract class MyOkHttpUtil {
     /**
      * callBack in background thread
      */
-    public void httpGet1(final Context context, String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
+    public void httpGet1(String url, Map<String, Object> paramMap,final ICallback<String> callback) {
+        httpGet1(url,paramMap,null,callback);
+    }
+
+    /**
+     * callBack in background thread
+     */
+    public void httpGet1(String url, Map<String, Object> paramMap, String tag, final ICallback<String> callback) {
         Request.Builder builder = new Request.Builder();
-        builder.get().url(getGetUrl(url, paramMap)).tag(tag);
+        builder.get().url(getGetUrl(url, paramMap));
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
 
         Request request = builder.build();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -208,10 +227,12 @@ public abstract class MyOkHttpUtil {
             public void onResponse(Call call, final Response response) throws IOException {
                 try {
                     if (response.isSuccessful()) {
-                        ResponseBody body = response.body();
-                        final String decode = UIHelper.decode(body.string());
-                        callback.onSucceed(decode);
-                        body.close();
+                        String string = response.newBuilder().build().body().string();
+                        if(isNeedDecode){
+                            callback.onSucceed(UIHelper.decode(string));
+                        }else{
+                            callback.onSucceed(string);
+                        }
                     } else {
                         callback.onFail("服务器异常，请稍后再试");
                     }
@@ -244,6 +265,69 @@ public abstract class MyOkHttpUtil {
         okHttpClient.newCall(request).enqueue(callback);
     }
 
+    public void httpPost1(String url, Map<String, String> postParamMap,final ICallback<String> callback) {
+        httpPost(url, postParamMap, null, new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                String message = e.getMessage();
+                callback.onFail(TextUtils.isEmpty(message) ? "服务器异常，请稍后再试" : message);
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                try {
+                    if (response.isSuccessful()) {
+                        String string = response.newBuilder().build().body().string();
+                        if(isNeedDecode){
+                            callback.onSucceed(UIHelper.decode(string));
+                        }else{
+                            callback.onSucceed(string);
+                        }
+                    } else {
+                        callback.onFail("服务器异常，请稍后再试");
+                    }
+                } catch (Exception ex) {
+                    callback.onFail("服务器异常，请稍后再试");
+                }
+            }
+        });
+    }
+
+    /**
+     * 参数使用表单方式上传
+     * callback in background thread
+     */
+    public void httpPostForm(String url, Map<String, Object> postParamMap, String tag, Callback callback) {
+        RequestBody requestBody;
+        String result = "";
+        if (postParamMap != null) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, Object> entry : postParamMap.entrySet()) {
+                sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            }
+            if (postParamMap.size() > 0) {
+                result = sb.substring(0, sb.length() - 1);
+            }
+            MediaType FORM_CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+            requestBody = RequestBody.create(FORM_CONTENT_TYPE, result);
+        }else{
+            requestBody = new FormBody.Builder().build();
+        }
+
+        Request.Builder builder = new Request.Builder();
+        builder.url(url).post(requestBody);
+        if(!TextUtils.isEmpty(tag)){
+            builder.tag(tag);
+        }
+
+        Request request = builder.build();
+        okHttpClient.newCall(request).enqueue(callback);
+    }
+
+    public void httpPost(final Activity activity, String url, Map<String, String> postParamMap,final ICallback<String> callback) {
+        httpPost(activity,url,postParamMap,null,callback);
+    }
+
     public void httpPost(final Activity activity, String url, Map<String, String> postParamMap, String tag, final ICallback<String> callback) {
         httpPost(url, postParamMap, tag, new Callback() {
             @Override
@@ -265,13 +349,15 @@ public abstract class MyOkHttpUtil {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
-                            ResponseBody body = response.body();
-                            final String decode = UIHelper.decode(body.string());
-                            body.close();
+                            final String string = response.newBuilder().build().body().string();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(decode);
+                                    if(isNeedDecode){
+                                        callback.onSucceed(UIHelper.decode(string));
+                                    }else{
+                                        callback.onSucceed(string);
+                                    }
                                 }
                             });
                         } else {
@@ -358,15 +444,15 @@ public abstract class MyOkHttpUtil {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
-                            final String decode = response.newBuilder().build().body().string();
-//                            ResponseBody body = response.body();
-//                            final String decode = UIHelper.decode(body.string());
-                            UIHelper.showLog(decode);
-//                            body.close();
+                            final String string = response.newBuilder().build().body().string();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(decode);
+                                    if(isNeedDecode){
+                                        callback.onSucceed(UIHelper.decode(string));
+                                    }else{
+                                        callback.onSucceed(string);
+                                    }
                                 }
                             });
                         } else {
@@ -429,13 +515,15 @@ public abstract class MyOkHttpUtil {
                     try {
                         if (response.isSuccessful()) {
                             //这一步也是网络操作。。。
-                            ResponseBody body = response.body();
-                            final String decode = UIHelper.decode(body.string());
-                            body.close();
+                            final String string = response.newBuilder().build().body().string();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(decode);
+                                    if(isNeedDecode){
+                                        callback.onSucceed(UIHelper.decode(string));
+                                    }else{
+                                        callback.onSucceed(string);
+                                    }
                                 }
                             });
                         } else {

@@ -114,7 +114,7 @@ public class NotificationUtil {
         showNotification16(context, drawableId, firstContent, actionIntent, showTitle, showContent, notifyId);
 //		if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
 //		}else{
-//			showNotification11(context,drawableId,firstContent,actionIntent,showTitle,showContent,notifyId);
+//			showNotification11(activity,drawableId,firstContent,actionIntent,showTitle,showContent,notifyId);
 //		}
     }
 
@@ -157,7 +157,7 @@ public class NotificationUtil {
 //				.setStyle(textStyle) //4.1以后才有效 ，5.0测试一下，没啥效果。。。
                 .build();
 
-//		Notification notification = new Notification.Builder(context)
+//		Notification notification = new Notification.Builder(activity)
 //				.setContentTitle(showTitle)
 //				.setContentText(showContent)
 //				.setSmallIcon(drawableId)
@@ -184,10 +184,10 @@ public class NotificationUtil {
     }
 
 //	@TargetApi(11)
-//	private static void showNotification11(Context context, int drawableId,
+//	private static void showNotification11(Context activity, int drawableId,
 //										String firstContent, Intent actionIntent, String showTitle,
 //										String showContent,int notifyId) {
-//		NotificationManager mNotificationManager = (NotificationManager) context
+//		NotificationManager mNotificationManager = (NotificationManager) activity
 //				.getSystemService(Context.NOTIFICATION_SERVICE);
 //		Notification notification = new Notification(drawableId, // 通知图片
 //				firstContent, System.currentTimeMillis());
@@ -195,10 +195,10 @@ public class NotificationUtil {
 //		notification.flags = Notification.FLAG_AUTO_CANCEL;
 //
 //		actionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+//		PendingIntent contentIntent = PendingIntent.getActivity(activity, 0,
 //				actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 //		//过时
-//		notification.setLatestEventInfo(context, showTitle, showContent,contentIntent);
+//		notification.setLatestEventInfo(activity, showTitle, showContent,contentIntent);
 //		mNotificationManager.notify(notifyId, notification);
 //	}
 }

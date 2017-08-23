@@ -17,17 +17,17 @@
 // */
 //public class HttpUtil extends MyOkHttpUtil{
 //
-//    private final Context context;
+//    private final Context activity;
 //    private Cookie SESSION_COOKIE;
 //    private static HttpUtil httpUtil;
 //
-//    private HttpUtil(Context context) {
-//        this.context = context;
+//    private HttpUtil(Context activity) {
+//        this.activity = activity;
 //    }
 //
-//    public static HttpUtil instance(Context context){
+//    public static HttpUtil instance(Context activity){
 //        if(httpUtil==null){
-//            httpUtil = new HttpUtil(context);
+//            httpUtil = new HttpUtil(activity);
 //        }
 //        return httpUtil;
 //    }
@@ -52,7 +52,7 @@
 //                    if (path.contains("/api/app-login")) {
 //                        SESSION_COOKIE = cookie;
 //                        MyCookie myCookie = new MyCookie(cookie.name(), cookie.value(), cookie.expiresAt(), cookie.domain(), cookie.path(), cookie.secure(), cookie.httpOnly(), cookie.hostOnly(), cookie.persistent());
-//                        SharePHelper.instance(context).saveObject("LoginCookie",myCookie);
+//                        SharePHelper.instance(activity).saveObject("LoginCookie",myCookie);
 //                    }
 //                }
 //            }
@@ -67,7 +67,7 @@
 //        }
 //        List<Cookie> cookies = new ArrayList<>();
 //        if(SESSION_COOKIE==null){
-//            MyCookie myCookie = SharePHelper.instance(context).readObject("LoginCookie");
+//            MyCookie myCookie = SharePHelper.instance(activity).readObject("LoginCookie");
 //            if(myCookie!=null){
 //                SESSION_COOKIE = myCookie.toCookie();
 //            }
@@ -80,6 +80,6 @@
 //
 //    public void logoff() {
 //        SESSION_COOKIE = null;
-//        SharePHelper.instance(context).remove("LoginCookie");
+//        SharePHelper.instance(activity).remove("LoginCookie");
 //    }
 //}

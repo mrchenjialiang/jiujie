@@ -108,13 +108,13 @@ public class WebFragment extends BaseFragment {
 //	/**
 //	 * 同步一下cookie
 //	 */
-//	public void synCookies(Context context, String url) {
+//	public void synCookies(Context activity, String url) {
 //		if(TextUtils.isEmpty(url)) return;
-//		PersistentCookieStore pcs = new PersistentCookieStore(context);
+//		PersistentCookieStore pcs = new PersistentCookieStore(activity);
 //		List<Cookie> cookies2 = pcs.getCookies();
 //		if(cookies2!=null){
 //			String cookies = cookies2.toString();
-//			CookieSyncManager.createInstance(context);
+//			CookieSyncManager.createInstance(activity);
 //			CookieManager cookieManager = CookieManager.getInstance();
 //			cookieManager.setAcceptCookie(true);
 //			cookieManager.removeSessionCookie();//移除

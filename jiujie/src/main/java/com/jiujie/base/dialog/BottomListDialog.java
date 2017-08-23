@@ -170,7 +170,7 @@ public class BottomListDialog extends BaseDialog {
 
     public void create(List<String> dataList){
         if(dataList==null||dataList.size()==0){
-            throw new NullPointerException("BottomListDialog create dataList should not be null or size==0");
+            throw new NullPointerException("BottomListDialog create imageList should not be null or size==0");
         }
         this.dataList = dataList;
         create(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM, R.style.BottomAlertAni);
@@ -178,7 +178,7 @@ public class BottomListDialog extends BaseDialog {
 
     public void create(String[] dataList){
         if(dataList==null||dataList.length==0){
-            throw new NullPointerException("BottomListDialog create dataList should not be null or size==0");
+            throw new NullPointerException("BottomListDialog create imageList should not be null or size==0");
         }
         this.dataList = Arrays.asList(dataList);
         create(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM, R.style.BottomAlertAni);

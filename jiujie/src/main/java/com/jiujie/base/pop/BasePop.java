@@ -3,7 +3,6 @@ package com.jiujie.base.pop;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,16 +11,19 @@ import android.widget.PopupWindow;
 
 import com.jiujie.base.jk.OnPopItemClickListen;
 import com.jiujie.base.jk.onShowHideListen;
+import com.jiujie.base.util.UIHelper;
 
 public abstract class BasePop extends PopupWindow {
-	
+
+	private final int height;
+	private final int width;
 	private boolean isInit = false;
-	public View layout;
 	private int x = -1;
 	private int y = -1;
 	private onShowHideListen listen;
-	public Activity context;
+	private Activity activity;
 	protected OnPopItemClickListen onItemClickListen;
+	private View layout;
 
 	public void setOnShowHideListen(onShowHideListen listen) {
 		this.listen = listen;
@@ -31,31 +33,27 @@ public abstract class BasePop extends PopupWindow {
 		this.onItemClickListen = onItemClickListen;
 	}
 	
-	public BasePop(Activity context){
-		super(context);
-		this.context = context;
-		init(context);
+	public BasePop(Activity activity, int width, int height){
+		super(activity);
+		this.activity = activity;
+		this.width = width;
+		this.height = height;
+		init(activity);
 	}
-	public BasePop(Activity context,View view, int width, int height){
-		super(view,width,height);
-		this.context = context;
-		init(view.getContext());
-	}
-	public BasePop(Activity context, AttributeSet attributeSet){
-		super(context, attributeSet);
-		this.context = context;
-		init(context);
+
+	public Activity getActivity() {
+		return activity;
 	}
 
 	private void init(Context context) {
 		layout = getLayout(context);
-		if(layout==null){
+		if(layout ==null){
 			layout = LayoutInflater.from(context).inflate(getLayoutId(), null);
 		}
-		if(layout==null){
+		if(layout ==null){
 			return;
 		}
-		initUI();
+		initUI(layout);
 
 		this.setContentView(layout);
 		this.setBackgroundDrawable(new BitmapDrawable());
@@ -65,9 +63,11 @@ public abstract class BasePop extends PopupWindow {
 			this.setSplitTouchEnabled(true);
 		}
 		isInit = true;
+		setWidth(width);
+		setHeight(height);
 	}
 
-	protected abstract void initUI();
+	protected abstract void initUI(View layout);
 
 	public abstract View getLayout(Context context);
 
@@ -78,38 +78,47 @@ public abstract class BasePop extends PopupWindow {
 		return super.getContentView();
 	}
 
-	/**
-	 * 设置显示在某个view之上
-	 */
-	public void showOnAboutView(View view,int width,int height){
+	public void showOnAboutView(View view){
 		if(!isInit){
 			throw new RuntimeException(this+"尚未初始化");
-		}else{
-			if(x<0&&y<0){
-				layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-				int popupHeight = layout.getMeasuredHeight();
-				int[] location = new int[2];
-				view.getLocationOnScreen(location);
-				this.setWidth(width);
-				this.setHeight(height);
-				x = location[0];
-				y = location[1]-popupHeight;
-				this.showAtLocation(view, Gravity.NO_GRAVITY, x,y);
-			}else{
-				this.showAtLocation(view, Gravity.NO_GRAVITY, x,y);
-			}
 		}
+
+		layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+		int height = layout.getMeasuredHeight();
+		int width = layout.getMeasuredWidth();
+
+		UIHelper.showLog("showOnAboutView layout width:"+width);
+		UIHelper.showLog("showOnAboutView layout getWidth():"+getWidth());
+		UIHelper.showLog("showOnAboutView layout layout.getWidth():"+layout.getWidth());
+		UIHelper.showLog("showOnAboutView layout height:"+height);
+		int[] location = new int[2];
+		view.getLocationOnScreen(location);
+		int x = location[0];
+		int y = location[1];
+		x = x - (width/2 - view.getWidth()/2);
+		y = y - height;
+		showAtLocation(view, Gravity.NO_GRAVITY, x,y);
 	}
-	
+
+	public void showOnBottomView(View view){
+		if(!isInit){
+			throw new RuntimeException(this+"尚未初始化");
+		}
+		layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+//		int height = layout.getMeasuredHeight();
+		float width = layout.getMeasuredWidth();
+		showAsDropDown(view, (int) - (width/2 - view.getWidth()/2 + 5),0);//老是会自己偏移了几个像素，我这里写5纠正
+	}
+
 	@Override
-	public void showAsDropDown(View anchor) {
-		super.showAsDropDown(anchor);
+	public void showAsDropDown(View view) {
+		super.showAsDropDown(view);
 		if(listen!=null)listen.show();
 	}
 	
 	@Override
-	public void showAsDropDown(View anchor, int x, int y) {
-		super.showAsDropDown(anchor, x, y);
+	public void showAsDropDown(View view, int x, int y) {
+		super.showAsDropDown(view, x, y);
 		if(listen!=null)listen.show();
 	}
 	

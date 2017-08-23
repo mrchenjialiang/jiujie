@@ -8,7 +8,7 @@
     <string name="app_name">base</string>
     <string name="list_footer_more">正在加载更多……</string>
     <string name="list_footer_end">已加载全部</string>
-    <string name="list_footer_prepare">松开即加载下一页</string>
+    <string name="list_footer_fail">加载失败，请重试</string>
 
     <!-- 点击看大图页面 -->
     <string name="menu_lock">锁定</string>

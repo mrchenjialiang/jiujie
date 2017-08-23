@@ -19,11 +19,11 @@ android {
             // 不显示Log
 //            buildConfigField "boolean", "isDeBug", "false"
             // 混淆 开关
-            minifyEnabled true
+            minifyEnabled false
             //zipAlign优化
-            zipAlignEnabled true
+            zipAlignEnabled false
             // 移除无用resource文件
-            shrinkResources true
+            shrinkResources false
             // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 //            //签名

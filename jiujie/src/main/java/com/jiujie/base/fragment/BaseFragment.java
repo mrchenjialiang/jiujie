@@ -1,7 +1,6 @@
 package com.jiujie.base.fragment;
 
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -10,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.Title;
+import com.jiujie.base.jk.OnTitleClickMoveToTopListen;
 import com.jiujie.base.util.UIHelper;
 
 public abstract class BaseFragment extends BaseMostFragment {
@@ -21,8 +22,8 @@ public abstract class BaseFragment extends BaseMostFragment {
 	public View mView;
 	private LinearLayout mLoadingLine,mLoadingFail;
 	private AnimationDrawable mLoadingAnimation;
-	private LinearLayout mBaseTitleTitleLayout;
-	private LinearLayout mBaseTitleContentLayout;
+	private LinearLayout mBaseTitleLayout;
+	private LinearLayout mBaseContentLayout;
 	private LinearLayout mTagLayout;
 	private final int Status_Loaded = 0;
 	private final int Status_Loading = 1;
@@ -57,19 +58,26 @@ public abstract class BaseFragment extends BaseMostFragment {
 			if(customTitleLayoutId==0){
 				customTitleLayoutId = R.layout.base_title;
 			}
-			View customTitle = LayoutInflater.from(mActivity).inflate(customTitleLayoutId, mBaseTitleTitleLayout, false);
-			mBaseTitleTitleLayout.addView(customTitle, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			View customTitle = LayoutInflater.from(mActivity).inflate(customTitleLayoutId, mBaseTitleLayout, false);
+			mBaseTitleLayout.addView(customTitle, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 			if(customTitleLayoutId== R.layout.base_title){
 				mTitle = new Title(mActivity,customTitle);
 			}
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-				int titleHeight = getResources().getDimensionPixelOffset(R.dimen.height_of_title);
-				int statusBarHeight = UIHelper.getStatusBarHeightByReadR(mActivity);
-				setViewHeight(customTitle, titleHeight+statusBarHeight);
-//					customTitle.setPadding(0,statusBarHeight,0,0);
+
+			if (APP.isTitleContainStatusBar()){
+				setViewHeight(customTitle, APP.getTitleHeight()+APP.getStatusBarHeight());
+			}
+			if(this instanceof OnTitleClickMoveToTopListen){
+				final OnTitleClickMoveToTopListen onTitleClickMoveToTopListen = (OnTitleClickMoveToTopListen) this;
+				mBaseTitleLayout.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						onTitleClickMoveToTopListen.moveToTop();
+					}
+				});
 			}
 		}else{
-			mBaseTitleTitleLayout.setVisibility(View.GONE);
+			mBaseTitleLayout.setVisibility(View.GONE);
 		}
 	}
 	
@@ -91,17 +99,21 @@ public abstract class BaseFragment extends BaseMostFragment {
 
 	public abstract int getLayoutId();
 
-	public LinearLayout getBaseTitleContentLayout() {
-		return mBaseTitleContentLayout;
+	public LinearLayout getBaseContentLayout() {
+		return mBaseContentLayout;
 	}
 
-	public LinearLayout getBaseTitleTitleLayout() {
-		return mBaseTitleTitleLayout;
+	public LinearLayout getBaseTitleLayout() {
+		return mBaseTitleLayout;
+	}
+
+	public LinearLayout getLoadingLine() {
+		return mLoadingLine;
 	}
 
 	protected void initView() {
-		mBaseTitleTitleLayout = (LinearLayout) mView.findViewById(R.id.base_title_title_layout);
-		mBaseTitleContentLayout = (LinearLayout) mView.findViewById(R.id.base_title_content_layout);
+		mBaseTitleLayout = (LinearLayout) mView.findViewById(R.id.base_title_title_layout);
+		mBaseContentLayout = (LinearLayout) mView.findViewById(R.id.base_title_content_layout);
 		
 		initBaseTitle();
 		initBaseContent();
@@ -118,7 +130,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 				LinearLayout.LayoutParams.MATCH_PARENT,
 				LinearLayout.LayoutParams.MATCH_PARENT);
 		contentView.setLayoutParams(lpContent);
-		mBaseTitleContentLayout.addView(contentView);
+		mBaseContentLayout.addView(contentView);
 	}
 
 	private void initLoading() {
@@ -144,6 +156,12 @@ public abstract class BaseFragment extends BaseMostFragment {
 			@Override
 			public void onClick(View v) {
 				System.out.println("mLoadingLine-click");
+			}
+		});
+		mTagLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				System.out.println("mTagLayout-click");
 			}
 		});
 		mView.findViewById(R.id.base_hide_pan).setOnClickListener(new View.OnClickListener() {
@@ -173,6 +191,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 	}
 
 	public void showTabLayout(boolean isShow){
+		UIHelper.showLog("showTabLayout:"+isShow);
 		if(isShow){
 			Status = Status_Tag;
 		}

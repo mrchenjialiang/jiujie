@@ -19,6 +19,7 @@ public abstract class BaseSimpleListFragment<T,V> extends BaseListFragment{
         public MyCallback(int type) {
             this.type = type;
             setLoadDataStart(type);
+//            setCanReadCache(type==0);
         }
 
         @Override
@@ -29,21 +30,31 @@ public abstract class BaseSimpleListFragment<T,V> extends BaseListFragment{
             List<V> list = analysisData(result);
             if(list!=null){
                 dataList.addAll(list);
-                isEnd = list.size()<size;
+//                setEnd(list.size()<size);
+                setEnd(list.size()<1);
             }else{
-                isEnd = true;
+                setEnd(true);
             }
             setLoadDataEnd(type);
         }
 
         @Override
         public void onFail(String error) {
-            setLoadDataEnd(type);
-
-            if(type==2){
+            if(type==0){
+                if(dataList.size()==0){
+                    setLoadingFail();
+                }else{
+                    setLoadingEnd();
+                }
+            }else if(type==2){
                 page--;
+                recyclerViewUtil.setReadFail();
+                notifyDataSetChanged();
+                setLoadDataEnd(type);
+            }else if(type==1){
+                recyclerViewUtil.setRefreshing(false);
+                UIHelper.showToastShort(mActivity,error);
             }
-            UIHelper.showToastShort(mActivity,error);
         }
     }
 

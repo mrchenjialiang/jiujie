@@ -38,7 +38,7 @@ public abstract class BaseDialog {
 		initUI(layout);
 
 		dialog = new Dialog(context, R.style.Dialog);
-//		dialog = new Dialog(context, R.style.bottom_dialog);
+//		dialog = new Dialog(activity, R.style.bottom_dialog);
 		Window dialogWindow = dialog.getWindow();
 		WindowManager.LayoutParams lp = dialogWindow.getAttributes();
 

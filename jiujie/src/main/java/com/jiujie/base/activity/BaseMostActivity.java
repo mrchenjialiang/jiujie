@@ -36,6 +36,10 @@ public abstract class BaseMostActivity extends AppCompatActivity{
 //        }
     }
 
+    public String getClassName(){
+        return this.getClass().getName();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -59,14 +63,24 @@ public abstract class BaseMostActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         UIHelper.hidePan(mActivity);
-        if(APP.isUseUMeng) MobclickAgent.onResume(this);
+        MobclickAgent.onResume(this);
+        if(APP.isUseUMeng) {
+            MobclickAgent.onPageStart(getPageName());
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         UIHelper.hidePan(mActivity);
-        if(APP.isUseUMeng) MobclickAgent.onPause(this);
+        MobclickAgent.onPause(this);
+        if(APP.isUseUMeng){
+            MobclickAgent.onPageEnd(getPageName());
+        }
+    }
+
+    protected String getPageName(){
+        return getClass().getSimpleName();
     }
 
 }

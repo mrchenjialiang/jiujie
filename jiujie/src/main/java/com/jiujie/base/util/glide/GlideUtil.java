@@ -10,6 +10,7 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -74,6 +75,10 @@ public class GlideUtil {
     }
 
     public void setDefaultNoCenterCropImage(Context context, String url, ImageView imageView) {
+        setDefaultNoCenterCropImage(context, url, imageView,null);
+    }
+
+    public void setDefaultNoCenterCropImage(Context context, String url, ImageView imageView,RequestListener<String, GlideDrawable> listener) {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.logo_gray)
@@ -81,8 +86,12 @@ public class GlideUtil {
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
+        if(listener!=null){
+            builder.listener(listener);
+        }
         builder.into(imageView);
     }
+
 
     public void setDefaultImage(Context context, String url, ImageView imageView,int width,int height) {
         DrawableRequestBuilder<String> builder = Glide.with(context)
@@ -101,6 +110,10 @@ public class GlideUtil {
         setDefaultImage(context,url,imageView,0,true,true,null);
     }
 
+    public void setDefaultImage(Context context, String url, ImageView imageView,RequestListener<String, GlideDrawable> listener) {
+        setDefaultImage(context,url,imageView,0,true,true,listener);
+    }
+
     public void setDefaultImage(Context context, String url, ImageView imageView,int defaultId) {
         setDefaultImage(context,url,imageView,defaultId,true,true,null);
     }
@@ -110,27 +123,31 @@ public class GlideUtil {
     }
 
     public void setDefaultImage(Context context, String url, ImageView imageView,int defaultId,boolean isCenterCrop,boolean isShowAnim,RequestListener<String, GlideDrawable> listener) {
-        if(defaultId<=0){
-            defaultId = R.drawable.logo_gray;
+        try {
+            if(defaultId<=0){
+                defaultId = R.drawable.logo_gray;
+            }
+            DrawableRequestBuilder<String> builder = Glide.with(context)
+                    .load(url)
+                    .placeholder(defaultId);
+            if(isCenterCrop){
+                builder.centerCrop();
+            }
+            if(isShowAnim){
+                builder.crossFade();
+            }else{
+                builder.dontAnimate();
+            }
+            if(listener!=null){
+                builder.listener(listener);
+            }
+            if (!isKeepInMemory) {
+                builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+            }
+            builder.into(imageView);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        DrawableRequestBuilder<String> builder = Glide.with(context)
-                .load(url)
-                .placeholder(defaultId);
-        if(isCenterCrop){
-            builder.centerCrop();
-        }
-        if(isShowAnim){
-            builder.crossFade();
-        }else{
-            builder.dontAnimate();
-        }
-        if(listener!=null){
-            builder.listener(listener);
-        }
-        if (!isKeepInMemory) {
-            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        builder.into(imageView);
     }
 
     public void setDefaultImage(Context context, String url, ImageView imageView,boolean isShowAnim) {
@@ -265,7 +282,7 @@ public class GlideUtil {
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
-                .transform(new GlideCircleTransform(context.getApplicationContext()))
+                .transform(new CenterCrop(context.getApplicationContext()), new GlideCircleTransform(context.getApplicationContext()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -276,7 +293,7 @@ public class GlideUtil {
         Glide.with(context)
                 .load(url)
                 .placeholder(defaultId)
-                .transform(new GlideCircleTransform(context.getApplicationContext()))
+                .transform(new CenterCrop(context.getApplicationContext()), new GlideCircleTransform(context.getApplicationContext()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -287,7 +304,7 @@ public class GlideUtil {
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
-                .transform(new GlideCircleTransform(context.getContext()))
+                .transform(new CenterCrop(context.getContext()), new GlideCircleTransform(context.getContext()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -298,7 +315,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
-                .transform(new GlideCircleTransform(context.getApplicationContext()))
+                .transform(new CenterCrop(context.getApplicationContext()), new GlideCircleTransform(context.getApplicationContext()))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -312,7 +329,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(activity)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
-                .transform(new GlideCircleTransform(activity.getApplicationContext()))
+                .transform(new CenterCrop(activity.getApplicationContext()), new GlideCircleTransform(activity.getApplicationContext()))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -326,7 +343,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(fragment)
                 .load(url)
                 .placeholder(R.drawable.circle_bg_gray)
-                .transform(new GlideCircleTransform(fragment.getActivity().getApplicationContext()))
+                .transform(new CenterCrop(fragment.getContext()), new GlideCircleTransform(fragment.getContext()))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -337,11 +354,33 @@ public class GlideUtil {
     }
 
     public void setConnerImage(Context context, String url, ImageView imageView, int dp) {
+        setConnerImage(context, url, imageView, dp,0);
+    }
+
+    public void setConnerImage(Context context, String url, ImageView imageView, int dp,int drawId) {
+        DrawableRequestBuilder<String> builder = Glide.with(context)
+                .load(url)
+                .placeholder(drawId==0?R.drawable.logo_gray_conner:drawId)
+                .transform(new CenterCrop(context), new GlideRoundTransform(context,dp))
+                .crossFade();
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder
+//                .centerCrop()//不能直接这样，否则会变成方形
+                .into(imageView);
+    }
+
+    public void setConnerImage(Context context, String url, ImageView imageView, int dp,boolean isCenterCrop) {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.logo_gray_conner)
-                .transform(new GlideRoundTransform(context.getApplicationContext(), dp))
                 .crossFade();
+        if(isCenterCrop){
+            builder.transform(new CenterCrop(context), new GlideRoundTransform(context,dp));
+        }else{
+            builder.transform(new GlideRoundTransform(context.getApplicationContext(), dp));
+        }
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
@@ -354,7 +393,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.logo_gray_conner)
-                .transform(new GlideRoundTransform(context.getApplicationContext(), dp,scaleHeight))
+                .transform(new CenterCrop(context), new GlideRoundTransform(context,dp,scaleHeight))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -368,7 +407,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(activity)
                 .load(url)
                 .placeholder(R.drawable.logo_gray_conner)
-                .transform(new GlideRoundTransform(activity.getApplicationContext(), dp))
+                .transform(new CenterCrop(activity), new GlideRoundTransform(activity,dp))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -382,7 +421,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(fragment)
                 .load(url)
                 .placeholder(R.drawable.logo_gray_conner)
-                .transform(new GlideRoundTransform(fragment.getActivity().getApplicationContext(), dp))
+                .transform(new CenterCrop(fragment.getContext()), new GlideRoundTransform(fragment.getContext(),dp))
                 .crossFade();
         if (!isKeepInMemory) {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -390,6 +429,13 @@ public class GlideUtil {
         builder
 //                .centerCrop()//不能这样，否则会变成方形
                 .into(imageView);
+    }
+
+    /**
+     * Must do on a background thread
+     */
+    public Bitmap getImage(Context context, String url, int width,int height) {
+        return getImage(context,url,true,true, width, height);
     }
 
     /**

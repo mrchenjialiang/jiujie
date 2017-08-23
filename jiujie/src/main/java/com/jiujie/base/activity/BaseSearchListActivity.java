@@ -23,4 +23,9 @@ public abstract class BaseSearchListActivity extends BaseListActivity{
 	public int getCustomTitleLayoutId() {
 		return R.layout.jiujie_title_search;
 	}
+
+	@Override
+	protected String getPageName() {
+		return "搜索";
+	}
 }

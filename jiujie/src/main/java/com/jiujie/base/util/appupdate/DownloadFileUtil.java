@@ -1,6 +1,8 @@
 package com.jiujie.base.util.appupdate;
 
 import com.jiujie.base.jk.DownloadFileListen;
+import com.jiujie.base.util.FileUtil;
+import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +45,8 @@ public class DownloadFileUtil {
                 mOkHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        if(downloadListen!=null)downloadListen.onFail(e.getMessage());
+                        UIHelper.showLog("DownFileUtil Exception " + e.getMessage());
+                        if(downloadListen!=null)downloadListen.onFail("下载失败");
                     }
 
                     @Override
@@ -53,19 +56,14 @@ public class DownloadFileUtil {
                         int len;
                         FileOutputStream fos = null;
                         try {
+                            File file = FileUtil.createFile(saveDir,saveName);
+                            if(file==null){
+                                if(downloadListen!=null)downloadListen.onFail("文件创建失败");
+                                return;
+                            }
+
                             is = response.body().byteStream();
                             long total = response.body().contentLength();
-                            File dirFile = new File(saveDir);
-                            // 判断文件目录是否存在
-                            if (!dirFile.exists()) {
-                                boolean isCreateFile = dirFile.mkdirs();
-                                if(!isCreateFile){
-
-                                    if(downloadListen!=null)downloadListen.onFail("文件创建失败");
-                                    return;
-                                }
-                            }
-                            File file = new File(saveDir, saveName);
                             fos = new FileOutputStream(file);
                             long sum = 0;
                             if(downloadListen!=null)downloadListen.onStart(total);
@@ -81,10 +79,11 @@ public class DownloadFileUtil {
                                 }
                             }
                             fos.flush();
-                            if(downloadListen!=null)downloadListen.onFinish(saveDir+saveName);
+                            if(downloadListen!=null)downloadListen.onFinish(new File(saveDir,saveName).getAbsolutePath());
                         } catch (Exception e) {
+                            UIHelper.showLog("DownFileUtil Exception " + e.getMessage());
                             e.printStackTrace();
-                            if(downloadListen!=null)downloadListen.onFail(e.getMessage());
+                            if(downloadListen!=null)downloadListen.onFail("下载失败");
                         } finally {
                             try {
                                 if (is != null) is.close();

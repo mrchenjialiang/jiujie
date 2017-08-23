@@ -8,6 +8,7 @@
         android:id="@+id/lf_loading_line"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         android:background="@android:color/transparent"
         android:gravity="center"
         android:orientation="horizontal" >
@@ -39,12 +40,12 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/lf_prepare_text"
+        android:id="@+id/lf_load_fail"
         android:layout_width="fill_parent"
         android:layout_height="40.0dip"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:text="@string/list_footer_prepare"
+        android:text="@string/list_footer_fail"
         android:textColor="#babec1"
         android:textSize="16.0sp"
         android:visibility="gone" />

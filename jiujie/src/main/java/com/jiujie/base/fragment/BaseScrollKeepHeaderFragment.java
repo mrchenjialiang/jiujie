@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.jiujie.base.R;
-import com.jiujie.base.fragment.BaseFragment;
 
 /**
  * @author Created by ChenJiaLiang on 2016/4/21.
@@ -16,11 +15,6 @@ import com.jiujie.base.fragment.BaseFragment;
 public abstract class BaseScrollKeepHeaderFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener, SwipeRefreshLayout.OnRefreshListener {
     private LinearLayout mMissLine,mKeepTopLine,mScrollLine;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
-
-    @Override
-    public boolean isShowTitle() {
-        return false;
-    }
 
     public void setRefreshing(boolean isRefreshing){
         mSwipeRefreshLayout.setRefreshing(isRefreshing);

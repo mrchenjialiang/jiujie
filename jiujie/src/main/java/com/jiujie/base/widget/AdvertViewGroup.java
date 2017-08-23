@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 
+import com.jiujie.base.R;
 import com.jiujie.base.jk.MyHandlerInterface;
 import com.jiujie.base.jk.OnItemClickListen;
 import com.jiujie.base.jk.OnMyPageChangeListener;
@@ -67,6 +68,8 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
         imageView2 = new ImageView(context);
         imageView1.setBackgroundResource(com.jiujie.base.R.drawable.logo_gray);
         imageView2.setBackgroundResource(com.jiujie.base.R.drawable.logo_gray);
+        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+        imageView2.setScaleType(ImageView.ScaleType.FIT_XY);
         addView(imageView1,LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         addView(imageView2,LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
     }
@@ -125,8 +128,8 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
      */
     public void setImageType(int imageType){
         this.imageType = imageType;
-        imageView1.setScaleType(imageType==0?ImageView.ScaleType.CENTER_CROP: ImageView.ScaleType.FIT_XY);
-        imageView2.setScaleType(imageType==0?ImageView.ScaleType.CENTER_CROP: ImageView.ScaleType.FIT_XY);
+//        imageView1.setScaleType(imageType==0?ImageView.ScaleType.CENTER_CROP: ImageView.ScaleType.FIT_XY);
+//        imageView2.setScaleType(imageType==0?ImageView.ScaleType.CENTER_CROP: ImageView.ScaleType.FIT_XY);
     }
 
     public void setDataList(List<String> dataList){
@@ -135,11 +138,11 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
             return;
         }
         if(dataList.size()==1){
-            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition), getCurrentImageView(),imageType==0,true);
+            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition),  getCurrentImageView(),R.drawable.trans,imageType==0,true,null);
             requestLayout();
             stopTime();
         }else{
-            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(0), getCurrentImageView(),imageType==0,true);
+            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(0), getCurrentImageView(),R.drawable.trans,imageType==0,true,null);
             prepareForLastBitmap();
             prepareForNextBitmap();
             moveX = 0;
@@ -396,7 +399,7 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
                 }
                 isTouching = false;
                 if(moveX!=0){
-                    if(Math.abs(moveX) >=getWidth()/2){
+                    if(Math.abs(moveX) >=getWidth()/3){
                         if(moveX>0){
                             startAnim(moveX,getWidth(),1);
                         }else{

@@ -38,6 +38,6 @@ public class URLSpan extends ClickableSpan {
                 Log.w("URLSpan", "Exception:" + e);
             }
         }
-//				UIHelper.setJumpAnimation(context, 1);
+//				UIHelper.setJumpAnimation(activity, 1);
     }
 }

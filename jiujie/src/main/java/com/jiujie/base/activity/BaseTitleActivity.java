@@ -1,6 +1,5 @@
 package com.jiujie.base.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.ActionBar;
@@ -10,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.jk.LoadStatus;
-import com.jiujie.base.util.UIHelper;
+import com.jiujie.base.jk.OnTitleClickMoveToTopListen;
 
 public abstract class BaseTitleActivity extends BaseSlideActivity implements LoadStatus {
 
@@ -120,13 +120,20 @@ public abstract class BaseTitleActivity extends BaseSlideActivity implements Loa
             }
             mBaseTitleTitleLayout.addView(customTitleView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                int titleHeight = isShowTitle()?getResources().getDimensionPixelOffset(R.dimen.height_of_title):0;
+            if (APP.isTitleContainStatusBar()){
 //                getDimension 获取绝对尺寸（"像素"单位，只是float）,
 //                getDimensionPixelSize是将getDimension获取的小数部分四舍五入，
 //                getDimensionPixelOffset是强制转换成int，即舍去小数部分
-                int statusBarHeight = UIHelper.getStatusBarHeightByReadR(mActivity);
-                setViewHeight(customTitleView, titleHeight+statusBarHeight);
+                setViewHeight(customTitleView, APP.getTitleHeight()+APP.getStatusBarHeight());
+            }
+            if(this instanceof OnTitleClickMoveToTopListen){
+                final OnTitleClickMoveToTopListen onTitleClickMoveToTopListen = (OnTitleClickMoveToTopListen) this;
+                mBaseTitleTitleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onTitleClickMoveToTopListen.moveToTop();
+                    }
+                });
             }
         }else{
             mBaseTitleTitleLayout.setVisibility(View.GONE);
