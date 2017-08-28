@@ -8,15 +8,15 @@
     <application >
 
         <!--7.0+在将文件提交给APP外使用时，需求Uri通过FileProvider。比如系统裁剪图片，比如安装-->
-        <provider
+        <!--<provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.xunrui.wallpaper.fileProvider"
+            android:authorities="com.jiujie.base.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
+        </provider>-->
 
         <meta-data
             android:name="com.jiujie.base.util.glide.GlideModuleMine"

@@ -11,7 +11,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
+//        multiDexEnabled true
     }
     buildTypes {
         //base_swipe_back 不能混淆，如需混淆，则要兼顾 类名、方法、参数---有public参数被引用

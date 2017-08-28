@@ -1,4 +1,4 @@
-package com.jiujie.base.util;
+﻿package com.jiujie.base.util;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -96,6 +96,7 @@ import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 @SuppressWarnings("deprecation")
 @SuppressLint("SimpleDateFormat")
 public class UIHelper {
+
 
     /**
      * 获取版本号
