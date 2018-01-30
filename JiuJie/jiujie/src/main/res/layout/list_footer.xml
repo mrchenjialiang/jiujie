@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent" >
+
+    <LinearLayout
+        android:id="@+id/lf_loading_line"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <com.jiujie.base.widget.RotateImageView
+            xmlns:jiujie="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/base_loading_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/loading_small"
+            jiujie:r_singleTime="150"
+            jiujie:r_num="12"
+            jiujie:r_isShun="false"/>
+
+        <TextView
+            android:id="@+id/lf_loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15.0dip"
+            android:text="@string/list_footer_more"
+            android:textColor="#babec1"
+            android:textSize="16.0sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lf_load_end_text"
+        android:layout_width="fill_parent"
+        android:layout_height="40.0dip"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/list_footer_end"
+        android:textColor="#babec1"
+        android:textSize="16.0sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/lf_load_fail"
+        android:layout_width="fill_parent"
+        android:layout_height="40.0dip"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/list_footer_fail"
+        android:textColor="#babec1"
+        android:textSize="16.0sp"
+        android:visibility="gone" />
+
+</RelativeLayout>

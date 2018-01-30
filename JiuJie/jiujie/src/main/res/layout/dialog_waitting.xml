@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:jiujie="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:background="@drawable/trans_5_conner_10"
+        android:gravity="center">
+
+        <com.jiujie.base.widget.RotateImageView
+            android:id="@+id/dialog_waitting_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerInside"
+            jiujie:r_singleTime="150"
+            jiujie:r_num="12"
+            jiujie:r_isShun="false"
+            android:src="@drawable/loading" />
+
+    </LinearLayout>
+
+</LinearLayout>

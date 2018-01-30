@@ -1,0 +1,81 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+//    useLibrary 'org.apache.http.legacy'
+//    /*友盟里还需要这个*/
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+        versionCode 1
+        versionName "1.0"
+//        multiDexEnabled true
+    }
+    buildTypes {
+        //base_swipe_back 不能混淆，如需混淆，则要兼顾 类名、方法、参数---有public参数被引用
+        release {
+            // 不显示Log
+//            buildConfigField "boolean", "isDeBug", "false"
+            // 混淆 开关
+            minifyEnabled false
+            //zipAlign优化
+            zipAlignEnabled false
+            // 移除无用resource文件
+            shrinkResources false
+            // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            //签名
+//            signingConfig signingConfigs.release
+        }
+        debug {
+            // 显示Log
+//            buildConfigField "boolean", "isDeBug", "true"
+            // 混淆 开关
+            minifyEnabled false
+            //zipAlign优化
+            zipAlignEnabled false
+            // 移除无用resource文件
+            shrinkResources false
+            // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
+        }
+    }
+    /*以下用于libs等类名包名重复问题*/
+    packagingOptions {
+        exclude('META-INF/NOTICE.txt')
+        exclude('META-INF/LICENSE.txt')
+    }
+
+    return void
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+
+    compile "${rootProject.ext.appcompat}"
+    compile "${rootProject.ext.recyclerview}"
+    compile "${rootProject.ext.design}"
+
+    compile "${rootProject.ext.okhttp3}"
+    compile "${rootProject.ext.glide}"
+    compile "${rootProject.ext.glide_transformations}"
+    compile "${rootProject.ext.rxjava}"
+    compile "${rootProject.ext.rxandroid}"
+    compile "${rootProject.ext.retrofit}"
+    compile "${rootProject.ext.converter_gson}"
+    compile "${rootProject.ext.adapter_rxjava}"
+    compile "${rootProject.ext.converter_scalars}"
+    compile "${rootProject.ext.umeng}"
+    compile "${rootProject.ext.photoview}"
+    compile "${rootProject.ext.eventbus}"
+
+
+//    compile 'com.jakewharton:butterknife:7.0.1'
+
+//    compile 'com.uwetrottmann.photoview:library:1.2.4'
+
+}

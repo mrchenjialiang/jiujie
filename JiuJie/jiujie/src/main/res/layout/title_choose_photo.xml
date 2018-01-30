@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jiujie="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#21282C"
+    android:gravity="bottom"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_of_title"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/tcp_btn_back"
+            android:layout_width="@dimen/height_of_title"
+            android:layout_height="@dimen/height_of_title"
+            android:scaleType="centerInside"
+            android:src="@drawable/title_jt_left"/>
+
+        <TextView
+            android:id="@+id/tcp_title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+        <com.jiujie.base.widget.JJSimpleButton
+            android:id="@+id/tcp_btn_ensure"
+            android:layout_width="75dp"
+            android:layout_height="28dp"
+            android:layout_marginRight="12dp"
+            jiujie:text="完成(1/9)"
+            jiujie:textColor_n="@color/white"
+            jiujie:textSize="13sp"
+            jiujie:bgColor_n="#44BF1A"
+            jiujie:bgColor_p="#337523"
+            jiujie:conner="4dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

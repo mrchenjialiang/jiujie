@@ -1,0 +1,60 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jiujie.base">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application >
+
+        <!--7.0+在将文件提交给APP外使用时，需求Uri通过FileProvider。比如系统裁剪图片，比如安装-->
+        <!--<provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.jiujie.base.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>-->
+
+        <meta-data
+            android:name="com.jiujie.base.util.glide.GlideModuleMine"
+            android:value="GlideModule" />
+
+        <activity
+            android:name=".activity.ImageViewPagerActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/Slide.trans"/>
+
+        <activity
+            android:name=".activity.WebActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/Slide.trans"/>
+
+        <activity
+            android:name=".activity.cropimage.CropImageActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/Slide.trans.FullScreen"/>
+
+        <activity android:name=".activity.ChoosePhotoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/Slide.trans"/>
+
+        <activity android:name=".activity.cropimage.JJCropImageActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/Slide.trans"/>
+
+    </application>
+
+</manifest>

@@ -1,80 +1,76 @@
-apply plugin: 'com.android.library'
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-android {
-    compileSdkVersion rootProject.ext.compileSdk
-    buildToolsVersion rootProject.ext.buildTools
-//    useLibrary 'org.apache.http.legacy'
-//    /*友盟里还需要这个*/
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
 
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdk
-        targetSdkVersion rootProject.ext.targetSdk
-        versionCode 1
-        versionName "1.0"
-//        multiDexEnabled true
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
-    buildTypes {
-        //base_swipe_back 不能混淆，如需混淆，则要兼顾 类名、方法、参数---有public参数被引用
-        release {
-            // 不显示Log
-//            buildConfigField "boolean", "isDeBug", "false"
-            // 混淆 开关
-            minifyEnabled false
-            //zipAlign优化
-            zipAlignEnabled false
-            // 移除无用resource文件
-            shrinkResources false
-            // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            //签名
-//            signingConfig signingConfigs.release
-        }
-        debug {
-            // 显示Log
-//            buildConfigField "boolean", "isDeBug", "true"
-            // 混淆 开关
-            minifyEnabled false
-            //zipAlign优化
-            zipAlignEnabled false
-            // 移除无用resource文件
-            shrinkResources false
-            // 加载默认混淆配置文件及自定义混淆配置proguard-rules.pro
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.release
-        }
-    }
-    /*以下用于libs等类名包名重复问题*/
-    packagingOptions {
-        exclude('META-INF/NOTICE.txt')
-        exclude('META-INF/LICENSE.txt')
-    }
-
-    return void
 }
 
-dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
 
-    compile "${rootProject.ext.appcompat}"
-    compile "${rootProject.ext.recyclerview}"
-    compile "${rootProject.ext.design}"
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
 
-    compile "${rootProject.ext.okhttp3}"
-    compile "${rootProject.ext.glide}"
-    compile "${rootProject.ext.rxjava}"
-    compile "${rootProject.ext.rxandroid}"
-    compile "${rootProject.ext.retrofit}"
-    compile "${rootProject.ext.converter_gson}"
-    compile "${rootProject.ext.adapter_rxjava}"
-    compile "${rootProject.ext.converter_scalars}"
-    compile "${rootProject.ext.umeng}"
-    compile "${rootProject.ext.photoview}"
-    compile "${rootProject.ext.eventbus}"
+ext {
+//    compileSdk = 23
+//    minSdk = 14
+//    targetSdk = 22
+//    support = "23.0.1"
+//    buildTools = "23.0.1"
+
+    compileSdk = 25
+    minSdk = 14
+    targetSdk = 22
+    support = "25.3.1"
+    buildTools = "25.0.3"
+    appcompat = "com.android.support:appcompat-v7:25.3.1"
+    recyclerview = "com.android.support:recyclerview-v7:25.3.1"
+    design = "com.android.support:design:25.3.1"
+//    cardview = "com.android.support:cardview-v7:25.3.1"
+
+//    appcompat = "com.android.support:appcompat-v7:23.0.1"
+//    recyclerview = "com.android.support:recyclerview-v7:23.0.1"
+//    design = "com.android.support:design:23.0.1"
+
+    multidex = "com.android.support:multidex:1.0.1"
+
+//    greendao = "org.greenrobot:greendao:3.2.0"
+//    circleimageview = "de.hdodenhof:circleimageview:2.1.0"
+//    recyclerview_animators = "jp.wasabeef:recyclerview-animators:2.2.3"
+//    systembartint = "com.readystatesoftware.systembartint:systembartint:1.0.3"
+//    convenientbanner = "com.bigkoo:convenientbanner:2.0.5"
+//    labelview = "com.flyco.labelview:FlycoLabelView_Lib:1.0.2@aar"
+    tablayout = "com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar"
+//    FlycoDialog_Lib = "com.flyco.dialog:FlycoDialog_Lib:1.3.2"
+//    TagLayout = "com.github.Rukey7:TagLayout:1.0.5"
 
 
-//    compile 'com.jakewharton:butterknife:7.0.1'
+    butterknife8 = "com.jakewharton:butterknife-compiler:8.2.1"
+    butterknife7 = "com.jakewharton:butterknife:7.0.1"
 
-//    compile 'com.uwetrottmann.photoview:library:1.2.4'
 
+    okhttp = "com.squareup.okhttp:okhttp:2.4.0"
+    okhttp3 = "com.squareup.okhttp3:okhttp:3.3.0"
+    glide = "com.github.bumptech.glide:glide:3.7.0"
+    glide_transformations = "jp.wasabeef:glide-transformations:2.0.1"
+    rxjava = "io.reactivex:rxjava:1.1.0"
+    rxandroid = "io.reactivex:rxandroid:1.1.0"
+    retrofit = "com.squareup.retrofit2:retrofit:2.0.2"
+    converter_gson = "com.squareup.retrofit2:converter-gson:2.0.2"
+    adapter_rxjava = "com.squareup.retrofit2:adapter-rxjava:2.1.0"
+    converter_scalars = "com.squareup.retrofit2:converter-scalars:2.0.0"
+    photoview = "com.github.chrisbanes.photoview:library:1.2.4"
+    umeng = "com.umeng.analytics:analytics:latest.integration"
+    eventbus = "org.greenrobot:eventbus:3.0.0"
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Trans.Status" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="Slide.trans" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/Slide.anim</item>-->
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
+    </style>
+
+    <style name="Slide.trans.FullScreen" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/Slide.anim</item>-->
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
+    </style>
+
+    <style name="Slide.noTrans" parent="BaseAppTheme">
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+</resources>
