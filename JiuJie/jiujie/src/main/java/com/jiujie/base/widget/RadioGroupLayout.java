@@ -73,6 +73,10 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         mCurrentPosition = -1;
     }
 
+    public int getCheckPosition() {
+        return mCurrentPosition;
+    }
+
     public void check(int position){
         check(position,false);
     }

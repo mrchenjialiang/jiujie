@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/dsp_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:gravity="center"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:text="取消"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/dsp_ensure"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/s_item_bg"
+        android:gravity="center"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:text="确认"
+        android:textColor="@color/title_bg"
+        android:textSize="16sp" />
+
+    <View
+        android:id="@+id/line1"
+        style="@style/HLine"
+        android:layout_below="@id/dsp_cancel" />
+
+    <com.jiujie.base.widget.PickerView
+        android:id="@+id/dsp_picker"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/line1"
+        app:textSize="17sp"/>
+
+</RelativeLayout>

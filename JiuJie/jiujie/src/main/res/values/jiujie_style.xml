@@ -56,6 +56,26 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/line</item>
     </style>
+    <style name="HLine_light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">@color/line_light</item>
+    </style>
+    <style name="VLine_light">
+        <item name="android:layout_width">0.5dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/line_light</item>
+    </style>
+    <style name="HLine_dark">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">@color/line_dark</item>
+    </style>
+    <style name="VLine_dark">
+        <item name="android:layout_width">0.5dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/line_dark</item>
+    </style>
     <style name="MyTabLayout" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
         <item name="android:textSize">15sp</item>
         <item name="android:textAllCaps">true</item>

@@ -192,11 +192,22 @@ public class UIHelper {
         }
     }
 
+    public static void showLog(Object... text) {
+        if (APP.isDeBug) {
+            if(text!=null){
+                for (Object o:text){
+                    Log.e("LOG", ""+o.toString());
+                }
+            }
+        }
+    }
+
     public static void showLog(String text) {
         if (APP.isDeBug) {
             Log.e("LOG", text);
         }
     }
+    
     public static void showLogInFile(String text) {
 //        writeStringToFile("E:/AndroidLog/","log.txt",text);
         writeStringToFile(Environment.getExternalStorageDirectory().getPath(), "log.txt", text);
@@ -784,6 +795,14 @@ public class UIHelper {
     }
 
     /**
+     * 保留1位小数→Str
+     */
+    public static String getOneDecimal(double num) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        return df.format(num);
+    }
+
+    /**
      * 保留两位小数→Str
      */
     public static String getTwoDecimal(float num) {
@@ -805,6 +824,14 @@ public class UIHelper {
     public static String getThreeDecimal(double num) {
         DecimalFormat df = new DecimalFormat("0.000");
         return df.format(num);
+    }
+
+    /**
+     * 保留三位小数→double
+     */
+    public static double getThreeDecimal1(double num) {
+        DecimalFormat df = new DecimalFormat("0.000");
+        return Double.valueOf(df.format(num));
     }
 
     /**

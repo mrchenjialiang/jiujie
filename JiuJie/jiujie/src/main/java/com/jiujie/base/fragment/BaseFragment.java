@@ -57,7 +57,9 @@ public abstract class BaseFragment extends BaseMostFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		((ViewGroup)mView.getParent()).removeView(mView);
+		if(mView!=null&&mView.getParent()!=null){
+			((ViewGroup)mView.getParent()).removeView(mView);
+		}
 	}
 
 	//当标题栏纯色时，重写返回true比较合适...返回true时，标题栏UI需android:fitsSystemWindows="true"

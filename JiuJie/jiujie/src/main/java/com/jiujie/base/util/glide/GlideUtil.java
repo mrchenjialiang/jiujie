@@ -77,6 +77,20 @@ public class GlideUtil {
         builder.into(imageView);
     }
 
+    public void setDefaultImage(Context context, int drawId, ImageView imageView,int defaultDrawId) {
+        if(defaultDrawId<=0){
+            defaultDrawId = R.drawable.logo_gray;
+        }
+        DrawableRequestBuilder<Integer> builder = Glide.with(context)
+                .load(drawId)
+                .placeholder(defaultDrawId)
+                .crossFade()
+                .centerCrop();
+        if (!isKeepInMemory) {
+            builder.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        builder.into(imageView);
+    }
 
     public void setDefaultImage(Context context, String url, ImageView imageView, int width, int height) {
         Glide.clear(imageView);
