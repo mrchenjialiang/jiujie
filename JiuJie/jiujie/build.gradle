@@ -73,9 +73,6 @@ dependencies {
     compile "${rootProject.ext.photoview}"
     compile "${rootProject.ext.eventbus}"
 
-
-//    compile 'com.jakewharton:butterknife:7.0.1'
-
-//    compile 'com.uwetrottmann.photoview:library:1.2.4'
+    compile "${rootProject.ext.rxpermissions}"
 
 }

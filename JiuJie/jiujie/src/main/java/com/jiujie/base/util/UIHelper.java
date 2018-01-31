@@ -21,6 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.media.RingtoneManager;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
@@ -966,17 +967,23 @@ public class UIHelper {
 
     /**
      * 刷新手机图库
-     * @param newImageFile 新存储到本地的图片文件
+     * @param file 新存储到本地的图片文件
      */
-    public static void refreshSystemImage(Context context, File newImageFile) {
+    public static void refreshSystemImage(Context context, File file) {
+        if(file==null||!file.exists()||file.length()==0){
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//            Uri uri = Uri.fromFile(newImageFile);
-            Uri uri = UriUtil.getUri(context,intent,newImageFile);
+            Uri uri = UriUtil.getUri(context,intent,file);
             intent.setData(uri);
             context.sendBroadcast(intent);
+            //两种，同时
+            MediaScannerConnection.scanFile(context, new String[]{file.getAbsolutePath()},
+                    null, null);
         } else {
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+            Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory()));
+            context.sendBroadcast(intent);
         }
     }
 
