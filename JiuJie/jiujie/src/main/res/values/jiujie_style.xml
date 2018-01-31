@@ -46,6 +46,16 @@
         <item name="android:background">@color/app_bg</item>
     </style>
 
+    <style name="HLine_app_bg">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">@color/app_bg</item>
+    </style>
+    <style name="VLine_app_bg">
+        <item name="android:layout_width">0.5dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/app_bg</item>
+    </style>
     <style name="HLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0.5dp</item>
@@ -73,6 +83,46 @@
     </style>
     <style name="VLine_dark">
         <item name="android:layout_width">0.5dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/line_dark</item>
+    </style>
+    <style name="HLine_app_bg1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/app_bg</item>
+    </style>
+    <style name="VLine_app_bg1">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/app_bg</item>
+    </style>
+    <style name="HLine1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/line</item>
+    </style>
+    <style name="VLine1">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/line</item>
+    </style>
+    <style name="HLine_light1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/line_light</item>
+    </style>
+    <style name="VLine_light1">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/line_light</item>
+    </style>
+    <style name="HLine_dark1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/line_dark</item>
+    </style>
+    <style name="VLine_dark1">
+        <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/line_dark</item>
     </style>
