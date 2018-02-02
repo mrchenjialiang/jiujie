@@ -20,6 +20,14 @@ public class UriUtil {
      * 注：拍照不要用这个，不然会回调失败
      */
     public static Uri getUri(Context context,Intent intent, File file){
+        return getUri(context, intent, file, false);
+    }
+
+    public static Uri getUri(Context context,Intent intent, File file, boolean isUseForCamera){
+        if(isUseForCamera&&(context.getApplicationInfo().targetSdkVersion<=23||Build.VERSION.SDK_INT<Build.VERSION_CODES.N)){
+//			targetSdkVersion<=23时用
+            return Uri.fromFile(file);
+        }
         Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if(intent!=null)intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

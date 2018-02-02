@@ -12,6 +12,7 @@
             android:id="@+id/rr_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             android:cacheColorHint="@null"/>
 
         <!--不要给RecyclerView加滚动条属性-->

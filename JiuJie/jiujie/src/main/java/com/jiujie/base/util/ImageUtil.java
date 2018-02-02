@@ -446,6 +446,28 @@ public class ImageUtil {
         return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
     }
 
+    /**
+     * 压缩图片，用缩放法，改变尺寸
+     * @param maxLength B 单位
+     */
+    public Bitmap scaleBitmapBySize(Bitmap bm,int maxLength){
+        if(maxLength<=0){
+            return bm;
+        }
+        if(bm==null||bm.getByteCount()<=maxLength){
+            return bm;
+        }
+        UIHelper.showLog("尺寸压缩前："+(bm.getByteCount()/1024)+"KB");
+        while (bm.getByteCount()>maxLength){
+            Matrix matrix = new Matrix();
+            matrix.postScale(0.9f, 0.9f);
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
+                    bm.getHeight(), matrix, true);
+        }
+        UIHelper.showLog("尺寸压缩后："+(bm.getByteCount()/1024)+"KB");
+        return bm;
+    }
+
     public void getAllImageFromLocal(final FragmentActivity activity, final ICallbackSimple<Map<String,Image>> callback){
         final String[] IMAGE_PROJECTION = {
                 MediaStore.Images.Media.DATA,

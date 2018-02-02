@@ -48,6 +48,7 @@ public class JJCropImageView extends View{
     private final int radio = 10;
     private final int radioAction = 30;//响应范围要大点，不然按不到
     private final int minCropWidthHeight = 10;
+    private int cropFileMaxLength;
 
     public JJCropImageView(Context context) {
         super(context);
@@ -71,7 +72,7 @@ public class JJCropImageView extends View{
         setClickable(true);
     }
 
-    public void setImagePath(final String path, String savePath, String saveName, float scaleHeight){
+    public void setCropData(final String path, String savePath, String saveName, float scaleHeight, int cropFileMaxLength){
         if(TextUtils.isEmpty(path)){
             return;
         }
@@ -81,6 +82,7 @@ public class JJCropImageView extends View{
         this.savePath = savePath;
         this.saveName = saveName;
         this.scaleHeight = scaleHeight;
+        this.cropFileMaxLength = cropFileMaxLength;
         final float finalScaleHeight = scaleHeight;
         new TaskManager<Bitmap>() {
             @Override
@@ -303,7 +305,11 @@ public class JJCropImageView extends View{
         int fromTop = cropTop - bitmapTop;
         int fromRight = fromLeft + cropRight - cropLeft;
         int fromBottom = fromTop + cropBottom - cropTop;
-        return ImageUtil.instance().cropImage(bitmap,cropRight-cropLeft,cropBottom-cropTop, fromLeft, fromTop, fromRight, fromBottom);
+        Bitmap bitmap = ImageUtil.instance().cropImage(this.bitmap, cropRight - cropLeft, cropBottom - cropTop, fromLeft, fromTop, fromRight, fromBottom);
+        if(cropFileMaxLength>0){
+            bitmap = ImageUtil.instance().scaleBitmapBySize(bitmap,cropFileMaxLength);
+        }
+        return bitmap;
     }
 
     public void doSave(final OnListener<String> saveListener){

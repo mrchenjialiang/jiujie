@@ -52,6 +52,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -68,6 +69,7 @@ import com.jiujie.base.R;
 import com.jiujie.base.WaitingDialog;
 import com.jiujie.base.jk.InputAction;
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.appupdate.NotificationUtil;
 import com.jiujie.base.util.recycler.PagingScrollHelper;
 
@@ -1571,6 +1573,30 @@ public class UIHelper {
             }
         }
         return result;
+    }
+
+    /**
+     * 当前日期 年_月_日_时_分_秒
+     * @param fileType .jpg  .png   .txt  ...
+     */
+    public static String getTimeFileName(String fileType) {
+        long currentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        return sdf.format(new Date(currentTimeMillis)) + fileType;
+    }
+
+    public static void getViewDrawListen(final View view, final OnSimpleListener onSimpleListener){
+        final ViewTreeObserver vto =view.getViewTreeObserver();
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                if(onSimpleListener!=null){
+                    onSimpleListener.onListen();
+                }
+                return true;
+            }
+        });
     }
 
 }

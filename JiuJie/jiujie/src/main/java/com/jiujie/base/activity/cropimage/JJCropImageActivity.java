@@ -27,12 +27,20 @@ public class JJCropImageActivity extends BaseActivity {
      * @param scaleHeight 裁剪的宽高比例
      */
     public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight, OnListener<String> onCropListener){
+        launch(activity, path, savePath, saveName, scaleHeight,0, onCropListener);
+    }
+
+    /**
+     * @param scaleHeight 裁剪的宽高比例
+     */
+    public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight,int cropFileMaxLength, OnListener<String> onCropListener){
         JJCropImageActivity.onCropListener = onCropListener;
         activity.startActivity(new Intent(activity,JJCropImageActivity.class)
                 .putExtra("path",path)
                 .putExtra("savePath",savePath)
                 .putExtra("saveName",saveName)
                 .putExtra("scaleHeight",scaleHeight)
+                .putExtra("cropFileMaxLength",cropFileMaxLength)
         );
     }
 
@@ -105,11 +113,12 @@ public class JJCropImageActivity extends BaseActivity {
         String savePath = intent.getStringExtra("savePath");
         String saveName = intent.getStringExtra("saveName");
         float scaleHeight = intent.getFloatExtra("scaleHeight", 1);
+        int cropFileMaxLength = intent.getIntExtra("cropFileMaxLength", 0);
 
         initTitle();
 
         cropImageView = (JJCropImageView) findViewById(R.id.ci_cropImageView);
-        cropImageView.setImagePath(mPath, savePath, saveName, scaleHeight);
+        cropImageView.setCropData(mPath, savePath, saveName, scaleHeight,cropFileMaxLength);
 
         //自带的，返回键不好整，可能颜色和背景对不上，不好定死
 //        mTitle.setLeftButtonBack();

@@ -28,6 +28,9 @@ public class GlideUtil {
 
     private static GlideUtil glideUtil;
     private boolean isKeepInMemory;
+    private int normalDefaultId = R.drawable.logo_gray;
+    private int circleDefaultId = R.drawable.circle_bg_gray;
+    private int connerDefaultId = R.drawable.logo_gray_conner;
 
     private GlideUtil() {
         long romAvailableSize = UIHelper.getRomAvailableSize();
@@ -39,6 +42,18 @@ public class GlideUtil {
             glideUtil = new GlideUtil();
         }
         return glideUtil;
+    }
+
+    public void setNormalDefaultId(int normalDefaultId){
+        this.normalDefaultId = normalDefaultId;
+    }
+
+    public void setCircleDefaultId(int circleDefaultId) {
+        this.circleDefaultId = circleDefaultId;
+    }
+
+    public void setConnerDefaultId(int connerDefaultId) {
+        this.connerDefaultId = connerDefaultId;
     }
 
     public boolean isKeepInMemory() {
@@ -65,7 +80,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .crossFade();
         builder.skipMemoryCache(true);//跳过内存缓存
         if (!isKeepInMemory) {
@@ -79,7 +94,7 @@ public class GlideUtil {
 
     public void setDefaultImage(Context context, int drawId, ImageView imageView,int defaultDrawId) {
         if(defaultDrawId<=0){
-            defaultDrawId = R.drawable.logo_gray;
+            defaultDrawId = normalDefaultId;
         }
         DrawableRequestBuilder<Integer> builder = Glide.with(context)
                 .load(drawId)
@@ -96,7 +111,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .crossFade()
                 .centerCrop()
                 .override(width, height);
@@ -155,7 +170,7 @@ public class GlideUtil {
             }
             Glide.clear(imageView);
             if (defaultId <= 0) {
-                defaultId = R.drawable.logo_gray;
+                defaultId = normalDefaultId;
             }
             DrawableRequestBuilder<T> builder = Glide.with(context)
                     .load(t)
@@ -204,7 +219,7 @@ public class GlideUtil {
             }
             Glide.clear(imageView);
             if (defaultId <= 0) {
-                defaultId = R.drawable.logo_gray;
+                defaultId = normalDefaultId;
             }
             DrawableRequestBuilder<String> builder = Glide.with(context)
                     .load(url)
@@ -247,7 +262,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .crossFade()
                 .centerCrop();
         if (isShowAnim) {
@@ -282,7 +297,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)//禁用磁盘缓存
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -294,7 +309,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<Integer> builder = Glide.with(context)
                 .load(id)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)//禁用磁盘缓存
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -310,7 +325,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<File> builder = Glide.with(context)
                 .load(file)
-                .placeholder(R.drawable.logo_gray)
+                .placeholder(normalDefaultId)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)//禁用磁盘缓存
                 .skipMemoryCache(true)//跳过内存缓存
                 .crossFade()
@@ -326,7 +341,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.circle_bg_gray)
+                .placeholder(circleDefaultId)
                 .transform(new CenterCrop(context), new GlideCircleTransform(context))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)//跳过内存缓存
@@ -350,7 +365,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.circle_bg_gray)
+                .placeholder(circleDefaultId)
                 .transform(new CenterCrop(context), new GlideCircleTransform(context))
                 .crossFade();
         builder.skipMemoryCache(true);//跳过内存缓存
@@ -386,7 +401,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(drawId == 0 ? R.drawable.logo_gray_conner : drawId)
+                .placeholder(drawId == 0 ? connerDefaultId : drawId)
                 .transform(new CenterCrop(context), new GlideRoundTransform(context, dp))
                 .crossFade();
         builder.skipMemoryCache(true);//跳过内存缓存
@@ -402,7 +417,7 @@ public class GlideUtil {
         Glide.clear(imageView);
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
-                .placeholder(R.drawable.logo_gray_conner)
+                .placeholder(connerDefaultId)
                 .crossFade();
         if (isCenterCrop) {
             builder.transform(new CenterCrop(context), new GlideRoundTransform(context, dp));
@@ -423,7 +438,7 @@ public class GlideUtil {
         DrawableRequestBuilder<String> builder = Glide.with(context)
                 .load(url)
                 .transform(new CenterCrop(context), new GlideRoundTransform(context, dp, scaleHeight))
-                .placeholder(R.drawable.logo_gray_conner)
+                .placeholder(connerDefaultId)
                 .crossFade();
         builder.skipMemoryCache(true);//跳过内存缓存
         if (!isKeepInMemory) {
