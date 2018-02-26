@@ -1,28 +1,29 @@
 package com.jiujie.jiujie;
 
+import android.Manifest;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.GetPictureUtil;
 import com.jiujie.base.util.ImageUtil;
+import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
-
-import java.io.File;
-import java.util.List;
+import com.jiujie.base.util.file.SystemDownloadUtil;
+import com.jiujie.jiujie.grouplist.GroupListActivity;
 
 public class MainActivity extends MyBaseActivity {
 
     private String filePath = "/storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg";
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void initUI() {
         mTitle.setTitleText("JiuJie首页");
 
-        initData();
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -37,21 +38,21 @@ public class MainActivity extends MyBaseActivity {
         return R.layout.activity_main;
     }
 
-    private String getCropOutPutDir(){
-        return ImageUtil.instance().getCacheSDDic(mActivity)+ "res/image/camera";
+    private String getCropOutPutDir() {
+        return ImageUtil.instance().getCacheSDDic(mActivity) + "res/image/camera";
     }
 
     public void toSd(View view) {
-        try {
-            //获取父目录
-            File parentFile = new File(getCropOutPutDir());
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setDataAndType(Uri.fromFile(parentFile), "*/*");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            startActivity(intent);
-        }catch (Exception e){
-            UIHelper.showToastShort(mActivity,"没有文件管理器");
-        }
+//        try {
+//            //获取父目录
+//            File parentFile = new File(getCropOutPutDir());
+//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            intent.setDataAndType(Uri.fromFile(parentFile), "*/*");
+//            intent.addCategory(Intent.CATEGORY_OPENABLE);
+//            startActivity(intent);
+//        }catch (Exception e){
+//            UIHelper.showToastShort(mActivity,"没有文件管理器");
+//        }
 
 //        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //        intent.setType("*/*");
@@ -64,7 +65,14 @@ public class MainActivity extends MyBaseActivity {
     }
 
     public void doAction1(View view) {
-        UIHelper.installNormal(mActivity,"/storage/emulated/0/tencent/QQfile_recv/jingling_oppo.apk");//oppo测试机
+        PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHasPermission) {
+//                UIHelper
+            }
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
+
+//        UIHelper.installNormal(mActivity, "/storage/emulated/0/tencent/QQfile_recv/jingling_oppo.apk");//oppo测试机
 
 //        UIHelper.installNormal(mActivity,"/storage/emulated/0/tencent/qqfile_recv/jingling.apk");//小米测试机
 //        UIHelper.installNormal(mActivity,"/storage/emulated/0/Download/jingling_m_3987.apk");
@@ -86,6 +94,36 @@ public class MainActivity extends MyBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        GetPictureUtil.onActivityResult(mActivity,requestCode,resultCode,data);
+        GetPictureUtil.onActivityResult(mActivity, requestCode, resultCode, data);
+    }
+
+    public void toGroupList(View view) {
+        startActivity(new Intent(mActivity, GroupListActivity.class));
+    }
+
+    public void doDownload(View view) {
+        String url = "http://www.5857.com/small/wallpaper_bizhi.apk";
+        String name = "ty.apk";
+//        String url = "http://d.5857.com/eeeo_180122/001.jpg";
+//                String name = "1.jpg";
+        new SystemDownloadUtil(url,ImageUtil.instance().getCacheSDDic(mActivity),name,new SimpleDownloadFileListen(){
+            @Override
+            public void onFail(String error) {
+                UIHelper.showLog(UIHelper.isRunInUIThread());
+                UIHelper.showToastShort(mActivity,error);
+            }
+
+            @Override
+            public void onFinish(String filePath) {
+                UIHelper.showLog(UIHelper.isRunInUIThread());
+                UIHelper.showToastShort(mActivity,filePath);
+            }
+
+            @Override
+            public void onLoading(long loadedLength, int progress) {
+                UIHelper.showLog(UIHelper.isRunInUIThread());
+                UIHelper.showLog("onLoading loadedLength:"+loadedLength+",progress:"+progress);
+            }
+        }).start();
     }
 }

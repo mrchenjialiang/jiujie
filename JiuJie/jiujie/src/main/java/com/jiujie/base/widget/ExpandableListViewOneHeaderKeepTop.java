@@ -20,6 +20,7 @@ import com.jiujie.base.adapter.BaseExpandAdapter;
  * 改自github 的 PinnedHeaderExpandableListView
  * author : Created by ChenJiaLiang on 2016/8/31.
  * Email 576507648@qq.com
+ * android:groupIndicator="@null"---去掉默认箭头
  */
 public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView implements OnScrollListener,OnGroupClickListener {
 

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.os.Build;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -28,14 +27,15 @@ public class WebActivity extends BaseActivity {
 	private WebView webView;
 	private String title;
 	private String url;
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public void initUI() {
+
 		getIntentData();
 		initTitle();
 		initWebView();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -96,7 +96,7 @@ public class WebActivity extends BaseActivity {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	private void initWebView() {
-		webView = (WebView) findViewById(R.id.webView1);
+		webView = findViewById(R.id.webView1);
 		webView.setClickable(true);
 		webView.setInitialScale((int) 0.1);
 		webView.setWebViewClient(new webViewClient()); 

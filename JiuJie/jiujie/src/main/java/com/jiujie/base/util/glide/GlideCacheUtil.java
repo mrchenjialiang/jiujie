@@ -18,7 +18,7 @@ public class GlideCacheUtil {
     private static GlideCacheUtil instance;
     private final Context context;
     // 图片缓存最大容量，100M，根据自己的需求进行修改  getMaxCacheSize
-    public static int GLIDE_CACHE_SIZE = 100 * 1024 * 1024;
+    public static int GLIDE_CACHE_SIZE = 200 * 1024 * 1024;
     // 图片缓存子目录
     public static final String GLIDE_CACHE_DIR = "glide_cache";
 
@@ -29,6 +29,9 @@ public class GlideCacheUtil {
     public static int getMaxCacheSize(){
         int size = (int) (UIHelper.getSDAvailableSize()/5);
         if(size>GLIDE_CACHE_SIZE){
+            if(size>300*1024*1024){
+                size = 300*1024*1024;
+            }
             GLIDE_CACHE_SIZE = size;
         }
         return GLIDE_CACHE_SIZE;

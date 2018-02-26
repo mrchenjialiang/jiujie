@@ -3,7 +3,6 @@ package com.jiujie.base.activity.cropimage;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -60,7 +59,7 @@ public class JJCropImageActivity extends BaseActivity {
                 finish();
             }
         });
-        TextView titleTextTv = (TextView) baseTitleLayout.findViewById(R.id.tcp_title);
+        TextView titleTextTv = baseTitleLayout.findViewById(R.id.tcp_title);
         titleTextTv.setText("裁剪图片");
         titleTextTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +67,7 @@ public class JJCropImageActivity extends BaseActivity {
                 finish();
             }
         });
-        JJSimpleButton mBtnEnsure = (JJSimpleButton) baseTitleLayout.findViewById(R.id.tcp_btn_ensure);
+        JJSimpleButton mBtnEnsure = baseTitleLayout.findViewById(R.id.tcp_btn_ensure);
         mBtnEnsure.setText("确定").refresh();
         mBtnEnsure.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,10 +93,9 @@ public class JJCropImageActivity extends BaseActivity {
         return R.layout.title_choose_photo;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+    @Override
+    public void initUI() {
         Intent intent = getIntent();
         String mPath = intent.getStringExtra("path");
         if(TextUtils.isEmpty(mPath)){

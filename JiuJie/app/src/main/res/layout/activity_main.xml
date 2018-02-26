@@ -22,6 +22,22 @@
         android:gravity="center"
         android:text="去本地SD卡目录"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="toGroupList"
+        android:gravity="center"
+        android:text="去Group列表"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="doDownload"
+        android:gravity="center"
+        android:text="下载"/>
+
     <FrameLayout
         android:id="@+id/main_frameLayout"
         android:layout_width="match_parent"

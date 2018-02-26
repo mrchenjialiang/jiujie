@@ -39,18 +39,23 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     private int mLastPosition = -1;
 
     public void notifyDataSetChanged1(){
-        int itemCount = getItemCount();
-        if(oldItemCount==0||oldItemCount >= itemCount){
-            notifyDataSetChanged();
-        }else{
-            int startPosition = oldItemCount -1;
-            for (int position = startPosition;position<itemCount;position++){
-                notifyItemInserted(position++);
-            }
-
-//            notifyItemRangeChanged(startPosition, itemCount);
+        int startPosition = oldItemCount -1;
+        for (int position = startPosition;position<getItemCount();position++){
+            notifyItemInserted(position++);
         }
-        oldItemCount = itemCount;
+
+//        int itemCount = getItemCount();
+//        if(oldItemCount==0||oldItemCount >= itemCount){
+//            notifyDataSetChanged();
+//        }else{
+//            int startPosition = oldItemCount -1;
+//            for (int position = startPosition;position<itemCount;position++){
+//                notifyItemInserted(position++);
+//            }
+//
+////            notifyItemRangeChanged(startPosition, itemCount);
+//        }
+//        oldItemCount = itemCount;
     }
 
     public void notifyItemChanged1(int position){
@@ -74,6 +79,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         if(getFooterEnable()){
             count++;
         }
+        oldItemCount = count;
         return count;
     }
 

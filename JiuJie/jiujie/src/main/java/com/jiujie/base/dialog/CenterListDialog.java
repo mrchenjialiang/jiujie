@@ -43,7 +43,7 @@ public class CenterListDialog extends BaseDialog{
     @Override
     protected void initUI(View layout) {
         ScrollView scrollView = (ScrollView) layout.findViewById(R.id.dcl_scrollView);
-        listLine = (LinearLayout) layout.findViewById(R.id.dcl_list_line);
+        listLine = layout.findViewById(R.id.dcl_list_line);
 
         listLine.removeAllViews();
         for (int i=0;i<dataList.size();i++){
@@ -59,7 +59,7 @@ public class CenterListDialog extends BaseDialog{
 
     private View getItemView(final int position) {
         View itemView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_center_list_item, listLine, false);
-        TextView text = (TextView) itemView.findViewById(R.id.dcli_text);
+        TextView text = itemView.findViewById(R.id.dcli_text);
         View line = itemView.findViewById(R.id.dcli_line);
         line.setVisibility(position>=dataList.size()-1?View.GONE:View.VISIBLE);
         text.setText(dataList.get(position));

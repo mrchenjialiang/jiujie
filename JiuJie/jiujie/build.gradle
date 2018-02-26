@@ -74,5 +74,6 @@ dependencies {
     compile "${rootProject.ext.eventbus}"
 
     compile "${rootProject.ext.rxpermissions}"
+    compile "${rootProject.ext.barlibrary}"
 
 }

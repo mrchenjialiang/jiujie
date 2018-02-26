@@ -4,6 +4,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--DownloadManager下载时不显示Notification-->
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <!--读取手机相关信息需求，如imei-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--读取网络状态-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--震动需求权限-->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application >
 

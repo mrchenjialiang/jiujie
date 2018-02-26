@@ -16,9 +16,9 @@ public class BaseRecyclerViewFooter {
 	public BaseRecyclerViewFooter(View footer){
 		this.footer = footer;
 		loadingLine = footer.findViewById(R.id.lf_loading_line);
-		loadingText = (TextView) footer.findViewById(R.id.lf_loading_text);
-		loadEndText = (TextView) footer.findViewById(R.id.lf_load_end_text);
-		loadFailText = (TextView) footer.findViewById(R.id.lf_load_fail);
+		loadingText = footer.findViewById(R.id.lf_loading_text);
+		loadEndText = footer.findViewById(R.id.lf_load_end_text);
+		loadFailText = footer.findViewById(R.id.lf_load_fail);
 	}
 
 	/**

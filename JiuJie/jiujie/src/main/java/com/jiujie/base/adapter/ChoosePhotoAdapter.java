@@ -107,7 +107,7 @@ public class ChoosePhotoAdapter extends BaseRecyclerViewSimpleAdapter<Image,Choo
         View trans;
         public ItemViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.icp_image);
+            image = itemView.findViewById(R.id.icp_image);
             btnCheck = itemView.findViewById(R.id.icp_btn_check);
             trans = itemView.findViewById(R.id.icp_trans);
         }

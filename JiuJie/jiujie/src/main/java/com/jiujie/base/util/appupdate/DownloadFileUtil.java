@@ -1,7 +1,13 @@
 package com.jiujie.base.util.appupdate;
 
+import android.Manifest;
+import android.text.TextUtils;
+
+import com.jiujie.base.APP;
 import com.jiujie.base.jk.DownloadFileListen;
+import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
+import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.File;
@@ -35,14 +41,31 @@ public class DownloadFileUtil {
     }
 
     public void start(){
+        PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHasPermission) {
+                if(isHasPermission){
+                    realStart();
+                }else{
+                    if (downloadListen != null) downloadListen.onFail("没有读写权限，请在权限管理中给予");
+                }
+            }
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void realStart(){
+        if(TextUtils.isEmpty(url)||TextUtils.isEmpty(saveDir)||TextUtils.isEmpty(saveName)){
+            if(downloadListen!=null)downloadListen.onFail("无相关下载资源");
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if(downloadListen!=null)downloadListen.onPrepare();
                 Request request = new Request.Builder().url(url).build();
                 // 创建okHttpClient对象
-                OkHttpClient mOkHttpClient = new OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(10,TimeUnit.MINUTES).build();
-                mOkHttpClient.newCall(request).enqueue(new Callback() {
+//                OkHttpClient mOkHttpClient = new OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(10,TimeUnit.MINUTES).build();
+                new OkHttpClient().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         UIHelper.showLog("DownFileUtil Exception " + e.getMessage());

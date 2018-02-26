@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.gyf.barlibrary.ImmersionBar;
 import com.jiujie.base.R;
 import com.jiujie.base.util.UIHelper;
 
@@ -17,11 +18,23 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	private LinearLayout mLoadingLine,mLoadingFail;
 	private LinearLayout contentLayout;
 	private LinearLayout mTagLayout;
+	private ImmersionBar immersionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		doBeforeCreate();
 		super.onCreate(savedInstanceState);
 		initView();
+		initUI();
+		initData();
+	}
+
+	protected void doBeforeCreate() {
+
+	}
+
+	public boolean isTitleBarTextDark(){
+		return false;
 	}
 
 	@Override
@@ -29,9 +42,22 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		return R.layout.activity_base;
 	}
 
-	private void initView() {
+	protected void initView() {
 		initContentLayout();
 		initLoading();
+
+		if(isTitleBarTextDark()){
+			immersionBar = ImmersionBar.with(this);
+			immersionBar.fitsSystemWindows(false).statusBarDarkFont(true).init();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (immersionBar != null) {
+			immersionBar.destroy(); //必须调用该方法，防止内存泄漏
+		}
 	}
 
 	@Override
@@ -40,7 +66,7 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	}
 
 	private void initContentLayout() {
-		contentLayout = (LinearLayout) findViewById(R.id.base_content_layout);
+		contentLayout = findViewById(R.id.base_content_layout);
 		View contentView;
 		if (getLayoutId() == 0){
 			contentView = getContentView();
@@ -59,8 +85,8 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	}
 
 	private void initLoading() {
-		mLoadingLine = (LinearLayout) findViewById(R.id.base_loading_line);
-		mLoadingFail = (LinearLayout) findViewById(R.id.base_loading_fail);
+		mLoadingLine = findViewById(R.id.base_loading_line);
+		mLoadingFail = findViewById(R.id.base_loading_fail);
 		mTagLayout = (LinearLayout)findViewById(R.id.base_tag_layout);
 
 		if(getLoadingLayoutId()!=0){
@@ -125,6 +151,8 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		return mTagLayout;
 	}
 
+
+	public abstract void initUI();
 	public abstract void initData();
 	public abstract int getLayoutId();
 	public View getContentView(){

@@ -1,5 +1,6 @@
 package com.jiujie.base.util;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -35,6 +36,7 @@ import android.os.Looper;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,6 +87,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -96,6 +99,7 @@ import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -153,9 +157,15 @@ public class UIHelper {
         }
     }
 
-    public static String getImei(Context context){
+    public static String getImei(Context context) {
         try {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                return "";
+            }
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if(tm==null){
+                return "";
+            }
             return tm.getDeviceId();
         }catch (Exception e){
             e.printStackTrace();
@@ -163,11 +173,15 @@ public class UIHelper {
         }
     }
 
+    public static boolean isRunInUIThread(){
+        return Looper.myLooper() == Looper.getMainLooper();
+    }
+
     public static void showToastShort(final Activity context, final String text) {
         if(TextUtils.isEmpty(text)||TextUtils.isEmpty(text.trim())){
             return;
         }
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (isRunInUIThread()) {
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         } else {
             context.runOnUiThread(new Runnable() {
@@ -183,7 +197,7 @@ public class UIHelper {
         if(TextUtils.isEmpty(text)||TextUtils.isEmpty(text.trim())){
             return;
         }
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (isRunInUIThread()) {
             Toast.makeText(context, text, Toast.LENGTH_LONG).show();
         } else {
             context.runOnUiThread(new Runnable() {
@@ -251,12 +265,12 @@ public class UIHelper {
         try {
             InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
             BufferedReader br = new BufferedReader(isr);
-            String str = "";
+            StringBuilder sb = new StringBuilder();
             String mimeTypeLine ;
             while ((mimeTypeLine = br.readLine()) != null) {
-                str = str + mimeTypeLine;
+                sb.append(mimeTypeLine);
             }
-            return str;
+            return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -303,12 +317,14 @@ public class UIHelper {
         //否则会内存泄漏
         if (context == null) return false;
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(manager==null)return false;
         NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public static int getNetworkSimpleType(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(manager==null)return 0;
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -328,6 +344,7 @@ public class UIHelper {
     public static String getNetworkType(Context context){
         String strNetworkType = "";
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(manager==null)return "";
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()){
             if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI){
@@ -398,7 +415,8 @@ public class UIHelper {
                 if (currentFocus != null) {
                     IBinder windowToken = currentFocus.getWindowToken();
                     if (windowToken != null) {
-                        ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
+                        InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if(manager!=null)manager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                 }
             }
@@ -412,8 +430,10 @@ public class UIHelper {
      */
     public static void showPan(Activity activity, View view) {
         try {
-            if (activity != null)
-                ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(view, 0);
+            if (activity != null) {
+                InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(manager!=null)manager.showSoftInput(view, 0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -604,20 +624,18 @@ public class UIHelper {
      * 拷贝进剪切板
      */
     public static void copyText(Activity activity, CharSequence text,boolean isShowToast) {
-        ClipboardManager clipboard = (ClipboardManager) activity
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setText(text);
-        if(isShowToast)showToastShort(activity, "复制成功");
+        boolean isSuccess = copyText(activity, text);
+        if(isShowToast)showToastShort(activity, isSuccess?"复制成功":"复制失败");
     }
 
     /**
      * 拷贝进剪切板
      */
-    public static void copyText(Context context, CharSequence text) {
+    public static boolean copyText(Context context, CharSequence text) {
         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if(clipboard==null){
             Log.e("Log","复制失败，clipboard==null");
-            return;
+            return false;
         }
         if (!TextUtils.isEmpty(text)) {
             if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -626,8 +644,10 @@ public class UIHelper {
                 CharSequence getText = clipboard.getText();
                 if(text.equals(getText)){
                     Log.e("Log","复制成功");
+                    return true;
                 }else{
                     Log.e("Log","复制失败");
+                    return false;
                 }
             }else{
                 clipboard.setText(text);//API 11 之前
@@ -635,12 +655,15 @@ public class UIHelper {
                 CharSequence getText = clipboard.getText();
                 if(text.equals(getText)){
                     Log.e("Log","复制成功");
+                    return true;
                 }else{
                     Log.e("Log","复制失败");
+                    return false;
                 }
             }
         }else{
             Log.e("Log","复制内容为空，不复制");
+            return false;
         }
     }
 
@@ -876,6 +899,7 @@ public class UIHelper {
         // 震动提示
         Vibrator vibrator = (Vibrator) context
                 .getSystemService(Context.VIBRATOR_SERVICE);
+        if(vibrator==null)return;
         long[] pattern = {50, 300, 50, 200};
         vibrator.vibrate(pattern, -1);
     }
@@ -905,6 +929,7 @@ public class UIHelper {
         @SuppressWarnings("static-access")
         Vibrator vibrator = (Vibrator) context
                 .getSystemService(context.VIBRATOR_SERVICE);
+        if(vibrator==null)return;
         long[] pattern = {50, 300, 50, 200};
         vibrator.vibrate(pattern, -1);
     }
@@ -1006,6 +1031,7 @@ public class UIHelper {
         boolean flag = false;
         if (cmpName != null) { // 说明系统中存在这个activity
             ActivityManager am = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
+            if(am==null)return false;
             List<ActivityManager.RunningTaskInfo> taskInfoList = am.getRunningTasks(10);
             for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
                 if (taskInfo.baseActivity.equals(cmpName)) { // 说明它已经启动了
@@ -1372,19 +1398,20 @@ public class UIHelper {
 
         final long tagStart = System.currentTimeMillis();
         imageView.setTag(tagStart);
-        new AsyncTask<Void, Void, Bitmap>(){
+        new TaskManager<Bitmap>() {
             @Override
-            protected Bitmap doInBackground(Void... params) {
+            public Bitmap runOnBackgroundThread() {
                 return createVideoThumbnail(url);
             }
+
             @Override
-            protected void onPostExecute(Bitmap result) {
+            public void runOnUIThread(Bitmap bitmap) {
                 long tag = (long) imageView.getTag();
-                if(tag==tagStart&&result!=null){
-                    imageView.setImageBitmap(result);
+                if(tag==tagStart&&bitmap!=null){
+                    imageView.setImageBitmap(bitmap);
                 }
-            };
-        }.execute();
+            }
+        }.start();
     }
 
     /**
@@ -1462,6 +1489,7 @@ public class UIHelper {
 
     public static String getProcessName(Context cxt, int pid) {
         ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
+        if(am==null)return null;
         List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
         if (runningApps == null) {
             return null;
@@ -1597,6 +1625,19 @@ public class UIHelper {
                 return true;
             }
         });
+    }
+
+    public static <T> T[] list2Array(List<T> list,T[] array){
+        return list.toArray(array);
+    }
+
+    public static <T> T[] list2Array(List<T> list){
+        T[] array = (T[]) new Object[list.size()];
+        return list.toArray(array);
+    }
+
+    public static <T>List<T> array2List(T[] array){
+        return Arrays.asList(array);
     }
 
 }

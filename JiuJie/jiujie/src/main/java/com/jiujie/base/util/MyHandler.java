@@ -11,15 +11,17 @@ import java.lang.ref.WeakReference;
  * @author : Created by ChenJiaLiang on 2016/12/13.
  *         Email : 576507648@qq.com
  */
-public class MyHandler extends Handler{
-    WeakReference<MyHandlerInterface> weakReference;
-    public MyHandler(MyHandlerInterface t){
+public class MyHandler extends Handler {
+    private WeakReference<MyHandlerInterface> weakReference;
+
+    public MyHandler(MyHandlerInterface t) {
         weakReference = new WeakReference<>(t);
     }
+
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
-        if(weakReference.get()!=null){
+        if (weakReference.get() != null) {
             weakReference.get().handleMessage(msg);
         }
     }

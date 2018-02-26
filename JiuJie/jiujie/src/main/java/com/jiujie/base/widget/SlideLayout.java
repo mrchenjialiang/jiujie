@@ -121,7 +121,7 @@ public class SlideLayout extends FrameLayout {
 				}else if(touchView instanceof RecyclerView){
 					//RecyclerView判断不出touchView是RecyclerView
 
-//					RecyclerView recyclerView = (RecyclerView) touchView;
+//					RecyclerView recyclerView = touchView;
 //					RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
 //					if(layoutManager instanceof LinearLayoutManager){
 //						LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;

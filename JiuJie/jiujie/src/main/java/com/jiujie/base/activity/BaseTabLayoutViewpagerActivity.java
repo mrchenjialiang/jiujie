@@ -18,13 +18,8 @@ public abstract class BaseTabLayoutViewpagerActivity extends BaseActivity{
     protected ViewPager mViewPager;
     protected TabLayout mTabLayout;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initUI();
-    }
 
-    private void initUI() {
+    public void initUI() {
         mTabLayout = (TabLayout) findViewById(R.id.base_tv_tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
 

@@ -32,9 +32,9 @@ public abstract class BaseTitleActivity extends BaseSlideActivity implements Loa
             super.setContentView(R.layout.activity_base_title);
         }
 
-        mBaseTitleToolbarLayout = (LinearLayout) findViewById(R.id.base_title_toolbar_layout);
-        mBaseTitleTitleLayout = (LinearLayout) findViewById(R.id.base_title_title_layout);
-        mBaseTitleContentLayout = (LinearLayout) findViewById(R.id.base_title_content_layout);
+        mBaseTitleToolbarLayout = findViewById(R.id.base_title_toolbar_layout);
+        mBaseTitleTitleLayout = findViewById(R.id.base_title_title_layout);
+        mBaseTitleContentLayout = findViewById(R.id.base_title_content_layout);
 
         initBaseToolbar();
         initBaseTitle();

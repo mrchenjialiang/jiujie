@@ -52,7 +52,7 @@
         android:supportsRtl="true"
         android:theme="@style/BaseAppTheme">
 
-        <!--7.0+在将文件提交给APP外使用时，需求Uri通过FileProvider。比如系统裁剪图片，比如安装-->
+        <!-- 7.0+在将文件提交给APP外使用时，需求Uri通过FileProvider。比如系统裁剪图片，比如安装 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
@@ -72,6 +72,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".grouplist.GroupListActivity"
+            android:theme="@style/Slide.trans"/>
     </application>
 
 </manifest>

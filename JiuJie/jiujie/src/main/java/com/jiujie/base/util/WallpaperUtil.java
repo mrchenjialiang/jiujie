@@ -14,6 +14,7 @@ import com.jiujie.base.util.glide.GlideUtil;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
+import java.io.File;
 import java.io.IOException;
 
 import rx.functions.Action1;
@@ -71,25 +72,51 @@ public class WallpaperUtil {
         new TaskManager<Boolean>() {
             @Override
             public Boolean runOnBackgroundThread() {
-                Bitmap bitmap = GlideUtil.instance().getImage(mActivity, url, true, true);
-                if(bitmap==null){
-                    return false;
+                try {
+                    Bitmap bitmap = GlideUtil.instance().getImage(mActivity, url, true, true);
+                    if (bitmap == null) {
+                        return false;
+                    }
+                    int screenWidth = UIHelper.getScreenWidth(mActivity);
+                    int screenHeight = UIHelper.getScreenHeight(mActivity);
+                    int bitmapWidth = bitmap.getWidth();
+                    int bitmapHeight = bitmap.getHeight();
+                    boolean isChange = false;
+                    if (bitmapWidth > screenWidth) {
+                        bitmapWidth = screenWidth;
+                        float scale = bitmapWidth * 1f / screenWidth;
+                        bitmapHeight = (int) (bitmapHeight / scale);
+                        isChange = true;
+                    }
+                    if (bitmapHeight > screenHeight) {
+                        bitmapHeight = screenHeight;
+                        float scale = bitmapHeight * 1f / screenHeight;
+                        bitmapWidth = (int) (bitmapWidth / scale);
+                        isChange = true;
+                    }
+                    if (isChange)
+                        bitmap = ImageUtil.instance().scaleBitmap(bitmap, bitmapWidth, bitmapHeight);
+
+                    float requestScale = 0.5625f;
+                    int left = 0, top = 0;
+                    if (bitmapWidth * 1.0f / bitmapHeight > requestScale) {
+                        int yuanWidth = bitmapWidth;
+                        bitmapWidth = (int) (bitmapHeight * requestScale);
+                        left = (yuanWidth - bitmapWidth) / 2;
+                    } else {
+                        int yuanHeight = bitmapHeight;
+                        bitmapHeight = (int) (bitmapWidth / requestScale);
+                        top = (yuanHeight - bitmapHeight) / 2;
+                    }
+                    bitmap = ImageUtil.instance().cropImage(bitmap, bitmapWidth, bitmapHeight, left, top, left + bitmapWidth, top + bitmapHeight);
+                    return setWallpaper(mActivity, bitmap);
+                }catch (Exception e){
+                    String message = e.getMessage();
+                    File logFile = FileUtil.createLogFile(mActivity, "setWallpaperFailLog.txt");
+                    UIHelper.writeStringToFile(logFile.getParentFile().getAbsolutePath(),logFile.getName(),message);
+                    UIHelper.showToastShort(mActivity, "图片处理失败");
                 }
-                int width = bitmap.getWidth();
-                int height = bitmap.getHeight();
-                float requestScale = 0.5625f;
-                int left = 0,top = 0;
-                if(width*1.0f/height> requestScale){
-                    int yuanWidth = width;
-                    width = (int) (height* requestScale);
-                    left = (yuanWidth - width)/2;
-                }else{
-                    int yuanHeight = height;
-                    height = (int) (width/requestScale);
-                    top = (yuanHeight-height)/2;
-                }
-                bitmap = ImageUtil.instance().cropImage(bitmap, width, height, left, top, left + width, top + height);
-                return setWallpaper(mActivity,bitmap);
+                return false;
             }
 
             @Override

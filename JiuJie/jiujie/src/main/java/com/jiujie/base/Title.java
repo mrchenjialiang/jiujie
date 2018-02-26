@@ -43,39 +43,39 @@ public class Title {
 		initUI();
 	}
 
-	private void initUI() {
+	public void initUI() {
 		if(rootView!=null){
 			mTitleView = rootView.findViewById(R.id.base_title);
 			mDefaultTitle = rootView.findViewById(R.id.base_default_title);
-			title_text = (TextView) rootView.findViewById(R.id.title_text);
-			title_image = (ImageView) rootView.findViewById(R.id.title_image);
+			title_text = rootView.findViewById(R.id.title_text);
+			title_image = rootView.findViewById(R.id.title_image);
 			title_left_btn = rootView.findViewById(R.id.title_left_btn);
-			title_right_btn = (LinearLayout) rootView.findViewById(R.id.title_right_btn);
-			title_left_btn_image = (SelectorImage) rootView.findViewById(R.id.title_left_btn_image);
-			title_right_btn_image = (SelectorImage) rootView.findViewById(R.id.title_right_btn_image);
+			title_right_btn = rootView.findViewById(R.id.title_right_btn);
+			title_left_btn_image = rootView.findViewById(R.id.title_left_btn_image);
+			title_right_btn_image = rootView.findViewById(R.id.title_right_btn_image);
 
 			title_right_btn2 = rootView.findViewById(R.id.title_right_btn2);
-			title_right_btn_image2 = (SelectorImage) rootView.findViewById(R.id.title_right_btn_image2);
+			title_right_btn_image2 = rootView.findViewById(R.id.title_right_btn_image2);
 			
 			title_right_text_btn = rootView.findViewById(R.id.title_right_text_btn);
-			title_right_text = (TextView) rootView.findViewById(R.id.title_right_text);
-			title_custom_line = (LinearLayout) rootView.findViewById(R.id.title_custom_line);
+			title_right_text = rootView.findViewById(R.id.title_right_text);
+			title_custom_line = rootView.findViewById(R.id.title_custom_line);
 		}else if(activity!=null){
 			mTitleView = activity.findViewById(R.id.base_title);
 			mDefaultTitle = activity.findViewById(R.id.base_default_title);
-			title_text = (TextView) activity.findViewById(R.id.title_text);
-			title_image = (ImageView) activity.findViewById(R.id.title_image);
+			title_text = activity.findViewById(R.id.title_text);
+			title_image = activity.findViewById(R.id.title_image);
 			title_left_btn = activity.findViewById(R.id.title_left_btn);
-			title_right_btn = (LinearLayout) activity.findViewById(R.id.title_right_btn);
-			title_left_btn_image = (SelectorImage) activity.findViewById(R.id.title_left_btn_image);
-			title_right_btn_image = (SelectorImage) activity.findViewById(R.id.title_right_btn_image);
+			title_right_btn = activity.findViewById(R.id.title_right_btn);
+			title_left_btn_image = activity.findViewById(R.id.title_left_btn_image);
+			title_right_btn_image = activity.findViewById(R.id.title_right_btn_image);
 
 			title_right_btn2 = activity.findViewById(R.id.title_right_btn2);
-			title_right_btn_image2 = (SelectorImage) activity.findViewById(R.id.title_right_btn_image2);
+			title_right_btn_image2 = activity.findViewById(R.id.title_right_btn_image2);
 			
 			title_right_text_btn = activity.findViewById(R.id.title_right_text_btn);
-			title_right_text = (TextView) activity.findViewById(R.id.title_right_text);
-			title_custom_line = (LinearLayout) activity.findViewById(R.id.title_custom_line);
+			title_right_text = activity.findViewById(R.id.title_right_text);
+			title_custom_line = activity.findViewById(R.id.title_custom_line);
 		}else{
 			try {
 				throw new Exception();

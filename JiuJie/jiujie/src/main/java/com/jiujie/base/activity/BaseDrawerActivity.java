@@ -86,7 +86,7 @@
 //
 //    private void initDrawer() {
 //        drawerLayout = (DrawerLayoutNoScroll) findViewById(R.id.base_drawer);
-//        drawerContent = (LinearLayout) findViewById(R.id.base_drawer_content);
+//        drawerContent = findViewById(R.id.base_drawer_content);
 //        if(getDrawerInsideLayoutId()!=0){
 //            View drawerInsideContent = getLayoutInflater().inflate(getDrawerInsideLayoutId(), drawerContent, false);
 //            drawerContent.addView(drawerInsideContent);
@@ -135,7 +135,7 @@
 //
 //    @SuppressWarnings("deprecation")
 //    private void initView() {
-//        contentLayout = (LinearLayout) findViewById(R.id.base_content);
+//        contentLayout = findViewById(R.id.base_content);
 //        if (getLayoutId() == 0) {
 //            throw new NullPointerException(this+" getLayoutId() should not be 0");
 //        }
@@ -167,7 +167,7 @@
 //    }
 //
 //    private void initLoading() {
-//        mTagLayout = (LinearLayout) findViewById(R.id.base_tag_layout);
+//        mTagLayout = findViewById(R.id.base_tag_layout);
 //        mLoadingLine = findViewById(R.id.base_loading_line);
 //        mLoadingFail = findViewById(R.id.base_loading_fail);
 //        mTagLayout.setVisibility(View.GONE);
@@ -209,7 +209,7 @@
 //
 //    public void setLoading(){
 //        if(mLoadingAnimation==null){
-//            ImageView image = (ImageView) findViewById(R.id.base_loading_image);
+//            ImageView image = findViewById(R.id.base_loading_image);
 //            image.setImageResource(R.drawable.loading);
 //            mLoadingAnimation = (AnimationDrawable) image.getDrawable();
 //        }

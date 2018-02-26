@@ -26,7 +26,7 @@ public class SearchTitle {
 		initUI();
 	}
 
-	private void initUI() {
+	public void initUI() {
 		mTitleView = activity.findViewById(R.id.ts_base_title);
 		mBtnBack = activity.findViewById(R.id.ts_btn_back);
 		mBtnSearch = activity.findViewById(R.id.ts_btn_search);

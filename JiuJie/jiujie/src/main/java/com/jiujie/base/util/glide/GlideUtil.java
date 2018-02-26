@@ -3,6 +3,7 @@ package com.jiujie.base.util.glide;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -105,6 +106,19 @@ public class GlideUtil {
             builder.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
         builder.into(imageView);
+    }
+
+    public void setVideoImage(Context context, Uri uri, ImageView imageView, int defaultDrawId) {
+        if(defaultDrawId<=0){
+            defaultDrawId = normalDefaultId;
+        }
+        Glide.with(context)
+                .load(uri)
+                .placeholder(defaultDrawId)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .centerCrop()
+                .into(imageView);
     }
 
     public void setDefaultImage(Context context, String url, ImageView imageView, int width, int height) {

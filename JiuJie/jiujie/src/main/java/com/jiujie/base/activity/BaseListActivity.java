@@ -1,6 +1,5 @@
 package com.jiujie.base.activity;
 
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 
 import com.jiujie.base.R;
@@ -19,19 +18,15 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 	public int size = 20;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		initView();
-	}
-	
-	@Override
 	public int getLayoutId() {
 		return R.layout.refresh_recyclerview;
 	}
 
 	public abstract RecyclerView.Adapter getAdapter();
 
+	@Override
 	protected void initView() {
+		super.initView();
 		recyclerViewUtil = new RecyclerViewUtil(mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
 		recyclerViewUtil.setRefreshListen(this);
 	}

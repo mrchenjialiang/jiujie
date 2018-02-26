@@ -10,7 +10,7 @@ import com.jiujie.base.fragment.BaseFragment;
 public class SimpleFragment extends BaseFragment{
 
     @Override
-    protected void initUI() {
+    public void initUI() {
 //        mTitle.setTitleText("哇哈哈");
     }
 

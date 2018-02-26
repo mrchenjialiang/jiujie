@@ -31,13 +31,13 @@
     </style>
 
     <style name="BottomAlertAni">
-        <item name="@android:windowEnterAnimation">@anim/push_bottom_in</item>
-        <item name="@android:windowExitAnimation">@anim/push_bottom_out</item>
+        <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
     </style>
 
     <style name="Dialog_Top_In">
-        <item name="@android:windowEnterAnimation">@anim/scale_y_0_to_1</item>
-        <item name="@android:windowExitAnimation">@anim/scale_y_1_to_0</item>
+        <item name="android:windowEnterAnimation">@anim/scale_y_0_to_1</item>
+        <item name="android:windowExitAnimation">@anim/scale_y_1_to_0</item>
     </style>
 
     <style name="HLine_app_bg_8">

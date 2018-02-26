@@ -45,6 +45,10 @@ public abstract class BaseFragment extends BaseMostFragment {
 		return mView;
 	}
 
+	public abstract void initUI();
+	public abstract void initData();
+	public abstract int getLayoutId();
+
 	/**
 	 * 基础布局，标题栏和内容是否重叠--标题栏在内容之上
 	 */
@@ -52,7 +56,6 @@ public abstract class BaseFragment extends BaseMostFragment {
 		return false;
 	}
 
-	protected abstract void initUI();
 
 	@Override
 	public void onDestroyView() {
@@ -61,11 +64,6 @@ public abstract class BaseFragment extends BaseMostFragment {
 			((ViewGroup)mView.getParent()).removeView(mView);
 		}
 	}
-
-	//当标题栏纯色时，重写返回true比较合适...返回true时，标题栏UI需android:fitsSystemWindows="true"
-//	public boolean isTitleFitsSystemWindows(){
-//		return false;
-//	}
 
 	private void initBaseTitle() {
 		if(isShowTitle()){
@@ -113,8 +111,6 @@ public abstract class BaseFragment extends BaseMostFragment {
 		}
 	}
 
-	public abstract int getLayoutId();
-
 	public LinearLayout getBaseContentLayout() {
 		return mBaseContentLayout;
 	}
@@ -132,8 +128,8 @@ public abstract class BaseFragment extends BaseMostFragment {
 	}
 
 	protected void initView() {
-		mBaseTitleLayout = (LinearLayout) mView.findViewById(R.id.base_title_title_layout);
-		mBaseContentLayout = (LinearLayout) mView.findViewById(R.id.base_title_content_layout);
+		mBaseTitleLayout = mView.findViewById(R.id.base_title_title_layout);
+		mBaseContentLayout = mView.findViewById(R.id.base_title_content_layout);
 		
 		initBaseTitle();
 		initBaseContent();
@@ -154,8 +150,8 @@ public abstract class BaseFragment extends BaseMostFragment {
 	}
 
 	private void initLoading() {
-		mLoadingLine = (LinearLayout) mView.findViewById(R.id.base_loading_line);
-		mLoadingFail = (LinearLayout) mView.findViewById(R.id.base_loading_fail);
+		mLoadingLine = mView.findViewById(R.id.base_loading_line);
+		mLoadingFail = mView.findViewById(R.id.base_loading_fail);
 		mTagLayout = (LinearLayout)mView.findViewById(R.id.base_tag_layout);
 
 		if(getLoadingLayoutId()!=0){
@@ -218,8 +214,6 @@ public abstract class BaseFragment extends BaseMostFragment {
 		mLoadingFail.setVisibility(View.GONE);
 		mTagLayout.setVisibility(isShow?View.VISIBLE:View.GONE);
 	}
-	
-	public abstract void initData();
 
 	@Override
 	public void setLoading(){

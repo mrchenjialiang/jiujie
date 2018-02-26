@@ -24,7 +24,7 @@ public class WebFragment extends BaseFragment {
 	private String url;
 
 	@Override
-	protected void initUI() {
+	public void initUI() {
 		initTitle();
 		initWebView();
 	}
@@ -72,7 +72,7 @@ public class WebFragment extends BaseFragment {
 	}
 	@SuppressLint("SetJavaScriptEnabled")
 	private void initWebView() {
-		webView = (WebView) mView.findViewById(R.id.webView1);
+		webView = mView.findViewById(R.id.webView1);
 		webView.setClickable(true);
 		webView.setInitialScale((int) 0.1);
 		webView.setWebViewClient(new webViewClient()); 

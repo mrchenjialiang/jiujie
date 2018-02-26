@@ -36,7 +36,7 @@ public class BottomListDialog extends BaseDialog {
 
     @Override
     protected void initUI(View layout) {
-        list = (LinearLayout) layout.findViewById(R.id.dbl_list);
+        list = layout.findViewById(R.id.dbl_list);
         scrollView = layout.findViewById(R.id.dbl_scrollView);
         View cancelTopView = layout.findViewById(R.id.dbl_cancel_top_view);
         layout.findViewById(R.id.dbl_btn_cancel).setOnClickListener(new View.OnClickListener() {

@@ -33,7 +33,7 @@ public class ChoosePhotoDirPop extends BasePop{
 
     @Override
     protected void initUI(View layout) {
-        mDirList = (RecyclerView) layout.findViewById(R.id.pcpd_list);
+        mDirList = layout.findViewById(R.id.pcpd_list);
         UIHelper.initRecyclerView(getActivity(), mDirList,0,0);
     }
 

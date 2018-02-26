@@ -66,7 +66,7 @@ public class RecyclerViewUtil {
         this.num = num;
         this.header = header;
         if(swipeRefreshLayoutId>0)mSwipeRefreshWidget = (SwipeRefreshLayout) mActivity.findViewById(swipeRefreshLayoutId);
-        mRecyclerView = (RecyclerView) mActivity.findViewById(recyclerViewId);
+        mRecyclerView = mActivity.findViewById(recyclerViewId);
         init();
     }
 
@@ -92,7 +92,7 @@ public class RecyclerViewUtil {
         this.num = num;
         this.header = header;
         if(swipeRefreshLayoutId>0)mSwipeRefreshWidget = (SwipeRefreshLayout) rootView.findViewById(swipeRefreshLayoutId);
-        mRecyclerView = (RecyclerView) rootView.findViewById(recyclerViewId);
+        mRecyclerView = rootView.findViewById(recyclerViewId);
         init();
     }
     /**

@@ -72,10 +72,10 @@ public class ChoosePhotoDirAdapter extends BaseRecyclerViewSimpleAdapter<Image,C
         TextView name,path,count;
         public ItemViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.icpd_image);
-            name = (TextView) itemView.findViewById(R.id.icpd_name);
-            path = (TextView) itemView.findViewById(R.id.icpd_path);
-            count = (TextView) itemView.findViewById(R.id.icpd_count);
+            image = itemView.findViewById(R.id.icpd_image);
+            name = itemView.findViewById(R.id.icpd_name);
+            path = itemView.findViewById(R.id.icpd_path);
+            count = itemView.findViewById(R.id.icpd_count);
             check = itemView.findViewById(R.id.icpd_check);
         }
     }

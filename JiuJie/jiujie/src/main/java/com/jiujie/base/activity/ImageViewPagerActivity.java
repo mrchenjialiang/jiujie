@@ -2,7 +2,6 @@ package com.jiujie.base.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -38,14 +37,6 @@ public class ImageViewPagerActivity extends BaseActivity {
 		activity.overridePendingTransition(R.anim.center_0_to_max, R.anim.alpha_null);
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		initUI();
-		getIntentData();
-		initData();
-	}
-
 	protected void getIntentData() {
 		Intent intent = getIntent();
 		index = intent.getIntExtra("index",0);
@@ -58,8 +49,9 @@ public class ImageViewPagerActivity extends BaseActivity {
 		}
 	}
 
-	protected void initUI() {
-		mViewPager = (ViewPager) findViewById(R.id.iv_ViewPager);
+	public void initUI() {
+		getIntentData();
+		mViewPager = findViewById(R.id.iv_ViewPager);
 		View mTitleLayout = findViewById(R.id.iv_title_layout);
 		boolean showTitleLayout = isShowTitleLayout();
 		if(showTitleLayout){
@@ -67,7 +59,7 @@ public class ImageViewPagerActivity extends BaseActivity {
 			if(APP.isTitleContainStatusBar()){
 				mTitleLayout.setPadding(0,APP.getStatusBarHeight(),0,0);
 			}
-			mTvTitle = (TextView) findViewById(R.id.iv_title);
+			mTvTitle = findViewById(R.id.iv_title);
 			findViewById(R.id.iv_back).setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -163,7 +155,7 @@ public class ImageViewPagerActivity extends BaseActivity {
 	@NonNull
 	protected View getItemView(ViewGroup container, int position) {
 		View layout = getLayoutInflater().inflate(R.layout.rela_viewpager, container,false);
-		final PhotoView photoView = (PhotoView) layout.findViewById(R.id.rela_viewpager_photoView);
+		final PhotoView photoView = layout.findViewById(R.id.rela_viewpager_photoView);
 		GlideUtil.instance().setDefaultImage(mActivity,getUrl(position), photoView,R.drawable.trans,false,true,null);
 		photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
             @Override

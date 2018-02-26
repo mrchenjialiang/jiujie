@@ -28,9 +28,9 @@ public class EnsureDialog extends BaseDialog {
 
     @Override
     protected void initUI(View layout) {
-        mTextTv = (TextView) layout.findViewById(R.id.de_text);
-        mBtnLeft = (TextView) layout.findViewById(R.id.de_btn_left);
-        mBtnRight = (TextView) layout.findViewById(R.id.de_btn_right);
+        mTextTv = layout.findViewById(R.id.de_text);
+        mBtnLeft = layout.findViewById(R.id.de_btn_left);
+        mBtnRight = layout.findViewById(R.id.de_btn_right);
     }
 
     public EnsureDialog create(){

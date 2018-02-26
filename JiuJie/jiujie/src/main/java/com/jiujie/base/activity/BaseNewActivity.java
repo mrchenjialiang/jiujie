@@ -32,7 +32,7 @@
 //    }
 //
 //    private void initBaseTitle() {
-//        LinearLayout mBaseTitleLayout = (LinearLayout) findViewById(R.id.base_title_layout);
+//        LinearLayout mBaseTitleLayout = findViewById(R.id.base_title_layout);
 //        if(getCustomTitleLayoutId()==0){
 //            mBaseTitleLayout.setVisibility(View.GONE);
 //        }else{

@@ -2,7 +2,6 @@ package com.jiujie.base.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -51,15 +50,8 @@ public class ChoosePhotoActivity extends BaseActivity{
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        getIntentData();
-        super.onCreate(savedInstanceState);
-        initUI();
-        initTitle();
-        initData();
-    }
-
-    private void getIntentData() {
+    protected void doBeforeCreate() {
+        super.doBeforeCreate();
         Intent intent = getIntent();
         maxCheckCount = intent.getIntExtra("maxCheckCount", 0);
         ArrayList<String> checkedList = intent.getStringArrayListExtra("checkedList");
@@ -87,7 +79,7 @@ public class ChoosePhotoActivity extends BaseActivity{
                 finish();
             }
         });
-        mBtnEnsure = (JJSimpleButton) baseTitleLayout.findViewById(R.id.tcp_btn_ensure);
+        mBtnEnsure = baseTitleLayout.findViewById(R.id.tcp_btn_ensure);
         mBtnEnsure.setSelected(mCheckedList.size()==0);
         if(maxCheckCount>1){
             mBtnEnsure.setText("完成("+mCheckedList.size()+"/"+maxCheckCount+")").refresh();
@@ -108,8 +100,9 @@ public class ChoosePhotoActivity extends BaseActivity{
         });
     }
 
-    private void initUI() {
-        RecyclerView mMainList = (RecyclerView) findViewById(R.id.cp_main_list);
+    public void initUI() {
+        initTitle();
+        RecyclerView mMainList = findViewById(R.id.cp_main_list);
         findViewById(R.id.cp_btn_show_dir).setOnClickListener(new View.OnClickListener() {
             ChoosePhotoDirPop choosePhotoDirPop;
             @Override
