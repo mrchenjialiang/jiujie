@@ -12,7 +12,7 @@ import com.jiujie.base.APP;
 public class MyApp extends Application{
 
     @Override
-    public void onCreate() {
+    public void onCreate() { 
         super.onCreate();
         APP.init(this,false,false,null,true,"com.jiujie.jiujie.fileProvider");
     }
