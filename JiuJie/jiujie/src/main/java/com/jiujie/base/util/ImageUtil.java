@@ -18,10 +18,6 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -33,6 +29,7 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.jiujie.base.jk.ICallbackSimple;
+import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.model.Image;
 
 import java.io.BufferedInputStream;
@@ -306,38 +303,52 @@ public class ImageUtil {
      * @param fileName 要保存的文件文件名,包括格式
      * @param bitmap   要保存的图片
      */
-    public void saveImageToLocalAsJpg(String fileDic, String fileName, Bitmap bitmap) {
+    public void saveImageToLocalAsJpg(final String fileDic, final String fileName, final Bitmap bitmap) {
         if (!UIHelper.isSdCardExist()) {
             return;
         }
-        try {
-            File file = FileUtil.createFile(fileDic, fileName);
-            if(file!=null){
-                FileOutputStream fos = new FileOutputStream(file);
-                bitmap.compress(CompressFormat.JPEG, 100, fos);
+        FileUtil.requestPermission(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHas) {
+                if(isHas){
+                    try {
+                        File file = FileUtil.createFile(fileDic, fileName);
+                        if(file!=null){
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(CompressFormat.JPEG, 100, fos);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
      * @param fileName 要保存的文件文件名,包括格式
      * @param bitmap   要保存的图片
      */
-    public void saveImageToLocalAsPng(String fileDic, String fileName, Bitmap bitmap) {
+    public void saveImageToLocalAsPng(final String fileDic, final String fileName, final Bitmap bitmap) {
         if (!UIHelper.isSdCardExist()) {
             return;
         }
-        try {
-            File file = FileUtil.createFile(fileDic, fileName);
-            if(file!=null){
-                FileOutputStream fos = new FileOutputStream(file);
-                bitmap.compress(CompressFormat.PNG, 100, fos);
+        FileUtil.requestPermission(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHas) {
+                if(isHas){
+                    try {
+                        File file = FileUtil.createFile(fileDic, fileName);
+                        if(file!=null){
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(CompressFormat.PNG, 100, fos);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     public Bitmap drawable2Bitmap(Drawable drawable) {

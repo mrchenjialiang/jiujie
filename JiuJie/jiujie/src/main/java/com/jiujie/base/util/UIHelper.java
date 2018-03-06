@@ -241,7 +241,7 @@ public class UIHelper {
         writeStringToFile(Environment.getExternalStorageDirectory().getPath(), "log.txt", text);
     }
 
-    public static void writeStringToFile(String fileDic, String fileName, String text) {
+    public static void writeStringToFile(final String fileDic, final String fileName, final String text) {
         if (TextUtils.isEmpty(text)) {
             return;
         }
@@ -251,18 +251,25 @@ public class UIHelper {
         if (TextUtils.isEmpty(fileName)) {
             return;
         }
-        File file = FileUtil.createFile(fileDic, fileName);
-        if (file == null) {
-            return;
-        }
-        FileOutputStream fos;
-        try {
-            fos = new FileOutputStream(file, false);
-            fos.write(text.getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileUtil.requestPermission(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHas) {
+                if(isHas){
+                    File file = FileUtil.createFile(fileDic, fileName);
+                    if (file == null) {
+                        return;
+                    }
+                    FileOutputStream fos;
+                    try {
+                        fos = new FileOutputStream(file, false);
+                        fos.write(text.getBytes());
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     public static String readStringFromFile(String filePath) {

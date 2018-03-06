@@ -3,7 +3,6 @@ package com.jiujie.base.util.appupdate;
 import android.Manifest;
 import android.text.TextUtils;
 
-import com.jiujie.base.APP;
 import com.jiujie.base.jk.DownloadFileListen;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
@@ -14,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -73,48 +71,57 @@ public class DownloadFileUtil {
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        InputStream is = null;
-                        byte[] buf = new byte[1024];
-                        int len;
-                        FileOutputStream fos = null;
-                        try {
-                            File file = FileUtil.createFile(saveDir,saveName);
-                            if(file==null){
-                                if(downloadListen!=null)downloadListen.onFail("文件创建失败");
-                                return;
-                            }
+                    public void onResponse(Call call, final Response response) throws IOException {
+                        FileUtil.requestPermission(new OnListener<Boolean>() {
+                            @Override
+                            public void onListen(Boolean isHas) {
+                                if(isHas){
+                                    InputStream is = null;
+                                    byte[] buf = new byte[1024];
+                                    int len;
+                                    FileOutputStream fos = null;
+                                    try {
+                                        File file = FileUtil.createFile(saveDir,saveName);
+                                        if(file==null){
+                                            if(downloadListen!=null)downloadListen.onFail("文件创建失败");
+                                            return;
+                                        }
 
-                            is = response.body().byteStream();
-                            long total = response.body().contentLength();
-                            fos = new FileOutputStream(file);
-                            long sum = 0;
-                            if(downloadListen!=null)downloadListen.onStart(total);
-                            int oldProgress;
-                            int newProgress = 0;
-                            while ((len = is.read(buf)) != -1) {
-                                fos.write(buf, 0, len);
-                                sum += len;
-                                oldProgress = newProgress;
-                                newProgress = (int) (sum * 1.0f / total * 100);
-                                if(oldProgress!=newProgress){
-                                    if(downloadListen!=null)downloadListen.onLoading(sum,newProgress);
+                                        is = response.body().byteStream();
+                                        long total = response.body().contentLength();
+                                        fos = new FileOutputStream(file);
+                                        long sum = 0;
+                                        if(downloadListen!=null)downloadListen.onStart(total);
+                                        int oldProgress;
+                                        int newProgress = 0;
+                                        while ((len = is.read(buf)) != -1) {
+                                            fos.write(buf, 0, len);
+                                            sum += len;
+                                            oldProgress = newProgress;
+                                            newProgress = (int) (sum * 1.0f / total * 100);
+                                            if(oldProgress!=newProgress){
+                                                if(downloadListen!=null)downloadListen.onLoading(sum,newProgress);
+                                            }
+                                        }
+                                        fos.flush();
+                                        if(downloadListen!=null)downloadListen.onFinish(new File(saveDir,saveName).getAbsolutePath());
+                                    } catch (Exception e) {
+                                        UIHelper.showLog("DownFileUtil Exception " + e.getMessage());
+                                        e.printStackTrace();
+                                        if(downloadListen!=null)downloadListen.onFail("下载失败");
+                                    } finally {
+                                        try {
+                                            if (is != null) is.close();
+                                            if (fos != null) fos.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }else{
+                                    if(downloadListen!=null)downloadListen.onFail("缺少读写权限");
                                 }
                             }
-                            fos.flush();
-                            if(downloadListen!=null)downloadListen.onFinish(new File(saveDir,saveName).getAbsolutePath());
-                        } catch (Exception e) {
-                            UIHelper.showLog("DownFileUtil Exception " + e.getMessage());
-                            e.printStackTrace();
-                            if(downloadListen!=null)downloadListen.onFail("下载失败");
-                        } finally {
-                            try {
-                                if (is != null) is.close();
-                                if (fos != null) fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        });
                     }
                 });
             }

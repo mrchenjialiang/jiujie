@@ -108,11 +108,18 @@ public class WallpaperUtil {
                     }
 
                     return setWallpaper(mActivity, bitmap);
-                } catch (Exception e) {
-                    String message = e.getMessage();
-                    File logFile = FileUtil.createLogFile(mActivity, "setWallpaperFailLog.txt");
-                    UIHelper.writeStringToFile(logFile.getParentFile().getAbsolutePath(), logFile.getName(), message);
-                    UIHelper.showToastShort(mActivity, "图片处理失败");
+                } catch (final Exception e) {
+                    FileUtil.requestPermission(new OnListener<Boolean>() {
+                        @Override
+                        public void onListen(Boolean isHas) {
+                            if(isHas){
+                                String message = e.getMessage();
+                                File logFile = FileUtil.createLogFile(mActivity, "setWallpaperFailLog.txt");
+                                UIHelper.writeStringToFile(logFile.getParentFile().getAbsolutePath(), logFile.getName(), message);
+                                UIHelper.showToastShort(mActivity, "图片处理失败");
+                            }
+                        }
+                    });
                 }
                 return false;
             }

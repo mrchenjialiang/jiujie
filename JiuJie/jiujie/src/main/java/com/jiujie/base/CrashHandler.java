@@ -7,12 +7,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
 import com.jiujie.base.util.UIHelper;
 
@@ -155,7 +155,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
              return;
           }
       }
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       for (Map.Entry<String, String> entry : infos.entrySet()) {  
           String key = entry.getKey();  
           String value = entry.getValue();  
@@ -174,21 +174,29 @@ public class CrashHandler implements UncaughtExceptionHandler {
       String result = writer.toString();  
       sb.append(result);
       UIHelper.showLog(result);
-      try {
-          String time = formatter.format(new Date());
-          String fileName = "crash_" + time + ".txt";
-          if (UIHelper.isSdCardExist()) {
-              File file = FileUtil.createLogFile(mContext, fileName);
-              if(file==null||!file.exists()){
-                  return;
+      if (UIHelper.isSdCardExist()) {
+          FileUtil.requestPermission(new OnListener<Boolean>() {
+              @Override
+              public void onListen(Boolean isHas) {
+                  if(isHas){
+                      try {
+                          String time = formatter.format(new Date());
+                          String fileName = "crash_" + time + ".txt";
+
+                          File file = FileUtil.createLogFile(mContext, fileName);
+                          if(file==null||!file.exists()){
+                              return;
+                          }
+                          FileOutputStream fos = new FileOutputStream(file,true);
+                          sb.append(UIHelper.timeLongHaoMiaoToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss")).append("\n===END===\n");
+                          fos.write(sb.toString().getBytes());
+                          fos.close();
+                      } catch (Exception e) {
+                          Log.e(TAG, "an error happened while writing file", e);
+                      }
+                  }
               }
-              FileOutputStream fos = new FileOutputStream(file,true);
-              sb.append(UIHelper.timeLongHaoMiaoToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss")).append("\n===END===\n");
-              fos.write(sb.toString().getBytes());
-              fos.close();  
-          }  
-      } catch (Exception e) {
-          Log.e(TAG, "an error happened while writing file", e);
-      }  
+          });
+      }
   }
 }  

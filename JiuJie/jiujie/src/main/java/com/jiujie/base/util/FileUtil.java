@@ -1,8 +1,11 @@
 package com.jiujie.base.util;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
+
+import com.jiujie.base.jk.OnListener;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -63,6 +66,13 @@ public class FileUtil {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 调用创建文件前调用
+     */
+    public static void requestPermission(OnListener<Boolean> onListener){
+        PermissionsManager.getPermissionSimple(onListener, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     public static File createFile(String dirPath,String fileName){
