@@ -19,7 +19,7 @@ public class GlideModuleMine implements GlideModule {
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
 
-        builder.setDecodeFormat(DecodeFormat.PREFER_RGB_565);
+//        builder.setDecodeFormat(DecodeFormat.PREFER_RGB_565);
         //自定义缓存目录
         builder.setDiskCache(new InternalCacheDiskCacheFactory(context,
                 GlideCacheUtil.GLIDE_CACHE_DIR,

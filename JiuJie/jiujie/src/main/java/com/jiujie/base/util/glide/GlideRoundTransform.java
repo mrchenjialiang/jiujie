@@ -45,15 +45,15 @@ public class GlideRoundTransform extends BitmapTransformation {
 
         Bitmap result;
         if(scaleHeight!=0){
-            result = pool.get(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.RGB_565);
+            result = pool.get(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.ARGB_8888);
         }else{
-            result = pool.get(source.getWidth(), source.getHeight(), Bitmap.Config.RGB_565);
+            result = pool.get(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
         }
         if (result == null) {
             if(scaleHeight!=0){
-                result = Bitmap.createBitmap(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.RGB_565);
+                result = Bitmap.createBitmap(source.getWidth(), (int) (source.getWidth()*scaleHeight), Bitmap.Config.ARGB_8888);
             }else{
-                result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.RGB_565);
+                result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
             }
         }
 

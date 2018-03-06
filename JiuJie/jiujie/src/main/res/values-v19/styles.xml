@@ -22,10 +22,15 @@
         <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
     </style>
 
+    //适配华为等底部有Navigation也透明，但注意，会影响UI按键，设置的时候，按钮离底部要高点
+    <style name="Slide.trans.FullScreen.real" parent="Slide.trans.FullScreen">
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
     <style name="Slide.noTrans" parent="BaseAppTheme">
         <item name="android:actionBarStyle">@style/Slide.actionBar</item>
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
+    <!--<item name="android:windowTranslucentNavigation">true</item>-->
 
 </resources>

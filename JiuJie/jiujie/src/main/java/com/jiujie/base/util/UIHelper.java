@@ -28,7 +28,6 @@ import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
@@ -43,7 +42,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.telephony.TelephonyManager;
-import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -73,6 +71,9 @@ import com.jiujie.base.jk.InputAction;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.appupdate.NotificationUtil;
+import com.jiujie.base.util.recycler.MyGridLayoutManager;
+import com.jiujie.base.util.recycler.MyLinearLayoutManager;
+import com.jiujie.base.util.recycler.MyStaggeredGridLayoutManager;
 import com.jiujie.base.util.recycler.PagingScrollHelper;
 
 import java.io.BufferedReader;
@@ -87,7 +88,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -163,22 +163,22 @@ public class UIHelper {
                 return "";
             }
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            if(tm==null){
+            if (tm == null) {
                 return "";
             }
             return tm.getDeviceId();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static boolean isRunInUIThread(){
+    public static boolean isRunInUIThread() {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 
     public static void showToastShort(final Activity context, final String text) {
-        if(TextUtils.isEmpty(text)||TextUtils.isEmpty(text.trim())){
+        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(text.trim())) {
             return;
         }
         if (isRunInUIThread()) {
@@ -194,7 +194,7 @@ public class UIHelper {
     }
 
     public static void showToastLong(final Activity context, final String text) {
-        if(TextUtils.isEmpty(text)||TextUtils.isEmpty(text.trim())){
+        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(text.trim())) {
             return;
         }
         if (isRunInUIThread()) {
@@ -211,42 +211,53 @@ public class UIHelper {
 
     public static void showLog(Object... text) {
         if (APP.isDeBug) {
-            if(text!=null){
-                for (Object o:text){
-                    Log.e("LOG", ""+o.toString());
+            if (text != null) {
+                for (Object o : text) {
+                    Log.e("LOG", "" + o.toString());
                 }
             }
         }
     }
 
-    public static void showLog(String text) {
+    public static void showLog(Object key,String text) {
         if (APP.isDeBug) {
-            Log.e("LOG", text);
+            if(key==null){
+                return;
+            }
+            if(key instanceof String){
+                Log.e(key.toString(), ""+text);
+            }else{
+                Log.e(key.getClass().getSimpleName(), ""+text);
+            }
         }
     }
-    
+
+    public static void showLog(String text) {
+        showLog("LOG", text);
+    }
+
     public static void showLogInFile(String text) {
 //        writeStringToFile("E:/AndroidLog/","log.txt",text);
         writeStringToFile(Environment.getExternalStorageDirectory().getPath(), "log.txt", text);
     }
 
-    public static void writeStringToFile(String fileDic,String fileName,String text){
-        if(TextUtils.isEmpty(text)){
+    public static void writeStringToFile(String fileDic, String fileName, String text) {
+        if (TextUtils.isEmpty(text)) {
             return;
         }
-        if(TextUtils.isEmpty(fileDic)){
+        if (TextUtils.isEmpty(fileDic)) {
             return;
         }
-        if(TextUtils.isEmpty(fileName)){
+        if (TextUtils.isEmpty(fileName)) {
             return;
         }
         File file = FileUtil.createFile(fileDic, fileName);
-        if(file==null){
+        if (file == null) {
             return;
         }
         FileOutputStream fos;
         try {
-            fos = new FileOutputStream(file,false);
+            fos = new FileOutputStream(file, false);
             fos.write(text.getBytes());
             fos.close();
         } catch (IOException e) {
@@ -254,19 +265,19 @@ public class UIHelper {
         }
     }
 
-    public static String readStringFromFile(String filePath){
-        if(TextUtils.isEmpty(filePath)){
+    public static String readStringFromFile(String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
             return null;
         }
         File file = new File(filePath);
-        if(!file.exists()){
+        if (!file.exists()) {
             return null;
         }
         try {
             InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
-            String mimeTypeLine ;
+            String mimeTypeLine;
             while ((mimeTypeLine = br.readLine()) != null) {
                 sb.append(mimeTypeLine);
             }
@@ -286,6 +297,7 @@ public class UIHelper {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
+
     /**
      * 将px值转换为sp值，保证文字大小不变
      */
@@ -317,14 +329,14 @@ public class UIHelper {
         //否则会内存泄漏
         if (context == null) return false;
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(manager==null)return false;
+        if (manager == null) return false;
         NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public static int getNetworkSimpleType(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(manager==null)return 0;
+        if (manager == null) return 0;
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -341,15 +353,15 @@ public class UIHelper {
     /**
      * 获取网络状态
      */
-    public static String getNetworkType(Context context){
+    public static String getNetworkType(Context context) {
         String strNetworkType = "";
         ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(manager==null)return "";
+        if (manager == null) return "";
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()){
-            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI){
+        if (networkInfo != null && networkInfo.isConnected()) {
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 strNetworkType = "WIFI";
-            }else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
+            } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                 String _strSubTypeName = networkInfo.getSubtypeName();
                 // TD-SCDMA   networkType is 17
                 int networkType = networkInfo.getSubtype();
@@ -377,9 +389,9 @@ public class UIHelper {
                         break;
                     default:
                         // http://baike.baidu.com/item/TD-SCDMA 中国移动 联通 电信 三种3G制式
-                        if (_strSubTypeName.equalsIgnoreCase("TD-SCDMA") || _strSubTypeName.equalsIgnoreCase("WCDMA") || _strSubTypeName.equalsIgnoreCase("CDMA2000")){
+                        if (_strSubTypeName.equalsIgnoreCase("TD-SCDMA") || _strSubTypeName.equalsIgnoreCase("WCDMA") || _strSubTypeName.equalsIgnoreCase("CDMA2000")) {
                             strNetworkType = "3G";
-                        }else{
+                        } else {
                             strNetworkType = _strSubTypeName;
                         }
                         break;
@@ -392,17 +404,21 @@ public class UIHelper {
     /**
      * 获取屏幕宽度
      */
-    public static int getScreenWidth(Activity context) {
-        Display display = context.getWindowManager().getDefaultDisplay();
-        return display.getWidth();
+    public static int getScreenWidth(Activity mActivity) {
+        ViewGroup rootView = (ViewGroup) mActivity.getWindow().getDecorView();
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        return Math.max(width,rootView.getWidth());
     }
 
     /**
      * 获取屏幕高度
      */
-    public static int getScreenHeight(Activity context) {
-        Display display = context.getWindowManager().getDefaultDisplay();
-        return display.getHeight();
+    public static int getScreenHeight(Activity mActivity) {
+        ViewGroup rootView = (ViewGroup) mActivity.getWindow().getDecorView();
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        int height = display.getHeight();
+        return Math.max(height,rootView.getHeight());
     }
 
     /**
@@ -416,7 +432,8 @@ public class UIHelper {
                     IBinder windowToken = currentFocus.getWindowToken();
                     if (windowToken != null) {
                         InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if(manager!=null)manager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
+                        if (manager != null)
+                            manager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                 }
             }
@@ -432,7 +449,7 @@ public class UIHelper {
         try {
             if (activity != null) {
                 InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(manager!=null)manager.showSoftInput(view, 0);
+                if (manager != null) manager.showSoftInput(view, 0);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -440,7 +457,7 @@ public class UIHelper {
     }
 
     /**
-     * @param type     1:into center 0→max, 2,out center max →0
+     * @param type 1:into center 0→max, 2,out center max →0
      */
     public static void setJumpAnimation(Activity activity, int type) {
         if (type == 1) {
@@ -623,9 +640,9 @@ public class UIHelper {
     /**
      * 拷贝进剪切板
      */
-    public static void copyText(Activity activity, CharSequence text,boolean isShowToast) {
+    public static void copyText(Activity activity, CharSequence text, boolean isShowToast) {
         boolean isSuccess = copyText(activity, text);
-        if(isShowToast)showToastShort(activity, isSuccess?"复制成功":"复制失败");
+        if (isShowToast) showToastShort(activity, isSuccess ? "复制成功" : "复制失败");
     }
 
     /**
@@ -633,8 +650,8 @@ public class UIHelper {
      */
     public static boolean copyText(Context context, CharSequence text) {
         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        if(clipboard==null){
-            Log.e("Log","复制失败，clipboard==null");
+        if (clipboard == null) {
+            Log.e("Log", "复制失败，clipboard==null");
             return false;
         }
         if (!TextUtils.isEmpty(text)) {
@@ -642,27 +659,27 @@ public class UIHelper {
                 clipboard.setPrimaryClip(ClipData.newPlainText("text", text));    //API 11之后使用该方法
 
                 CharSequence getText = clipboard.getText();
-                if(text.equals(getText)){
-                    Log.e("Log","复制成功");
+                if (text.equals(getText)) {
+                    Log.e("Log", "复制成功");
                     return true;
-                }else{
-                    Log.e("Log","复制失败");
+                } else {
+                    Log.e("Log", "复制失败");
                     return false;
                 }
-            }else{
+            } else {
                 clipboard.setText(text);//API 11 之前
 
                 CharSequence getText = clipboard.getText();
-                if(text.equals(getText)){
-                    Log.e("Log","复制成功");
+                if (text.equals(getText)) {
+                    Log.e("Log", "复制成功");
                     return true;
-                }else{
-                    Log.e("Log","复制失败");
+                } else {
+                    Log.e("Log", "复制失败");
                     return false;
                 }
             }
-        }else{
-            Log.e("Log","复制内容为空，不复制");
+        } else {
+            Log.e("Log", "复制内容为空，不复制");
             return false;
         }
     }
@@ -673,7 +690,7 @@ public class UIHelper {
     }
 
     public static void waitForOpen(Activity context) {
-        showToastShort(context,"尚未开放，敬请期待！");
+        showToastShort(context, "尚未开放，敬请期待！");
     }
 
     /**
@@ -701,6 +718,7 @@ public class UIHelper {
 
     /**
      * 从assets中获取文件内容
+     *
      * @param fileName 文件名
      * @return 文件内容
      */
@@ -899,7 +917,7 @@ public class UIHelper {
         // 震动提示
         Vibrator vibrator = (Vibrator) context
                 .getSystemService(Context.VIBRATOR_SERVICE);
-        if(vibrator==null)return;
+        if (vibrator == null) return;
         long[] pattern = {50, 300, 50, 200};
         vibrator.vibrate(pattern, -1);
     }
@@ -916,7 +934,7 @@ public class UIHelper {
             mp.prepare();
             mp.start();
         } catch (Exception e) {
-            showLog("Exception startRing:"+e);
+            showLog("Exception startRing:" + e);
         }
     }
 
@@ -929,16 +947,16 @@ public class UIHelper {
         @SuppressWarnings("static-access")
         Vibrator vibrator = (Vibrator) context
                 .getSystemService(context.VIBRATOR_SERVICE);
-        if(vibrator==null)return;
+        if (vibrator == null) return;
         long[] pattern = {50, 300, 50, 200};
         vibrator.vibrate(pattern, -1);
     }
 
     public static int getStatusBarHeightByReadR(Context context) {
-        Class<?> c ;
-        Object obj ;
-        Field field ;
-        int x ;
+        Class<?> c;
+        Object obj;
+        Field field;
+        int x;
         try {
             c = Class.forName("com.android.internal.R$dimen");
             obj = c.newInstance();
@@ -994,15 +1012,16 @@ public class UIHelper {
 
     /**
      * 刷新手机图库
+     *
      * @param file 新存储到本地的图片文件
      */
     public static void refreshSystemImage(Context context, File file) {
-        if(file==null||!file.exists()||file.length()==0){
+        if (file == null || !file.exists() || file.length() == 0) {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri uri = UriUtil.getUri(context,intent,file);
+            Uri uri = UriUtil.getUri(context, intent, file);
             intent.setData(uri);
             context.sendBroadcast(intent);
             //两种，同时
@@ -1025,13 +1044,13 @@ public class UIHelper {
     /**
      * 判断某一个类是否存在任务栈里面
      */
-    public static boolean isActivityExistInTask(Context context,Class<?> cls){
+    public static boolean isActivityExistInTask(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
         ComponentName cmpName = intent.resolveActivity(context.getPackageManager());
         boolean flag = false;
         if (cmpName != null) { // 说明系统中存在这个activity
             ActivityManager am = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
-            if(am==null)return false;
+            if (am == null) return false;
             List<ActivityManager.RunningTaskInfo> taskInfoList = am.getRunningTasks(10);
             for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
                 if (taskInfo.baseActivity.equals(cmpName)) { // 说明它已经启动了
@@ -1045,42 +1064,42 @@ public class UIHelper {
 
     @NonNull
     public static String removeUselessLine(String content) {
-        if(content==null){
+        if (content == null) {
             content = "";
         }
-        content = content.replaceAll("<div><br \\/><\\/div>","");
-        while(content.startsWith("<br />")||content.startsWith("<br >")||content.startsWith("<br/>")||content.startsWith("<br>")||content.startsWith("\\n")){
-            if(content.startsWith("<br />")){
-                content = content.substring("<br />".length(),content.length()).trim();
+        content = content.replaceAll("<div><br \\/><\\/div>", "");
+        while (content.startsWith("<br />") || content.startsWith("<br >") || content.startsWith("<br/>") || content.startsWith("<br>") || content.startsWith("\\n")) {
+            if (content.startsWith("<br />")) {
+                content = content.substring("<br />".length(), content.length()).trim();
             }
-            if(content.startsWith("<br >")){
-                content = content.substring("<br >".length(),content.length()).trim();
+            if (content.startsWith("<br >")) {
+                content = content.substring("<br >".length(), content.length()).trim();
             }
-            if(content.startsWith("<br/>")){
-                content = content.substring("<br/>".length(),content.length()).trim();
+            if (content.startsWith("<br/>")) {
+                content = content.substring("<br/>".length(), content.length()).trim();
             }
-            if(content.startsWith("<br>")){
-                content = content.substring("<br>".length(),content.length()).trim();
+            if (content.startsWith("<br>")) {
+                content = content.substring("<br>".length(), content.length()).trim();
             }
-            if(content.startsWith("\\n")){
-                content = content.substring("\\n".length(),content.length()).trim();
+            if (content.startsWith("\\n")) {
+                content = content.substring("\\n".length(), content.length()).trim();
             }
         }
-        while(content.endsWith("<br />")||content.endsWith("<br >")||content.endsWith("<br/>")||content.endsWith("<br>")||content.endsWith("\\n")){
-            if(content.endsWith("<br />")){
-                content = content.substring(0,content.length()-"<br />".length()).trim();
+        while (content.endsWith("<br />") || content.endsWith("<br >") || content.endsWith("<br/>") || content.endsWith("<br>") || content.endsWith("\\n")) {
+            if (content.endsWith("<br />")) {
+                content = content.substring(0, content.length() - "<br />".length()).trim();
             }
-            if(content.endsWith("<br >")){
-                content = content.substring(0,content.length()-"<br >".length()).trim();
+            if (content.endsWith("<br >")) {
+                content = content.substring(0, content.length() - "<br >".length()).trim();
             }
-            if(content.endsWith("<br/>")){
-                content = content.substring(0,content.length()-"<br/>".length()).trim();
+            if (content.endsWith("<br/>")) {
+                content = content.substring(0, content.length() - "<br/>".length()).trim();
             }
-            if(content.endsWith("<br>")){
-                content = content.substring(0,content.length()-"<br>".length()).trim();
+            if (content.endsWith("<br>")) {
+                content = content.substring(0, content.length() - "<br>".length()).trim();
             }
-            if(content.endsWith("\\n")){
-                content = content.substring(0,content.length()-"\\n".length()).trim();
+            if (content.endsWith("\\n")) {
+                content = content.substring(0, content.length() - "\\n".length()).trim();
             }
         }
         return content;
@@ -1091,18 +1110,19 @@ public class UIHelper {
 //        Matcher m = p.matcher(mobiles);
 //        return m.matches();
 //    }
-    public static boolean isMobilePhone(String mobiles){
+    public static boolean isMobilePhone(String mobiles) {
         Pattern p = Pattern.compile("^((13[0-9])|(14[0-9])|(15[0-9])|(18[0-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
     }
 
-    public static boolean isEmail(String email){
-        String str="^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\\.][A-Za-z]{2,3}([\\.][A-Za-z]{2})?$";
+    public static boolean isEmail(String email) {
+        String str = "^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\\.][A-Za-z]{2,3}([\\.][A-Za-z]{2})?$";
         Pattern p = Pattern.compile(str);
         Matcher m = p.matcher(email);
         return m.matches();
     }
+
     /**
      * 校验是否是银行卡卡号
      */
@@ -1114,23 +1134,23 @@ public class UIHelper {
     /**
      * 从不含校验位的银行卡卡号采用 Luhm 校验算法获得校验位
      */
-    private static char getBankCardCheckCode(String nonCheckCodeCardId){
-        if(nonCheckCodeCardId == null || nonCheckCodeCardId.trim().length() == 0
+    private static char getBankCardCheckCode(String nonCheckCodeCardId) {
+        if (nonCheckCodeCardId == null || nonCheckCodeCardId.trim().length() == 0
                 || !nonCheckCodeCardId.matches("\\d+")) {
             //如果传的不是数据返回N
             return 'N';
         }
         char[] chs = nonCheckCodeCardId.trim().toCharArray();
         int luhmSum = 0;
-        for(int i = chs.length - 1, j = 0; i >= 0; i--, j++) {
+        for (int i = chs.length - 1, j = 0; i >= 0; i--, j++) {
             int k = chs[i] - '0';
-            if(j % 2 == 0) {
+            if (j % 2 == 0) {
                 k *= 2;
                 k = k / 10 + k % 10;
             }
             luhmSum += k;
         }
-        return (luhmSum % 10 == 0) ? '0' : (char)((10 - luhmSum % 10) + '0');
+        return (luhmSum % 10 == 0) ? '0' : (char) ((10 - luhmSum % 10) + '0');
     }
 
     /**
@@ -1181,23 +1201,23 @@ public class UIHelper {
 //        return Formatter.formatFileSize(activity, blockSize * availableBlocks);
     }
 
-    public static long getFileSize(File file){
+    public static long getFileSize(File file) {
         long size = 0;
-        if(file!=null&&file.exists()){
-            if(file.isDirectory()){
+        if (file != null && file.exists()) {
+            if (file.isDirectory()) {
                 for (File fileItem : file.listFiles()) {
                     size += getFileSize(fileItem);
                 }
-            }else{
+            } else {
                 return file.length();
             }
-        }else{
+        } else {
             return 0;
         }
         return size;
     }
 
-    public static Object doMethod(Class<?> classObject,String methodName){
+    public static Object doMethod(Class<?> classObject, String methodName) {
         try {
             Method classMethod = classObject.getDeclaredMethod(methodName);
             classMethod.setAccessible(true);
@@ -1243,44 +1263,45 @@ public class UIHelper {
         return false;
     }
 
-    public static void initRecyclerViewHPage(Context context, RecyclerView mRecyclerView, OnListener<Integer> onPageChangeListener){
+    public static void initRecyclerViewHPage(Context context, RecyclerView mRecyclerView, OnListener<Integer> onPageChangeListener) {
         initRecyclerViewH(context, mRecyclerView);
-        new PagingScrollHelper(mRecyclerView,onPageChangeListener);
+        new PagingScrollHelper(mRecyclerView, onPageChangeListener);
     }
 
-    public static void initRecyclerViewH(Context context, RecyclerView mRecyclerView){
-        initRecyclerView(context,mRecyclerView,0,0,0);
+    public static void initRecyclerViewH(Context context, RecyclerView mRecyclerView) {
+        initRecyclerView(context, mRecyclerView, 0, 0, 0);
     }
 
-    public static void initRecyclerViewV(Context context, RecyclerView mRecyclerView){
-        initRecyclerView(context,mRecyclerView,0,0,1);
+    public static void initRecyclerViewV(Context context, RecyclerView mRecyclerView) {
+        initRecyclerView(context, mRecyclerView, 0, 0, 1);
     }
 
-    public static void initRecyclerViewV(Context context, RecyclerView mRecyclerView,int type, int gNum){
-        initRecyclerView(context,mRecyclerView,type,gNum,1);
+    public static void initRecyclerViewV(Context context, RecyclerView mRecyclerView, int type, int gNum) {
+        initRecyclerView(context, mRecyclerView, type, gNum, 1);
     }
 
     public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum) {
-        initRecyclerView(context, mRecyclerView, type, gNum,1);
+        initRecyclerView(context, mRecyclerView, type, gNum, 1);
     }
 
     /**
-     *  初始化RecyclerView
-     * @param type 0:普通列表，1：普通GridView样式，2：瀑布流样式
-     * @param gNum 如果type = 1 或 2，则该值表示列数
+     * 初始化RecyclerView
+     *
+     * @param type   0:普通列表，1：普通GridView样式，2：瀑布流样式
+     * @param gNum   如果type = 1 或 2，则该值表示列数
      * @param orient 0:水平，1垂直
      */
-    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum,int orient) {
+    public static void initRecyclerView(Context context, RecyclerView mRecyclerView, int type, int gNum, int orient) {
         mRecyclerView.setHasFixedSize(true);
-        if(type==0){
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(context.getApplicationContext(),orient==0?LinearLayoutManager.HORIZONTAL:LinearLayoutManager.VERTICAL,false);
+        if (type == 0) {
+            MyLinearLayoutManager mLayoutManager = new MyLinearLayoutManager(context.getApplicationContext(), orient == 0 ? LinearLayoutManager.HORIZONTAL : LinearLayoutManager.VERTICAL, false);
             mRecyclerView.setLayoutManager(mLayoutManager);
-        }else if(type==1){
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(context.getApplicationContext(), gNum,orient==0?GridLayoutManager.HORIZONTAL:GridLayoutManager.VERTICAL,false);
+        } else if (type == 1) {
+            MyGridLayoutManager gridLayoutManager = new MyGridLayoutManager(context.getApplicationContext(), gNum, orient == 0 ? GridLayoutManager.HORIZONTAL : GridLayoutManager.VERTICAL, false);
             mRecyclerView.setLayoutManager(gridLayoutManager);
-        }else{
-            StaggeredGridLayoutManager staggeredGridLayoutManager =
-                    new StaggeredGridLayoutManager(gNum, orient==0?StaggeredGridLayoutManager.HORIZONTAL:StaggeredGridLayoutManager.VERTICAL);
+        } else {
+            MyStaggeredGridLayoutManager staggeredGridLayoutManager =
+                    new MyStaggeredGridLayoutManager(gNum, orient == 0 ? StaggeredGridLayoutManager.HORIZONTAL : StaggeredGridLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         }
         DefaultItemAnimator animator = new DefaultItemAnimator();
@@ -1334,9 +1355,9 @@ public class UIHelper {
     //这里是将获取到得编码进行16 进制转换
     private static String byte2HexFormatted(byte[] arr) {
         StringBuilder str = new StringBuilder(arr.length * 2);
-        for (int i = 0; i <arr.length; i++) {
+        for (int i = 0; i < arr.length; i++) {
             String h = Integer.toHexString(arr[i]);
-            int l =h.length();
+            int l = h.length();
             if (l == 1)
                 h = "0" + h;
             if (l > 2)
@@ -1348,17 +1369,17 @@ public class UIHelper {
         return str.toString();
     }
 
-    public static void setEditTextAction(final Activity activity, final EditText editText, final InputAction inputAction){
+    public static void setEditTextAction(final Activity activity, final EditText editText, final InputAction inputAction) {
         editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH||actionId == EditorInfo.IME_ACTION_DONE||actionId == EditorInfo.IME_ACTION_UNSPECIFIED||actionId == EditorInfo.IME_ACTION_GO) {
-                    if(activity!=null) UIHelper.hidePan(activity);
-                    if(inputAction!=null) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED || actionId == EditorInfo.IME_ACTION_GO) {
+                    if (activity != null) UIHelper.hidePan(activity);
+                    if (inputAction != null) {
                         Editable text = editText.getText();
-                        if(TextUtils.isEmpty(text.toString().trim())){
+                        if (TextUtils.isEmpty(text.toString().trim())) {
                             inputAction.send("");
-                        }else{
+                        } else {
                             inputAction.send(editText.getText().toString().trim());
                             editText.setSelection(text.length());
                         }
@@ -1373,18 +1394,19 @@ public class UIHelper {
      * 获取视频的缩略图
      * 先通过ThumbnailUtils来创建一个视频的缩略图，然后再利用ThumbnailUtils来生成指定大小的缩略图。
      * 如果想要的缩略图的宽和高都小于MICRO_KIND，则类型要使用MICRO_KIND作为kind的值，这样会节省内存。
+     *
      * @param videoPath 视频的路径
-     * width 指定输出视频缩略图的宽度
-     * height 指定输出视频缩略图的高度度
-     * kind 参照MediaStore.Images(Video).Thumbnails类中的常量MINI_KIND和MICRO_KIND。
-     *            其中，MINI_KIND: 512 x 384，MICRO_KIND: 96 x 96
-     *  指定大小的视频缩略图
+     *                  width 指定输出视频缩略图的宽度
+     *                  height 指定输出视频缩略图的高度度
+     *                  kind 参照MediaStore.Images(Video).Thumbnails类中的常量MINI_KIND和MICRO_KIND。
+     *                  其中，MINI_KIND: 512 x 384，MICRO_KIND: 96 x 96
+     *                  指定大小的视频缩略图
      */
-    public static void setVideoThumbLocal(String videoPath,ImageView imageView,int width,int height){
+    public static void setVideoThumbLocal(String videoPath, ImageView imageView, int width, int height) {
         Bitmap bitmap;
         // 获取视频的缩略图
         bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, MINI_KIND);
-        if(bitmap!= null){
+        if (bitmap != null) {
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             imageView.setImageBitmap(bitmap);
         }
@@ -1393,8 +1415,8 @@ public class UIHelper {
     /**
      * 获取视频的预览图的方法要调用的方法
      */
-    public static void setVideoThumbnail(final String url,final ImageView imageView){
-        if(TextUtils.isEmpty(url)||imageView==null)return;
+    public static void setVideoThumbnail(final String url, final ImageView imageView) {
+        if (TextUtils.isEmpty(url) || imageView == null) return;
 
         final long tagStart = System.currentTimeMillis();
         imageView.setTag(tagStart);
@@ -1407,7 +1429,7 @@ public class UIHelper {
             @Override
             public void runOnUIThread(Bitmap bitmap) {
                 long tag = (long) imageView.getTag();
-                if(tag==tagStart&&bitmap!=null){
+                if (tag == tagStart && bitmap != null) {
                     imageView.setImageBitmap(bitmap);
                 }
             }
@@ -1449,7 +1471,7 @@ public class UIHelper {
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_BACK){
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
                     return true;
                 }
                 return false;
@@ -1457,21 +1479,21 @@ public class UIHelper {
         });
     }
 
-    public static boolean isSdCardExist(){
+    public static boolean isSdCardExist() {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    public static boolean installNormal(Context context, String filePath){
+    public static boolean installNormal(Context context, String filePath) {
         File file = new File(filePath);
-        return installNormal(context,file);
+        return installNormal(context, file);
     }
 
-    public static boolean installNormal(Context context, File file){
+    public static boolean installNormal(Context context, File file) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         if (!file.exists() || !file.isFile() || file.length() <= 0) {
             return false;
         }
-        i.setDataAndType(UriUtil.getUri(context,i,file), "application/vnd.android.package-archive");
+        i.setDataAndType(UriUtil.getUri(context, i, file), "application/vnd.android.package-archive");
         context.startActivity(i);
         return true;
     }
@@ -1489,7 +1511,7 @@ public class UIHelper {
 
     public static String getProcessName(Context cxt, int pid) {
         ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
-        if(am==null)return null;
+        if (am == null) return null;
         List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
         if (runningApps == null) {
             return null;
@@ -1502,7 +1524,7 @@ public class UIHelper {
         return null;
     }
 
-    public static void recycleImageView(ImageView imageView){
+    public static void recycleImageView(ImageView imageView) {
         if (imageView == null) return;
         Drawable drawable = imageView.getDrawable();
         if (drawable != null && drawable instanceof BitmapDrawable) {
@@ -1518,20 +1540,21 @@ public class UIHelper {
     }
 
     /**
-     *设置状态栏黑色字体图标，
+     * 设置状态栏黑色字体图标，
      * 适配4.4以上版本MIUIV、Flyme和6.0以上版本其他Android
+     *
      * @return 1:MIUUI 2:Flyme 3:android6.0
      */
-    public static int setStatusBarLightMode(Activity activity){
-        int result=0;
+    public static int setStatusBarLightMode(Activity activity) {
+        int result = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if(MIUISetStatusBarLightMode(activity.getWindow(), true)){
-                result=1;
-            }else if(FlymeSetStatusBarLightMode(activity.getWindow(), true)){
-                result=2;
-            }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                result=3;
+            if (MIUISetStatusBarLightMode(activity.getWindow(), true)) {
+                result = 1;
+            } else if (FlymeSetStatusBarLightMode(activity.getWindow(), true)) {
+                result = 2;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                result = 3;
             }
         }
         return result;
@@ -1539,10 +1562,10 @@ public class UIHelper {
 
     /**
      * 设置状态栏字体图标为深色，需要MIUIV6以上
-     * @param window 需要设置的窗口
-     * @param dark 是否把状态栏字体及图标颜色设置为深色
-     * @return  boolean 成功执行返回true
      *
+     * @param window 需要设置的窗口
+     * @param dark   是否把状态栏字体及图标颜色设置为深色
+     * @return boolean 成功执行返回true
      */
     private static boolean MIUISetStatusBarLightMode(Window window, boolean dark) {
         boolean result = false;
@@ -1554,13 +1577,13 @@ public class UIHelper {
                 Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
                 darkModeFlag = field.getInt(layoutParams);
                 Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
-                if(dark){
-                    extraFlagField.invoke(window,darkModeFlag,darkModeFlag);//状态栏透明且黑色字体
-                }else{
+                if (dark) {
+                    extraFlagField.invoke(window, darkModeFlag, darkModeFlag);//状态栏透明且黑色字体
+                } else {
                     extraFlagField.invoke(window, 0, darkModeFlag);//清除黑色字体
                 }
-                result=true;
-            }catch (Exception e){
+                result = true;
+            } catch (Exception e) {
 
             }
         }
@@ -1570,10 +1593,10 @@ public class UIHelper {
     /**
      * 设置状态栏图标为深色和魅族特定的文字风格
      * 可以用来判断是否为Flyme用户
-     * @param window 需要设置的窗口
-     * @param dark 是否把状态栏字体及图标颜色设置为深色
-     * @return  boolean 成功执行返回true
      *
+     * @param window 需要设置的窗口
+     * @param dark   是否把状态栏字体及图标颜色设置为深色
+     * @return boolean 成功执行返回true
      */
     private static boolean FlymeSetStatusBarLightMode(Window window, boolean dark) {
         boolean result = false;
@@ -1605,6 +1628,7 @@ public class UIHelper {
 
     /**
      * 当前日期 年_月_日_时_分_秒
+     *
      * @param fileType .jpg  .png   .txt  ...
      */
     public static String getTimeFileName(String fileType) {
@@ -1613,13 +1637,13 @@ public class UIHelper {
         return sdf.format(new Date(currentTimeMillis)) + fileType;
     }
 
-    public static void getViewDrawListen(final View view, final OnSimpleListener onSimpleListener){
-        final ViewTreeObserver vto =view.getViewTreeObserver();
+    public static void getViewDrawListen(final View view, final OnSimpleListener onSimpleListener) {
+        final ViewTreeObserver vto = view.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 view.getViewTreeObserver().removeOnPreDrawListener(this);
-                if(onSimpleListener!=null){
+                if (onSimpleListener != null) {
                     onSimpleListener.onListen();
                 }
                 return true;
@@ -1627,16 +1651,16 @@ public class UIHelper {
         });
     }
 
-    public static <T> T[] list2Array(List<T> list,T[] array){
+    public static <T> T[] list2Array(List<T> list, T[] array) {
         return list.toArray(array);
     }
 
-    public static <T> T[] list2Array(List<T> list){
+    public static <T> T[] list2Array(List<T> list) {
         T[] array = (T[]) new Object[list.size()];
         return list.toArray(array);
     }
 
-    public static <T>List<T> array2List(T[] array){
+    public static <T> List<T> array2List(T[] array) {
         return Arrays.asList(array);
     }
 

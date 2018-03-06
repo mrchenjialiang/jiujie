@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.jk.OnListener;
@@ -11,6 +12,7 @@ import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.GetPictureUtil;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.PermissionsManager;
+import com.jiujie.base.util.TaskManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
 import com.jiujie.jiujie.grouplist.GroupListActivity;
@@ -24,13 +26,32 @@ public class MainActivity extends MyBaseActivity {
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
 
+
+        new TaskManager<Boolean>() {
+            @Override
+            public Boolean runOnBackgroundThread() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            public void runOnUIThread(Boolean aBoolean) {
+                UIHelper.showToastShort(mActivity,"哇哈哈");
+                Toast.makeText(getApplicationContext(), "呵呵", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
+
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
 
     @Override
     public void initData() {
-//        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleFragment()).commit();
+//        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
     }
 
     @Override
@@ -125,5 +146,9 @@ public class MainActivity extends MyBaseActivity {
                 UIHelper.showLog("onLoading loadedLength:"+loadedLength+",progress:"+progress);
             }
         }).start();
+    }
+
+    public void toFrame(View view) {
+        startActivity(new Intent(mActivity,FragmentActivity.class));
     }
 }

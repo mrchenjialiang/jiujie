@@ -2,8 +2,15 @@ package com.jiujie.jiujie;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
+import com.jiujie.base.util.UIHelper;
+
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Created by ChenJiaLiang on 2018/1/11.
@@ -11,9 +18,16 @@ import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
  */
 
 public class SimpleListAdapter extends BaseRecyclerViewAdapter{
+
+    private final List<String> dataList;
+
+    public SimpleListAdapter(List<String> dataList) {
+        this.dataList = dataList;
+    }
+
     @Override
     public int getCount() {
-        return 20;
+        return dataList==null?0:dataList.size();
     }
 
     @Override
@@ -23,7 +37,11 @@ public class SimpleListAdapter extends BaseRecyclerViewAdapter{
 
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+        UIHelper.showLog("onBindItemViewHolder:"+position);
+        if(holder instanceof ItemViewHolder){
+            ItemViewHolder h = (ItemViewHolder) holder;
+            h.text.setText(dataList.get(position));
+        }
     }
 
     @Override
@@ -33,8 +51,11 @@ public class SimpleListAdapter extends BaseRecyclerViewAdapter{
 
     class ItemViewHolder extends RecyclerView.ViewHolder{
 
+        @Bind(R.id.iml_text)
+        TextView text;
         public ItemViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
         }
     }
 }

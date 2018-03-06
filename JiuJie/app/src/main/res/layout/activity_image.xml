@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:jiujie="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/i_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <com.jiujie.base.widget.JJSimpleButton
+        android:id="@+id/i_btn_set_wallpaper"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="12dp"
+        jiujie:conner="20dp"
+        jiujie:bgColor_n="#ff6666"
+        jiujie:text="设置壁纸"
+        jiujie:textColor_n="@color/white"
+        jiujie:textSize="15sp"/>
+
+</FrameLayout>

@@ -33,11 +33,11 @@ public class GlideCircleTransform extends BitmapTransformation {
         // TODO this could be acquired from the pool too
         Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);
 
-//        Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
-        Bitmap result = pool.get(size, size, Bitmap.Config.RGB_565);
+        Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
+//        Bitmap result = pool.get(size, size, Bitmap.Config.RGB_565);
         if (result == null) {
-            result = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
-//            result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+//            result = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
+            result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         }
 
         Canvas canvas = new Canvas(result);

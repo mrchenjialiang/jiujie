@@ -12,14 +12,10 @@ import com.jiujie.base.activity.ChoosePhotoActivity;
 import com.jiujie.base.activity.cropimage.JJCropImageActivity;
 import com.jiujie.base.jk.ICallbackSimple;
 import com.jiujie.base.jk.OnListener;
-import com.tbruyelle.rxpermissions.Permission;
-import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import rx.functions.Action1;
 
 /**
  *
@@ -36,22 +32,12 @@ public class GetPictureUtil {
 	private static int cropFileMaxLength;
 
 	private static void requestPermissions(Context context, final OnListener<Boolean> onListener){
-		RxPermissions.getInstance(context).requestEach(Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-				.subscribe(new Action1<Permission>() {
-					boolean isCallback;
-					@Override
-					public void call(Permission permission) {
-						if(isCallback){
-							return;
-						}
-						if (permission.granted) {
-							onListener.onListen(true);
-						}else {
-							onListener.onListen(false);
-						}
-						isCallback = true;
-					}
-				});
+		PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+			@Override
+			public void onListen(Boolean isHasPermission) {
+				onListener.onListen(isHasPermission);
+			}
+		}, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
 	}
 
 	private static Uri getCameraOutPutUri(Context context,Intent intent,String dir,String name){
