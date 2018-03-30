@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@android:color/transparent" >
 
     <LinearLayout
         android:id="@+id/lf_loading_line"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible"
         android:background="@android:color/transparent"
@@ -33,26 +34,38 @@
             android:textSize="16.0sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/lf_load_end_text"
-        android:layout_width="fill_parent"
-        android:layout_height="40.0dip"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/list_footer_end"
-        android:textColor="#babec1"
-        android:textSize="16.0sp"
-        android:visibility="gone" />
+    <LinearLayout
+        android:id="@+id/lf_load_end_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/lf_load_fail"
-        android:layout_width="fill_parent"
-        android:layout_height="40.0dip"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/list_footer_fail"
-        android:textColor="#babec1"
-        android:textSize="16.0sp"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/lf_load_end_text"
+            android:layout_width="match_parent"
+            android:layout_height="40.0dip"
+            android:gravity="center"
+            android:text="@string/list_footer_end"
+            android:textColor="#babec1"
+            android:textSize="16.0sp" />
 
-</RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lf_load_fail_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/lf_load_fail"
+            android:layout_width="match_parent"
+            android:layout_height="40.0dip"
+            android:gravity="center"
+            android:text="@string/list_footer_fail"
+            android:textColor="#babec1"
+            android:textSize="16.0sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

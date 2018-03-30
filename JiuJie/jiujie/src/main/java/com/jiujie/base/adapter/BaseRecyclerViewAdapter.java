@@ -29,9 +29,9 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     private FooterViewHolder footerViewHolder;
     private HeaderViewHolder headerViewHolder;
 
-    private final int Footer_Status_Loading = 0;
-    private final int Footer_Status_Load_End = 1;
-    private final int Footer_Status_Load_Fail = 2;
+    public static final int Footer_Status_Loading = 0;
+    public static final int Footer_Status_Load_End = 1;
+    public static final int Footer_Status_Load_Fail = 2;
     private int footerStatus;
     private int oldItemCount;
     private int mDuration = 300;
@@ -43,19 +43,6 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         for (int position = startPosition;position<getItemCount();position++){
             notifyItemInserted(position++);
         }
-
-//        int itemCount = getItemCount();
-//        if(oldItemCount==0||oldItemCount >= itemCount){
-//            notifyDataSetChanged();
-//        }else{
-//            int startPosition = oldItemCount -1;
-//            for (int position = startPosition;position<itemCount;position++){
-//                notifyItemInserted(position++);
-//            }
-//
-////            notifyItemRangeChanged(startPosition, itemCount);
-//        }
-//        oldItemCount = itemCount;
     }
 
     public void notifyItemChanged1(int position){
@@ -257,7 +244,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
         }
     }
     public final void setReadFail(){
-        if(footerStatus==Footer_Status_Loading){
+        if(footerStatus==Footer_Status_Load_Fail){
             return;
         }
         footerStatus = Footer_Status_Load_Fail;
@@ -265,6 +252,10 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
             footer.setReadFail();
         }
     }
+    public final int getFooterStatus(){
+        return footerStatus;
+    }
+
 
     public void addHeaderView(View header){
         this.header = header;

@@ -9,10 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--app:elevation="0dp"  去除阴影-->
         <android.support.design.widget.AppBarLayout
             android:id="@+id/bskh_appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:elevation="0dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
             <!--app:layout_behavior="com.jiujie.base.widget.FlingBehavior"-->
 
@@ -22,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_vertical"
-                app:layout_scrollFlags="scroll|snap">
+                app:layout_scrollFlags="scroll">
                 <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
                 <!--scroll是优先滑动scrollLine，scroll|enterAlways是优先滑动AppBarLayout-->
                 <!--app:layout_scrollFlags="scroll|enterAlways">-->

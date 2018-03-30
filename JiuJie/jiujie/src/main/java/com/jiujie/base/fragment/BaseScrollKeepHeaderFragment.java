@@ -33,7 +33,7 @@ public abstract class BaseScrollKeepHeaderFragment extends BaseFragment implemen
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) mView.findViewById(R.id.bskh_swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(mActivity,R.color.title_bg));
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(mActivity,R.color.refresh_color));
 
         mMissLine = mView.findViewById(R.id.bskh_dissmiss_line);
         mKeepTopLine = mView.findViewById(R.id.bskh_keep_top_line);

@@ -1,11 +1,7 @@
 package com.jiujie.jiujie;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.WallpaperUtil;
 import com.jiujie.base.util.glide.GlideUtil;
 

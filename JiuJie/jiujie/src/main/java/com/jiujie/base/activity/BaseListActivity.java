@@ -51,22 +51,6 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 		if(recyclerViewUtil!=null)recyclerViewUtil.setEnd(isEnd);
 	}
 
-	/**
-	 * @param type 0:first,1:refresh,2:loadNextPage
-	 */
-	public void setLoadDataStart(int type){
-		if(recyclerViewUtil==null)return;
-		recyclerViewUtil.setLoadDataStart(type,this);
-	}
-
-	/**
-	 * @param type 0:first,1:refresh,2:loadNextPage
-	 */
-	public void setLoadDataEnd(int type){
-		if(recyclerViewUtil==null)return;
-		recyclerViewUtil.setLoadDataEnd(type,this);
-	}
-
 	public void notifyDataSetChanged(){
 		if(recyclerViewUtil==null)return;
 		recyclerViewUtil.notifyDataSetChanged(true);

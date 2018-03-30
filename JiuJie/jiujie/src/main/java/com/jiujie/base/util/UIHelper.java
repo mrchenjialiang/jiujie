@@ -22,7 +22,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaScannerConnection;
 import android.media.RingtoneManager;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
@@ -34,6 +33,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.StatFs;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -415,7 +415,9 @@ public class UIHelper {
         ViewGroup rootView = (ViewGroup) mActivity.getWindow().getDecorView();
         Display display = mActivity.getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
-        return Math.max(width,rootView.getWidth());
+        int screenWidth = Math.max(width, rootView.getWidth());
+        SharePHelper.instance(mActivity).saveObject("screenWidth",screenWidth);
+        return screenWidth;
     }
 
     /**
@@ -425,7 +427,19 @@ public class UIHelper {
         ViewGroup rootView = (ViewGroup) mActivity.getWindow().getDecorView();
         Display display = mActivity.getWindowManager().getDefaultDisplay();
         int height = display.getHeight();
-        return Math.max(height,rootView.getHeight());
+        int screenHeight = Math.max(height, rootView.getHeight());
+        SharePHelper.instance(mActivity).saveObject("screenHeight",screenHeight);
+        return screenHeight;
+    }
+
+    public static int getScreenWidthByRead(Context context){
+        Integer screenWidth = SharePHelper.instance(context).readObject("screenWidth");
+        return screenWidth==null?0:screenWidth;
+    }
+
+    public static int getScreenHeightByRead(Context context){
+        Integer screenHeight = SharePHelper.instance(context).readObject("screenHeight");
+        return screenHeight==null?0:screenHeight;
     }
 
     /**
@@ -1026,18 +1040,15 @@ public class UIHelper {
         if (file == null || !file.exists() || file.length() == 0) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri uri = UriUtil.getUri(context, intent, file);
-            intent.setData(uri);
-            context.sendBroadcast(intent);
-            //两种，同时
-            MediaScannerConnection.scanFile(context, new String[]{file.getAbsolutePath()},
-                    null, null);
-        } else {
-            Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory()));
-            context.sendBroadcast(intent);
+        // 其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(),
+                    file.getAbsolutePath(), file.getName(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        // 最后通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getAbsolutePath())));
     }
 
     public static boolean isIntentExisting(Context context, Intent intent) {

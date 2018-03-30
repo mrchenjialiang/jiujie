@@ -11,11 +11,13 @@ import com.jiujie.base.util.UIHelper;
  */
 public class BaseRecyclerViewFooter {
 
-	private View footer,loadingLine;
+	private View footer,loadingLine,loadEndLine,loadFailLine;
 	private TextView loadingText,loadEndText, loadFailText;
 	public BaseRecyclerViewFooter(View footer){
 		this.footer = footer;
 		loadingLine = footer.findViewById(R.id.lf_loading_line);
+		loadEndLine = footer.findViewById(R.id.lf_load_end_line);
+		loadFailLine = footer.findViewById(R.id.lf_load_fail_line);
 		loadingText = footer.findViewById(R.id.lf_loading_text);
 		loadEndText = footer.findViewById(R.id.lf_load_end_text);
 		loadFailText = footer.findViewById(R.id.lf_load_fail);
@@ -27,8 +29,8 @@ public class BaseRecyclerViewFooter {
 	public void setReadMore() {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.VISIBLE);
-		loadEndText.setVisibility(View.GONE);
-		loadFailText.setVisibility(View.GONE);
+		loadEndLine.setVisibility(View.GONE);
+		loadFailLine.setVisibility(View.GONE);
 	}
 
 	/**
@@ -37,8 +39,8 @@ public class BaseRecyclerViewFooter {
 	public void setReadEnd() {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.GONE);
-		loadEndText.setVisibility(View.VISIBLE);
-		loadFailText.setVisibility(View.GONE);
+		loadEndLine.setVisibility(View.VISIBLE);
+		loadFailLine.setVisibility(View.GONE);
 	}
 
 	/**
@@ -47,9 +49,8 @@ public class BaseRecyclerViewFooter {
 	public void setReadFail() {
 		if(footer.getVisibility()==View.GONE)show();
 		loadingLine.setVisibility(View.GONE);
-		loadEndText.setVisibility(View.GONE);
-		loadFailText.setVisibility(View.VISIBLE);
-		UIHelper.showLog("setReadFail");
+		loadEndLine.setVisibility(View.GONE);
+		loadFailLine.setVisibility(View.VISIBLE);
 	}
 
 

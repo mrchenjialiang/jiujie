@@ -2,20 +2,20 @@ package com.jiujie.jiujie;
 
 import android.Manifest;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
-import com.jiujie.base.APP;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.GetPictureUtil;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.PermissionsManager;
-import com.jiujie.base.util.TaskManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
+import com.jiujie.jiujie.autocompletetextview.AutoCompleteTextViewActivity;
 import com.jiujie.jiujie.grouplist.GroupListActivity;
+import com.jiujie.jiujie.service.JiuJieKeepService;
+import com.jiujie.jiujie.service.MyWallpaperServer;
+import com.jiujie.jiujie.service.TransWallpaperServer;
 
 public class MainActivity extends MyBaseActivity {
 
@@ -26,25 +26,7 @@ public class MainActivity extends MyBaseActivity {
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
 
-
-        new TaskManager<Boolean>() {
-            @Override
-            public Boolean runOnBackgroundThread() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            public void runOnUIThread(Boolean aBoolean) {
-                UIHelper.showToastShort(mActivity,"哇哈哈");
-                Toast.makeText(getApplicationContext(), "呵呵", Toast.LENGTH_SHORT).show();
-            }
-        }.start();
-
+        startService(new Intent(mActivity, JiuJieKeepService.class));
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -52,6 +34,7 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
+
     }
 
     @Override
@@ -64,25 +47,7 @@ public class MainActivity extends MyBaseActivity {
     }
 
     public void toSd(View view) {
-//        try {
-//            //获取父目录
-//            File parentFile = new File(getCropOutPutDir());
-//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//            intent.setDataAndType(Uri.fromFile(parentFile), "*/*");
-//            intent.addCategory(Intent.CATEGORY_OPENABLE);
-//            startActivity(intent);
-//        }catch (Exception e){
-//            UIHelper.showToastShort(mActivity,"没有文件管理器");
-//        }
-
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("*/*");
-//        intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        try {
-//            startActivity(Intent.createChooser(intent, "打开文件管理器"));
-//        } catch (android.content.ActivityNotFoundException ex) {
-//            UIHelper.showToastShort(mActivity,"没有文件管理器");
-//        }
+        startActivity(new Intent(mActivity, VideoActivity.class));
     }
 
     public void doAction1(View view) {
@@ -92,24 +57,6 @@ public class MainActivity extends MyBaseActivity {
 //                UIHelper
             }
         }, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
-
-//        UIHelper.installNormal(mActivity, "/storage/emulated/0/tencent/QQfile_recv/jingling_oppo.apk");//oppo测试机
-
-//        UIHelper.installNormal(mActivity,"/storage/emulated/0/tencent/qqfile_recv/jingling.apk");//小米测试机
-//        UIHelper.installNormal(mActivity,"/storage/emulated/0/Download/jingling_m_3987.apk");
-
-
-//        GetPictureUtil.getPhotoFromCamera(mActivity, getCropOutPutDir(), UIHelper.getTimeFileName(".jpg"), true, 1, 100 * 1024, new OnListener<List<String>>() {
-//            @Override
-//            public void onListen(List<String> strings) {
-//                UIHelper.showLog("strings:"+strings);
-//                File file = new File(strings.get(0));
-//                if(file.exists()){
-//                    UIHelper.showToastShort(mActivity,strings.get(0));
-//                    UIHelper.showLog("length:"+file.length());
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -150,5 +97,32 @@ public class MainActivity extends MyBaseActivity {
 
     public void toFrame(View view) {
         startActivity(new Intent(mActivity,FragmentActivity.class));
+    }
+
+    public void doWallpaper(View view) {
+        startActivity(new Intent(mActivity,ImageActivity.class));
+    }
+
+    public void toScrollKeyTop(View view) {
+        startActivity(new Intent(mActivity,ScrollKeepTopActivity.class));
+    }
+
+    public void toAutoCompleteTextView(View view) {
+        startActivity(new Intent(mActivity,AutoCompleteTextViewActivity.class));
+    }
+
+    public void startLiveWallpaper(View view) {
+        MyWallpaperServer myWallpaperServer = new MyWallpaperServer();
+        myWallpaperServer.start(mActivity);
+    }
+
+    public void startTransLiveWallpaper(View view) {
+        PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean aBoolean) {
+                TransWallpaperServer myWallpaperServer = new TransWallpaperServer();
+                myWallpaperServer.start(mActivity);
+            }
+        },Manifest.permission.CAMERA,"android.hardware.camera","android.hardware.camera.autofocus","android.permission.FLASHLIGHT");
     }
 }

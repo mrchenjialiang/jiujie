@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.jiujie.base.R;
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
-import com.jiujie.base.jk.LoadStatus;
 import com.jiujie.base.jk.OnScrollPositionListener;
 import com.jiujie.base.jk.OnScrolledListen;
 import com.jiujie.base.jk.Refresh;
@@ -174,7 +173,7 @@ public class RecyclerViewUtil {
                 if(adapter instanceof BaseRecyclerViewAdapter &&!isEnd){
                     BaseRecyclerViewAdapter mAdapter = (BaseRecyclerViewAdapter) adapter;
                     if(mAdapter.getCount()>0){
-                        if(mAdapter.getLastPosition() + 1 >= adapter.getItemCount()- advanceSize) {
+                        if(mAdapter.getLastPosition() + 1 >= adapter.getItemCount()- (isLoadMoreFail()?0:advanceSize)) {
                             if (!isFooterEnable) return;
 
                             long current = System.currentTimeMillis();
@@ -186,9 +185,9 @@ public class RecyclerViewUtil {
 
                             if (refresh != null && !isLoadingData) {
                                 refresh.loadMore();
+                                setReadMore();
                                 isLoadingData = true;
                             }
-                            setReadMore();
                         }
                     }
                 }else{
@@ -278,6 +277,10 @@ public class RecyclerViewUtil {
         }
     }
 
+    public boolean isLoadMoreFail() {
+        return adapter != null && adapter instanceof BaseRecyclerViewAdapter && ((BaseRecyclerViewAdapter) adapter).getFooterStatus() == BaseRecyclerViewAdapter.Footer_Status_Load_Fail;
+    }
+
     public void setFooterEnable(boolean isFooterEnable){
         this.isFooterEnable = isFooterEnable;
     }
@@ -314,28 +317,39 @@ public class RecyclerViewUtil {
         return mRecyclerView;
     }
 
-    public void setLoadDataStart(int type, LoadStatus loadStatus) {
-        isLoadingData(true);
-        if(type==0){
-            loadStatus.setLoading();
-            setEnd(false);
-        }else if(type==1){
-            setRefreshing(true);
-            setEnd(false);
-        }else if(type==2){
-            setReadMore();
-        }
-    }
-
-    public void setLoadDataEnd(int type, LoadStatus loadStatus) {
-        isLoadingData(false);
-        if(type==0){
-            loadStatus.setLoadingEnd();
-        }else if(type==1){
-            setRefreshing(false);
-        }
-        if(isEnd)setReadEnd();
-        else setReadMore();
-        notifyDataSetChanged(type==0||type==1);
-    }
+//    public void setLoadDataStart(int type, LoadStatus loadStatus) {
+//        isLoadingData(true);
+//        if(type==0){
+//            loadStatus.setLoading();
+//            setEnd(false);
+//        }else if(type==1){
+//            setRefreshing(true);
+//            setEnd(false);
+//        }else if(type==2){
+//            setReadMore();
+//        }
+//    }
+//
+//    public void setLoadDataEnd(int type, LoadStatus loadStatus) {
+//        isLoadingData(false);
+//        if(type==0){
+//            loadStatus.setLoadingEnd();
+//        }else if(type==1){
+//            setRefreshing(false);
+//        }
+//        if(isEnd)setReadEnd();
+//        else setReadMore();
+//        notifyDataSetChanged(type==0||type==1);
+//    }
+//
+//    public void setLoadDataFail(int type,LoadStatus loadStatus){
+//        isLoadingData(false);
+//        if(type==0){
+//            loadStatus.setLoadingFail();
+//        }else if(type==1){
+//            setRefreshing(false);
+//        }else if(type==2){
+//            setReadFail();
+//        }
+//    }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/hpc_keep_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_of_title"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:gravity="center|bottom">
+
+        <com.flyco.tablayout.SlidingTabLayout
+            android:id="@+id/hpc_tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_of_title"
+            android:layout_gravity="bottom"
+            app:tl_indicator_color="#ff0000"
+            app:tl_indicator_height="3dp"
+            app:tl_indicator_width="57dp"
+            app:tl_indicator_style="NORMAL"
+            app:tl_textSelectColor="#ff0000"
+            app:tl_textUnselectColor="#1a1a1a"
+            app:tl_textsize="16sp"
+            app:tl_tab_space_equal="true"/>
+
+        <!--<View style="@style/HLine_light"/>-->
+
+    </LinearLayout>
+
+</LinearLayout>

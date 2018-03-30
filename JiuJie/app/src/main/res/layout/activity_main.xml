@@ -6,6 +6,15 @@
     android:orientation="vertical"
     tools:context="com.jiujie.jiujie.MainActivity">
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="doWallpaper"
+        android:gravity="center"
+        android:text="壁纸测试"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -45,14 +54,40 @@
         android:background="@drawable/s_item_bg"
         android:onClick="toFrame"
         android:gravity="center"
-        android:text="下载"/>
+        android:text="toFrame"/>
 
-    <FrameLayout
-        android:id="@+id/main_frameLayout"
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="toScrollKeyTop"
+        android:gravity="center"
+        android:text="toScrollKeyTop"/>
 
-    </FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="toAutoCompleteTextView"
+        android:gravity="center"
+        android:text="AutoCompleteTextView"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="startLiveWallpaper"
+        android:gravity="center"
+        android:text="startLiveWallpaper"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="startTransLiveWallpaper"
+        android:gravity="center"
+        android:text="startTransLiveWallpaper"/>
 
 
 </LinearLayout>
