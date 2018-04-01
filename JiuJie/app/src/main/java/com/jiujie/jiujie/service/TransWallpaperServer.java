@@ -17,10 +17,10 @@ import com.jiujie.base.util.UIHelper;
  * Email:576507648@qq.com
  */
 public class TransWallpaperServer extends WallpaperService {
-    private final Handler handler=new Handler();
+    private final Handler handler = new Handler();
     private Camera camera;
 
-    public void start(Activity activity){
+    public void start(Activity activity) {
         ComponentName componentName = new ComponentName(activity, this.getClass().getName());
 
 //        Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
@@ -38,8 +38,8 @@ public class TransWallpaperServer extends WallpaperService {
         } else {
             intent = new Intent("android.service.wallpaper.CHANGE_LIVE_WALLPAPER");
             intent.putExtra("android.service.wallpaper.extra.LIVE_WALLPAPER_COMPONENT", componentName);
-            if(!UIHelper.isIntentExisting(activity,intent)){
-                UIHelper.showToastShort(activity,"您的机型不支持设置动态壁纸");
+            if (!UIHelper.isIntentExisting(activity, intent)) {
+                UIHelper.showToastShort(activity, "您的机型不支持设置动态壁纸");
                 return;
             }
         }
@@ -50,7 +50,8 @@ public class TransWallpaperServer extends WallpaperService {
     public Engine onCreateEngine() {
         return new MyEngine();
     }
-    class MyEngine extends Engine implements Camera.PreviewCallback{
+
+    class MyEngine extends Engine implements Camera.PreviewCallback {
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
@@ -62,7 +63,7 @@ public class TransWallpaperServer extends WallpaperService {
         @Override
         public void onDestroy() {
             super.onDestroy();
-            UIHelper.showLog(this,"onDestroy");
+            UIHelper.showLog(this, "onDestroy");
             stopPreview();
         }
 
@@ -73,10 +74,10 @@ public class TransWallpaperServer extends WallpaperService {
 
         @Override
         public void onVisibilityChanged(boolean visible) {
-            UIHelper.showLog(this,"onVisibilityChanged visible "+visible);
-            if(visible){
+            UIHelper.showLog(this, "onVisibilityChanged visible " + visible);
+            if (visible) {
                 startPreview();
-            }else{
+            } else {
                 stopPreview();
             }
         }
@@ -88,26 +89,33 @@ public class TransWallpaperServer extends WallpaperService {
         }
 
         private boolean isStarted;
+
         private void startPreview() {
-            if(isStarted)return;
+            if (isStarted) return;
             isStarted = true;
+
+
+//            CameraManager.
+//            CameraManager cameraManager = new CameraManager();
+
+
 //            camera = Camera.open();
-            camera = Camera.open(Camera.getNumberOfCameras()-1);
+            camera = Camera.open(Camera.getNumberOfCameras() - 1);
             camera.setDisplayOrientation(90);
             try {
                 camera.setPreviewDisplay(getSurfaceHolder());
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         private void stopPreview() {
-            if(camera!=null){
+            if (camera != null) {
                 try {
                     camera.stopPreview();
                     camera.setPreviewCallback(null);
                     camera.release();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 camera = null;
