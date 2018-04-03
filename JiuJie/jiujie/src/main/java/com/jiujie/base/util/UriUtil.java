@@ -26,9 +26,11 @@ public class UriUtil {
     }
 
     public static Uri getUri(Context context, Intent intent, File file, boolean isUseForCamera) {
-        if (isUseForCamera && (context.getApplicationInfo().targetSdkVersion <= 23 || Build.VERSION.SDK_INT < Build.VERSION_CODES.N)) {
-//			targetSdkVersion<=23时用
-            return Uri.fromFile(file);
+        if(isUseForCamera){
+//            targetSdkVersion<=23 or 手机Android版本< 7.0
+            if(context.getApplicationInfo().targetSdkVersion <= 23 || Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
+                return Uri.fromFile(file);
+            }
         }
         Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

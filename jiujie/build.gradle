@@ -40,7 +40,7 @@ ext {
 //    buildTools = "26.0.2"
     compileSdk = 26
     minSdk = 16
-    targetSdk = 22
+    targetSdk = 26
     support = "26.0.2"
     buildTools = "26.0.2"
 

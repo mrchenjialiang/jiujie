@@ -103,6 +103,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,6 +112,7 @@ import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 @SuppressWarnings("deprecation")
 @SuppressLint("SimpleDateFormat")
 public class UIHelper {
+    private static final String TIME_ZONE_ID = "GMT+08";
 
     /**
      * 获取版本号
@@ -497,7 +499,9 @@ public class UIHelper {
     public static long timeStrToTimeLong(String timeStr, String format) {
         Date date;
         try {
-            date = new SimpleDateFormat(format).parse(timeStr);
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
+            date = sdf.parse(timeStr);
         } catch (ParseException e) {
             date = new Date();
         }
@@ -510,11 +514,15 @@ public class UIHelper {
     public static String timeStrToTimeStr(String timeStr, String oldFormat, String newFormat) {
         Date date;
         try {
-            date = new SimpleDateFormat(oldFormat).parse(timeStr);
+            SimpleDateFormat sdf = new SimpleDateFormat(oldFormat);
+            sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
+            date = sdf.parse(timeStr);
         } catch (Exception e) {
             date = new Date();
         }
-        return new SimpleDateFormat(newFormat).format(date);
+        SimpleDateFormat sdf = new SimpleDateFormat(newFormat);
+        sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
+        return sdf.format(date);
     }
 
     /**
@@ -539,6 +547,7 @@ public class UIHelper {
      */
     public static String timeDoubleMiaoToString(Double timestamp, String timeFromat) {
         SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+        sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date((long) (timestamp * 1000L)));
     }
 
@@ -550,6 +559,7 @@ public class UIHelper {
      */
     public static String timeLongMiaoToString(long timestamp, String timeFromat) {
         SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+        sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date(timestamp * 1000L));
     }
 
@@ -558,6 +568,7 @@ public class UIHelper {
      */
     public static String timeLongHaoMiaoToString(long millis, String timeFromat) {
         SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+        sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date(millis));
     }
 

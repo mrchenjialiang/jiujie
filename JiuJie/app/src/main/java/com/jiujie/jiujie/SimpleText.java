@@ -1,16 +1,25 @@
 package com.jiujie.jiujie;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class SimpleText {
 
     public static void main(String[] args) {
-        System.out.println(get(1.23f));
-        System.out.println(get(1.56f));
-        System.out.println(get(1.67f));
-        System.out.println(get(1.11f));
+
+        String time = timeLongHaoMiaoToString(1522724777000l, "yyyy-MM-dd HH:mm:ss");
+
+        System.out.println(time);
     }
 
-    private static int get(float a){
-        return Math.round(a);
+    /**
+     * 毫秒 时间戳转换为String
+     */
+    public static String timeLongHaoMiaoToString(long millis, String timeFromat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        return sdf.format(new Date(millis));
     }
 }

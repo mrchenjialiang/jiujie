@@ -56,13 +56,27 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
         }
         List<V> list = analysisData(result);
         boolean isEnd = list==null||(isEndFromSize()?list.size()<size:list.size()<1);
-        boolean isDataSizeChange = list != null && list.size() > 0;
-        if(isDataSizeChange)dataList.addAll(list);
+        boolean isHasData = list != null && list.size() > 0;
+        if(isHasData){
+            if(isAddDataWithQuChong()){
+                for (V d:list){
+                    if(!dataList.contains(d)){
+                        dataList.add(d);
+                    }
+                }
+            }else{
+                dataList.addAll(list);
+            }
+        }
         setEnd(isEnd);
-        setLoadDataUIEnd(type, isDataSizeChange);
+        setLoadDataUIEnd(type);
     }
 
-    protected void setLoadDataUIEnd(int type, boolean isDataSizeChange) {
+    protected boolean isAddDataWithQuChong(){
+        return false;
+    }
+
+    protected void setLoadDataUIEnd(int type) {
         if(type==0){
             setLoadingEnd();
         }else if(type==1){
@@ -71,7 +85,7 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
         if(isEnd()){
             recyclerViewUtil.setReadEnd();
         }
-        if(isDataSizeChange)recyclerViewUtil.notifyDataSetChanged(type==0||type==1);
+        recyclerViewUtil.notifyDataSetChanged(type==0||type==1);
     }
 
     protected void setLoadDataFail(int type, String error) {

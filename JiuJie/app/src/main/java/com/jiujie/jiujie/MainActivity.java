@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
-import com.jiujie.base.util.GetPictureUtil;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
@@ -16,10 +15,14 @@ import com.jiujie.jiujie.grouplist.GroupListActivity;
 import com.jiujie.jiujie.service.JiuJieKeepService;
 import com.jiujie.jiujie.service.MyWallpaperServer;
 import com.jiujie.jiujie.service.TransWallpaperServer;
+import com.jiujie.jiujie.util.GetPhotoUtil;
+
+import java.util.List;
 
 public class MainActivity extends MyBaseActivity {
 
     private String filePath = "/storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg";
+    private GetPhotoUtil getPhotoUtil;
 
 
     @Override
@@ -42,12 +45,26 @@ public class MainActivity extends MyBaseActivity {
         return R.layout.activity_main;
     }
 
-    private String getCropOutPutDir() {
-        return ImageUtil.instance().getCacheSDDic(mActivity) + "res/image/camera";
-    }
+    public void getPhoto(View view) {
+        if(getPhotoUtil==null){
+            getPhotoUtil = new GetPhotoUtil(mActivity) {
+                @Override
+                public void onGetPhotoEnd(boolean isFromCamera, List<String> imagePathList) {
+                    UIHelper.showToastShort(mActivity,"isFromCamera "+isFromCamera+",imagePathList size "+imagePathList.size());
+                }
 
-    public void toSd(View view) {
-        startActivity(new Intent(mActivity, VideoActivity.class));
+                @Override
+                public boolean isShouldCrop() {
+                    return true;
+                }
+
+                @Override
+                public float getCropScaleHeight() {
+                    return 1;
+                }
+            };
+        }
+        getPhotoUtil.showChooseImageDialog();
     }
 
     public void doAction1(View view) {
@@ -62,7 +79,7 @@ public class MainActivity extends MyBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        GetPictureUtil.onActivityResult(mActivity, requestCode, resultCode, data);
+        getPhotoUtil.onActivityResult(mActivity,requestCode,resultCode,data);
     }
 
     public void toGroupList(View view) {

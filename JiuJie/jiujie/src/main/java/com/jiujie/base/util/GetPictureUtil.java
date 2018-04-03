@@ -140,7 +140,7 @@ public class GetPictureUtil {
 		});
 	}
 
-	private static void toCrop(final Activity mActivity,String filePath,float cropScaleHeight,int cropFileMaxLength){
+	public static void toCrop(final Activity mActivity,String filePath,float cropScaleHeight,int cropFileMaxLength){
 //		String saveDir = mActivity.getCacheDir().getAbsolutePath();//这个目录下的，裁剪后上传会失败貌似
 		String saveDir = ImageUtil.instance().getCacheSDDic(mActivity)+ "res/image/crop";
 		String saveName = UIHelper.getTimeFileName(".jpg");
@@ -168,6 +168,10 @@ public class GetPictureUtil {
 	 * 拍照返回需调用
      */
 	public static void onActivityResult(Activity mActivity,int requestCode, int resultCode, Intent data) {
+		UIHelper.showLog("GetPictureUtil","onActivityResult requestCode:"+requestCode);
+		UIHelper.showLog("GetPictureUtil","onActivityResult resultCode:"+resultCode);
+		UIHelper.showLog("GetPictureUtil","onActivityResult mCameraFile:"+(mCameraFile==null?"null":mCameraFile.length()));
+		UIHelper.showLog("GetPictureUtil","onActivityResult data:"+data);
 		//拍照 成功时resultCode==RESULT_OK，data==null，因为设置了outPut，不返回
 		if (requestCode == REQUEST_CAMERA){
 			if(resultCode==Activity.RESULT_OK){
