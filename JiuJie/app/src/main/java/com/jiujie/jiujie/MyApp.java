@@ -14,6 +14,6 @@ public class MyApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        APP.init(this,false,false,null,true,"com.jiujie.jiujie.fileProvider");
+        APP.init(this,false,false,null,true,"com.jiujie.demo.fileProvider");
     }
 }

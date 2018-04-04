@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.jiujie.base">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -17,13 +18,15 @@
 
         <!--7.0+在将文件提交给APP外使用时，需求Uri通过FileProvider。比如系统裁剪图片，比如安装-->
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name=".provider.JiuJieProvider"
             android:authorities="${applicationId}.fileProvider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/jiujie_file_paths"
+                tools:replace="android:resource" />
         </provider>
 
         <meta-data

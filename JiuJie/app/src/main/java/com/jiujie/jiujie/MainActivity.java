@@ -6,16 +6,16 @@ import android.view.View;
 
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
+import com.jiujie.base.provider.JiuJieProvider;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
+import com.jiujie.base.util.photo.GetPhotoUtil;
 import com.jiujie.jiujie.autocompletetextview.AutoCompleteTextViewActivity;
 import com.jiujie.jiujie.grouplist.GroupListActivity;
-import com.jiujie.jiujie.service.JiuJieKeepService;
 import com.jiujie.jiujie.service.MyWallpaperServer;
 import com.jiujie.jiujie.service.TransWallpaperServer;
-import com.jiujie.jiujie.util.GetPhotoUtil;
 
 import java.util.List;
 
@@ -28,8 +28,6 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
-
-        startService(new Intent(mActivity, JiuJieKeepService.class));
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg

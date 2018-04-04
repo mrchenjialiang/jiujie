@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jiujie.base.R;
-import com.jiujie.base.util.GetPictureUtil;
+import com.jiujie.base.util.photo.GetPictureUtil;
 
 /**
  * author : Created by ChenJiaLiang on 2016/8/24.

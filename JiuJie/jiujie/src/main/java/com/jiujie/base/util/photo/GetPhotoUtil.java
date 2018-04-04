@@ -1,4 +1,4 @@
-package com.jiujie.jiujie.util;
+package com.jiujie.base.util.photo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import com.jiujie.base.dialog.BottomListDialog;
 import com.jiujie.base.jk.OnItemClickListen;
 import com.jiujie.base.jk.OnListener;
-import com.jiujie.base.util.GetPictureUtil;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.UIHelper;
 

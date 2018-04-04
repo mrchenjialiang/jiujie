@@ -1,30 +1,12 @@
 package com.jiujie.base.util;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-
 import com.jiujie.base.APP;
-import com.jiujie.base.jk.ICallBackNoParam;
 import com.jiujie.base.jk.OnListener;
-import com.jiujie.base.jk.PermissionRequest;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import rx.functions.Action1;
 
@@ -37,8 +19,7 @@ public class PermissionsManager {
 
     public static void getPermission(final OnListener<Boolean[]> onListener, final String... permissions){
         if(permissions==null||permissions.length==0){
-            onListener.onListen(null);
-            return;
+            throw new NullPointerException("permissions==null or length==0 when getPermissionSimple");
         }
         Boolean[] permissionResults = new Boolean[permissions.length];
         for (int i = 0;i<permissionResults.length;i++){
@@ -59,21 +40,19 @@ public class PermissionsManager {
     }
 
     public static void getPermissionSimple(final OnListener<Boolean> onListener,String... permissions){
-        getPermission(new OnListener<Boolean[]>() {
-            @Override
-            public void onListen(Boolean[] booleans) {
-                if(booleans==null||booleans.length==0){
-                    onListener.onListen(false);
-                }else{
-                    for (boolean isHas:booleans){
-                        if(!isHas){
+        if(permissions==null||permissions.length==0){
+            throw new NullPointerException("permissions==null or length==0 when getPermissionSimple");
+        }
+        RxPermissions.getInstance(APP.getContext()).request(permissions)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isHas) {
+                        if (isHas) {
+                            onListener.onListen(true);
+                        } else {
                             onListener.onListen(false);
-                            return;
                         }
                     }
-                    onListener.onListen(true);
-                }
-            }
-        },permissions);
+                });
     }
 }

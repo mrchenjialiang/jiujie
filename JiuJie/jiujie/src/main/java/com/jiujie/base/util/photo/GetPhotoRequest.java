@@ -1,4 +1,4 @@
-package com.jiujie.jiujie.util;
+package com.jiujie.base.util.photo;
 
 import java.util.List;
 

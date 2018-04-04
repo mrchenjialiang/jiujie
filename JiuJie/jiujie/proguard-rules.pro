@@ -140,6 +140,7 @@
 }
 -keep class com.jiujie.base.*.** {*; }
 -keep class com.jiujie.base.APP {*;}
+-keep class com.jiujie.base.util.glide.GlideModuleMine {*;}
 -keep class com.jiujie.base.Title {*;}
 -keep class com.jiujie.base.util.MyHandler {*;}
 

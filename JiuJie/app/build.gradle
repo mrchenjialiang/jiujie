@@ -4,7 +4,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     defaultConfig {
-        applicationId "com.jiujie.jiujie"
+        applicationId "com.jiujie.demo"
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
         versionCode 1
@@ -41,8 +41,8 @@ android {
 //            }
         }
         debug {
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -66,8 +66,28 @@ dependencies {
     })
 
     compile "${rootProject.ext.appcompat}"
+    compile "${rootProject.ext.recyclerview}"
+    compile "${rootProject.ext.design}"
+
+    compile "${rootProject.ext.okhttp3}"
+    compile "${rootProject.ext.glide}"
+    compile "${rootProject.ext.glide_transformations}"
+    compile "${rootProject.ext.rxjava}"
+    compile "${rootProject.ext.rxandroid}"
+    compile "${rootProject.ext.retrofit}"
+    compile "${rootProject.ext.converter_gson}"
+    compile "${rootProject.ext.adapter_rxjava}"
+    compile "${rootProject.ext.converter_scalars}"
+    compile "${rootProject.ext.umeng}"
+    compile "${rootProject.ext.photoview}"
+    compile "${rootProject.ext.eventbus}"
+
+    compile "${rootProject.ext.rxpermissions}"
+    compile "${rootProject.ext.barlibrary}"
+
     compile "${rootProject.ext.butterknife7}"
     compile "${rootProject.ext.tablayout}"
 
+//    compile(name: 'jiujie-release', ext: 'aar')
     compile project(':jiujie')
 }
