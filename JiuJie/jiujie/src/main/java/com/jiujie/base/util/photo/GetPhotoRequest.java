@@ -9,12 +9,14 @@ import java.util.List;
 
 public interface GetPhotoRequest {
     void onGetPhotoEnd(boolean isFromCamera, List<String> imagePathList);
-    boolean isShouldCrop();
     int getPhotoMaxSize();
-    float getCropScaleHeight();
     List<String> getCheckedPhotoList();
     String getCameraOutPutDir();
-    String getOutPutFileName();
+    String getCameraOutPutFileName();
+    boolean isShouldCrop();
+    float getCropScaleHeight();
+    String getCropSaveDir();
+    String getCropSaveName();
     int getCropFileMaxLength();
     void showChooseImageDialog();
 }
