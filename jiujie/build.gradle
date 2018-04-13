@@ -38,11 +38,11 @@ ext {
 //    targetSdk = 23
 //    support = "26.0.2"
 //    buildTools = "26.0.2"
-    compileSdk = 26
+    compileSdk = 27
     minSdk = 16
-    targetSdk = 26
-    support = "26.0.2"
-    buildTools = "26.0.2"
+    targetSdk = 27
+    support = "27.0.2"
+    buildTools = "27.0.2"
 
     appcompat = "com.android.support:appcompat-v7:${support}"
     recyclerview = "com.android.support:recyclerview-v7:${support}"

@@ -14,7 +14,7 @@ import android.view.View;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.TaskManager;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.io.File;
 
@@ -87,7 +87,7 @@ public class JJCropImageView extends View{
         new TaskManager<Bitmap>() {
             @Override
             public Bitmap runOnBackgroundThread() {
-                return GlideUtil.instance().getImage(getContext(),path);
+                return GlideUtil.instance().getImageBitmap(getContext(),path);
             }
 
             @Override

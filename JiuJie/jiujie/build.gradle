@@ -50,6 +50,13 @@ android {
         exclude('META-INF/LICENSE.txt')
     }
 
+    /*用于引用libs下的aar*/
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
     return void
 }
 
@@ -62,8 +69,6 @@ dependencies {
     compile "${rootProject.ext.design}"
 
     compile "${rootProject.ext.okhttp3}"
-    compile "${rootProject.ext.glide}"
-    compile "${rootProject.ext.glide_transformations}"
     compile "${rootProject.ext.rxjava}"
     compile "${rootProject.ext.rxandroid}"
     compile "${rootProject.ext.retrofit}"
@@ -76,5 +81,16 @@ dependencies {
 
     compile "${rootProject.ext.rxpermissions}"
     compile "${rootProject.ext.barlibrary}"
+
+
+//    compile project(':glide3')
+    compile(name: 'glide3-release', ext: 'aar')
+    compile "${rootProject.ext.glide}"
+    compile "${rootProject.ext.glide_transformations}"
+
+
+
+
+//    使用implementation还是api需要视情况而定，implementation只能用于当前module，如果在库中以这种方式设置依赖，那么在app的module是引用不到的，但是api可以，api相当于compile。
 
 }

@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import com.jiujie.base.jk.OnListener;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class WallpaperUtil {
             public Boolean runOnBackgroundThread() {
                 try {
                     UIHelper.showLog("doSetWallpaper url:" + url);
-                    Bitmap bitmap = GlideUtil.instance().getImage(mActivity, url, true, true);
+                    Bitmap bitmap = GlideUtil.instance().getImageBitmap(mActivity, url);
                     if (bitmap == null) {
                         return false;
                     }

@@ -9,7 +9,7 @@ import com.jiujie.base.R;
 import com.jiujie.base.jk.OnItemClickListen;
 import com.jiujie.base.model.Image;
 import com.jiujie.base.pop.BasePop;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.util.List;
 

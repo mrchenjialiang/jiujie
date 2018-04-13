@@ -3,8 +3,8 @@ package com.jiujie.base.widget;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.jiujie.base.R;
 import com.jiujie.base.jk.MyHandlerInterface;
 import com.jiujie.base.jk.OnItemClickListen;
@@ -24,7 +23,7 @@ import com.jiujie.base.jk.OnTouchListen;
 import com.jiujie.base.util.MyHandler;
 import com.jiujie.base.util.TaskManager;
 import com.jiujie.base.util.UIHelper;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.util.List;
 import java.util.Timer;
@@ -140,8 +139,6 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
     }
 
     public void recycler(){
-        Glide.clear(imageView1);
-        Glide.clear(imageView2);
         imageView1 = null;
         imageView2 = null;
     }
@@ -189,7 +186,7 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
         stopTime();
         if(dataList.size()==1){
             mCurrentPosition = 0;
-            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition),  getCurrentImageView(),R.drawable.trans,imageType==0,true,null);
+            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition),  getCurrentImageView(),R.drawable.trans,getWidth(),getHeight());
             requestLayout();
         }else{
             if(mCurrentPosition<0){
@@ -198,7 +195,7 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
             if(mCurrentPosition>dataList.size()-1){
                 mCurrentPosition = dataList.size()-1;
             }
-            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition), getCurrentImageView(),R.drawable.trans,imageType==0,true,null);
+            GlideUtil.instance().setDefaultImage(getContext(),dataList.get(mCurrentPosition), getCurrentImageView(),R.drawable.trans,getWidth(),getHeight());
             prepareForLastBitmap();
             prepareForNextBitmap();
             moveX = 0;
@@ -213,36 +210,36 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
     }
 
     private void prepareForLastBitmap(){
-        new TaskManager<Bitmap>() {
+        new TaskManager<Drawable>() {
             @Override
-            public Bitmap runOnBackgroundThread() {
+            public Drawable runOnBackgroundThread() {
                 int index = mCurrentPosition-1;
                 if(index<0){
                     index = dataList.size()-1;
                 }
-                return GlideUtil.instance().getImage(getContext(),dataList.get(index),true,false);
+                return GlideUtil.instance().getImageDrawable(getContext(),dataList.get(index),getWidth(),getHeight());
             }
 
             @Override
-            public void runOnUIThread(Bitmap bitmap) {
+            public void runOnUIThread(Drawable bitmap) {
 
             }
         }.start();
     }
 
     private void prepareForNextBitmap(){
-        new TaskManager<Bitmap>() {
+        new TaskManager<Drawable>() {
             @Override
-            public Bitmap runOnBackgroundThread() {
+            public Drawable runOnBackgroundThread() {
                 int index = mCurrentPosition+1;
                 if(index>dataList.size()-1){
                     index = 0;
                 }
-                return GlideUtil.instance().getImage(getContext(),dataList.get(index),true,false);
+                return GlideUtil.instance().getImageDrawable(getContext(),dataList.get(index),getWidth(),getHeight());
             }
 
             @Override
-            public void runOnUIThread(Bitmap bitmap) {
+            public void runOnUIThread(Drawable bitmap) {
 
             }
         }.start();
@@ -353,7 +350,8 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
             stopTime();
             return;
         }
-        GlideUtil.instance().setDefaultImage(getContext(),dataList.get(index), getOtherImageView(),imageType==0,true);
+        ImageView otherImageView = getOtherImageView();
+        GlideUtil.instance().setDefaultImage(otherImageView,dataList.get(index), otherImageView,imageType==0);
     }
 
     private void setLast() {
@@ -365,7 +363,8 @@ public class AdvertViewGroup extends ViewGroup implements MyHandlerInterface {
             stopTime();
             return;
         }
-        GlideUtil.instance().setDefaultImage(getContext(),dataList.get(index), getOtherImageView(),imageType==0,true);
+        ImageView otherImageView = getOtherImageView();
+        GlideUtil.instance().setDefaultImage(otherImageView,dataList.get(index), otherImageView,imageType==0);
     }
 
     /**

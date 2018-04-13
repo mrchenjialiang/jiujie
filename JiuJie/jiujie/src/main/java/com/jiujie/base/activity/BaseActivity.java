@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import com.gyf.barlibrary.ImmersionBar;
 import com.jiujie.base.R;
 import com.jiujie.base.util.UIHelper;
+import com.jiujie.glide.GlideCacheUtil;
 
 /**
  * 基础Activity类
@@ -55,6 +56,7 @@ public abstract class BaseActivity extends BaseTitleActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		GlideCacheUtil.getInstance(mActivity).clearCacheMemory();
 		if (immersionBar != null) {
 			immersionBar.destroy(); //必须调用该方法，防止内存泄漏
 		}

@@ -1,5 +1,6 @@
 package com.jiujie.base.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,6 +27,7 @@ public class ViewPagerFragmentTabAdapter extends FragmentPagerAdapter {
         return fragmentList.get(position);
     }
 
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         return super.instantiateItem(container, position);
@@ -43,7 +45,7 @@ public class ViewPagerFragmentTabAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public int getItemPosition(Object object) {
+    public int getItemPosition(@NonNull Object object) {
         return POSITION_NONE;
     }
 }

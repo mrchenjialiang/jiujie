@@ -12,6 +12,7 @@ import com.jiujie.base.R;
 import com.jiujie.base.Title;
 import com.jiujie.base.jk.OnTitleClickMoveToTopListen;
 import com.jiujie.base.util.UIHelper;
+import com.jiujie.glide.GlideCacheUtil;
 
 public abstract class BaseFragment extends BaseMostFragment {
 
@@ -60,6 +61,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		GlideCacheUtil.getInstance(mActivity).clearCacheMemory();
 		if(mView!=null&&mView.getParent()!=null){
 			((ViewGroup)mView.getParent()).removeView(mView);
 		}

@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jiujie.glide" >
+
+    <application>
+
+        <meta-data
+            android:name="com.jiujie.glide.GlideModuleMine"
+            android:value="GlideModule" />
+
+    </application>
+
+</manifest>

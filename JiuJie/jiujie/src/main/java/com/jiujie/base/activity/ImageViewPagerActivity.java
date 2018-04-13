@@ -13,7 +13,8 @@ import android.widget.TextView;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.base.util.ObjectCacheUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,20 +131,21 @@ public class ImageViewPagerActivity extends BaseActivity {
 		public int getCount() {
 			return ImageViewPagerActivity.this.getCount();
 		}
+		@NonNull
 		@Override
-		public View instantiateItem(ViewGroup container, final int position) {
+		public View instantiateItem(@NonNull ViewGroup container, final int position) {
 			return getItemView(container, position);
 		}
 		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			container.removeView((View) object);
+		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+			destroyItemView(container, position, (View) object);
 		}
 		@Override
-		public boolean isViewFromObject(View view, Object object) {
+		public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
 			return view == object;
 		}
 		@Override
-		public int getItemPosition(Object object) {
+		public int getItemPosition(@NonNull Object object) {
 			return POSITION_NONE;
 		}
 	}
@@ -152,19 +154,43 @@ public class ImageViewPagerActivity extends BaseActivity {
 		return imageList ==null?0: imageList.size();
 	}
 
+	private ObjectCacheUtil<ViewHolder> viewHolderObjectCacheUtil;
+	class ViewHolder{
+		private final View itemView;
+		PhotoView photoView;
+		public ViewHolder(View itemView) {
+			this.itemView = itemView;
+			photoView = itemView.findViewById(R.id.rela_viewpager_photoView);
+		}
+	}
 	@NonNull
 	protected View getItemView(ViewGroup container, int position) {
-		View layout = getLayoutInflater().inflate(R.layout.rela_viewpager, container,false);
-		final PhotoView photoView = layout.findViewById(R.id.rela_viewpager_photoView);
-		GlideUtil.instance().setDefaultImage(mActivity,getUrl(position), photoView,R.drawable.trans,false,true,null);
-		photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+		if(viewHolderObjectCacheUtil==null)viewHolderObjectCacheUtil = new ObjectCacheUtil<>();
+		ViewHolder h = viewHolderObjectCacheUtil.getCacheObject();
+		if(h==null){
+			View itemView = getLayoutInflater().inflate(R.layout.rela_viewpager, container,false);
+			h = new ViewHolder(itemView);
+			itemView.setTag(h);
+		}
+
+		GlideUtil.instance().setDefaultImage(h.photoView,getUrl(position), h.photoView,R.drawable.trans,false);
+		h.photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
             @Override
             public void onPhotoTap(View arg0, float arg1, float arg2) {
                 finish(true);
             }
         });
-		container.addView(layout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		return layout;
+		container.addView(h.itemView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		return h.itemView;
+	}
+
+	protected void destroyItemView(@NonNull ViewGroup container, int position, @NonNull View view){
+		container.removeView(view);
+		Object tag = view.getTag();
+		if(tag!=null&&tag instanceof ViewHolder&&viewHolderObjectCacheUtil!=null){
+			ViewHolder h = (ViewHolder) tag;
+			viewHolderObjectCacheUtil.addCacheObject(h);
+		}
 	}
 
 	protected String getUrl(int position) {

@@ -70,8 +70,6 @@ dependencies {
     compile "${rootProject.ext.design}"
 
     compile "${rootProject.ext.okhttp3}"
-    compile "${rootProject.ext.glide}"
-    compile "${rootProject.ext.glide_transformations}"
     compile "${rootProject.ext.rxjava}"
     compile "${rootProject.ext.rxandroid}"
     compile "${rootProject.ext.retrofit}"
@@ -91,6 +89,14 @@ dependencies {
 //    compile(name: 'jiujie-release', ext: 'aar')
     compile project(':jiujie')
 
-    compile 'com.github.bumptech.glide:glide:4.6.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+//    compile "${rootProject.ext.glide}"
+//    compile "${rootProject.ext.glide_transformations}"
+
+
+//    glide4需求  start
+//    compile(name: 'glide4-release', ext: 'aar')
+//    compile "${rootProject.ext.glide_transformations}"
+//    compile 'com.github.bumptech.glide:glide:4.6.1'
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+//    glide4需求  end
 }

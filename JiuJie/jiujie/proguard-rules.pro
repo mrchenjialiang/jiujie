@@ -140,7 +140,7 @@
 }
 -keep class com.jiujie.base.*.** {*; }
 -keep class com.jiujie.base.APP {*;}
--keep class com.jiujie.base.util.glide.GlideModuleMine {*;}
+-keep class com.jiujie.glide.GlideModuleMine {*;}
 -keep class com.jiujie.base.Title {*;}
 -keep class com.jiujie.base.util.MyHandler {*;}
 
@@ -215,9 +215,15 @@
 
 
 #Glide  start
+#-keep class com.jiujie.glide.GlideModuleMine{*;}
+-keep class com.jiujie.glide.GlideUtil{*;}
 -keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
-    **[] $VALUES;
-    public *;
+  **[] $VALUES;
+  public *;
 }
+
+# for DexGuard only
+#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 #Glide  end
