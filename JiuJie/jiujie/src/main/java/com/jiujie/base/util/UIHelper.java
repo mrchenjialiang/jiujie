@@ -69,6 +69,7 @@ import com.jiujie.base.R;
 import com.jiujie.base.WaitingDialog;
 import com.jiujie.base.jk.InputAction;
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.jk.OnScrollListener;
 import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.appupdate.NotificationUtil;
 import com.jiujie.base.util.recycler.MyGridLayoutManager;
@@ -103,6 +104,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -112,7 +114,21 @@ import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 @SuppressWarnings("deprecation")
 @SuppressLint("SimpleDateFormat")
 public class UIHelper {
-    private static final String TIME_ZONE_ID = "GMT+08";
+    private static String TIME_ZONE_ID = "GMT+08";
+
+    public static void setTimeZoneId(String timeZoneId){
+        if(!TextUtils.isEmpty(timeZoneId)){
+            TIME_ZONE_ID = timeZoneId;
+        }
+    }
+
+    /**
+     * 获取当前时区
+     */
+    public static String getCurrentTimeZoneId() {
+        TimeZone tz = TimeZone.getDefault();
+        return tz.getID();
+    }
 
     /**
      * 获取版本号
@@ -911,6 +927,14 @@ public class UIHelper {
     }
 
     /**
+     * 保留1位小数→double
+     */
+    public static double getOneDecimalDouble(double num) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        return Double.valueOf(df.format(num));
+    }
+
+    /**
      * 保留两位小数→float
      */
     public static float getTwoDecimal1(float num) {
@@ -1693,4 +1717,72 @@ public class UIHelper {
         return Arrays.asList(array);
     }
 
+    public static void setOnListScrollListener(final RecyclerView mRecyclerView, final OnScrollListener onScrollListener) {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int lastVisiblePosition;
+            int firstVisibleItemPosition;
+            int scrolledX;
+            int scrolledY;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                scrolledX += dx;
+                scrolledY += dy;
+                RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                if (layoutManager instanceof LinearLayoutManager) {
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+                    lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition();
+                    firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+                    StaggeredGridLayoutManager layoutManager1 = (StaggeredGridLayoutManager) layoutManager;
+                    int[] lastPositions = new int[layoutManager1.getSpanCount()];
+                    layoutManager1.findLastCompletelyVisibleItemPositions(lastPositions);
+                    lastVisiblePosition = findMax(lastPositions);
+                    int[] firstPositions = new int[layoutManager1.getSpanCount()];
+                    layoutManager1.findFirstVisibleItemPositions(firstPositions);
+                    firstVisibleItemPosition = findMin(firstPositions);
+                }
+                if (onScrollListener != null)
+                    onScrollListener.onScroll(scrolledX, scrolledY, firstVisibleItemPosition, lastVisiblePosition);
+
+            }
+
+            //To find the maximum value in the array
+            private int findMax(int[] lastPositions) {
+                int max = lastPositions[0];
+                for (int value : lastPositions) {
+                    if (value > max) {
+                        max = value;
+                    }
+                }
+                return max;
+            }
+
+            private int findMin(int[] firstPositions) {
+                int min = firstPositions[0];
+                for (int value : firstPositions) {
+                    if (value < min) {
+                        min = value;
+                    }
+                }
+                return min;
+            }
+
+        });
+    }
+
+    public static String getRandomNumString(int size) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            int num = new Random().nextInt(10);
+            if (i == 0) {
+                while (num == 0) {
+                    num = new Random().nextInt(10);
+                }
+            }
+            sb.append(num);
+        }
+        return sb.toString();
+    }
 }
