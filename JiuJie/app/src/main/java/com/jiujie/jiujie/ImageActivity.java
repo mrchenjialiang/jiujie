@@ -3,7 +3,7 @@ package com.jiujie.jiujie;
 import android.widget.ImageView;
 
 import com.jiujie.base.util.WallpaperUtil;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

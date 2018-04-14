@@ -1,5 +1,6 @@
 package com.jiujie.jiujie;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;

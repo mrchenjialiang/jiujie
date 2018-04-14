@@ -26,8 +26,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
+import com.jiujie.glide.GlideUtil;
 import com.jiujie.base.jk.ICallbackSimple;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.model.Image;
@@ -98,17 +97,7 @@ public class ImageUtil {
     }
 
     public Bitmap getImageBitmapFromNet(Activity activity, String imageUrl){
-        Bitmap bitmap = null;
-        try {
-            bitmap = Glide.with(activity)
-                    .load(imageUrl)
-                    .asBitmap()
-                    .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                    .get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bitmap;
+        return GlideUtil.instance().getImageBitmap(activity,imageUrl);
     }
 
     public Drawable getImageFromNetUseOkHttp(Activity activity, String imageUrl,int reqWidth,int reqHeight) {

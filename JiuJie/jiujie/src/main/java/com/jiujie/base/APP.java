@@ -44,7 +44,7 @@ public class APP {
             crashHandler.init(context.getApplicationContext());
         }
 
-        UIHelper.showLog("APP", "20180228_1635");
+        UIHelper.showLog("APP", "20180413");
     }
 
     public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug) {

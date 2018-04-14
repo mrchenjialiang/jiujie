@@ -18,7 +18,7 @@ import java.util.TimerTask;
 
 /**
  * 在触摸时广告设置成不自动跳转
- * should onDestroy when onDestroy if use in Activity or onDestroyView if use in fragment
+ * should onDestroy when onDestroy if use in Activity or addCacheObject if use in fragment
  * @author ChenJiaLiang
  */
 public class AdvertViewpager extends ViewPager {

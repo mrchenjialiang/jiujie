@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile "${rootProject.ext.glide_transformations}"
+    compile 'com.github.bumptech.glide:glide:4.6.1'
+//    使用GlideApp，需要添加annotationProcessor 的依赖
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+
+}
+//    外界引用方案1
+//    compile project(':glide4')
+
+//    外界引用方案2
+//    glide4需求  start
+//    compile(name: 'glide4-release', ext: 'aar')
+//    compile "${rootProject.ext.glide_transformations}"
+//    compile 'com.github.bumptech.glide:glide:4.6.1'
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+//    glide4需求  end

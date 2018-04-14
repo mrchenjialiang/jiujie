@@ -10,7 +10,7 @@ import com.jiujie.base.activity.ImageViewPagerActivity;
 import com.jiujie.base.jk.OnListCheckedChangeListener;
 import com.jiujie.base.model.Image;
 import com.jiujie.base.util.UIHelper;
-import com.jiujie.base.util.glide.GlideUtil;
+import com.jiujie.glide.GlideUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,18 +19,20 @@ import java.util.List;
  * Created by ChenJiaLiang on 2017/8/10.
  * Email:576507648@qq.com
  */
-
 public class ChoosePhotoAdapter extends BaseRecyclerViewSimpleAdapter<Image,ChoosePhotoAdapter.ItemViewHolder>{
 
     private final Activity mActivity;
     private List<String> checkedList = new ArrayList<>();
     private OnListCheckedChangeListener<String> onListCheckedChangeListener;
     private int maxCheckCount;
+    private final int itemImageWidth;
 
     public ChoosePhotoAdapter(Activity activity, List<Image> dataList, int maxCheckCount) {
         super(dataList);
         this.mActivity = activity;
         this.maxCheckCount = maxCheckCount;
+        int screenWidth = UIHelper.getScreenWidth(activity);
+        itemImageWidth = (screenWidth - UIHelper.dip2px(activity,2)*2)/3;
     }
 
     public void setCheckedList(List<String> checkedList) {
@@ -56,7 +58,7 @@ public class ChoosePhotoAdapter extends BaseRecyclerViewSimpleAdapter<Image,Choo
 
     @Override
     public void onBindItemViewHolder(final ItemViewHolder h, final Image d, final int position) {
-        GlideUtil.instance().setDefaultImage(mActivity,d.getPath(),h.image);
+        GlideUtil.instance().setDefaultImage(mActivity,d.getPath(),h.image,itemImageWidth,itemImageWidth);
         h.btnCheck.setSelected(checkedList.contains(d.getPath()));
         h.trans.setVisibility(checkedList.contains(d.getPath())?View.VISIBLE:View.GONE);
         h.btnCheck.setOnClickListener(new View.OnClickListener() {

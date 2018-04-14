@@ -83,6 +83,14 @@ public class FileUtil {
                     UIHelper.showLog(TAG+"createFile dirFile.mkdirs fail");
                     return null;
                 }
+            }else if(!dirFile.isDirectory()){
+                boolean delete = dirFile.delete();
+                if(delete){
+                    return createFile(dirPath,fileName);
+                }else{
+                    UIHelper.showLog(TAG+"createFile dirFile !isDirectory and delete fail");
+                    return null;
+                }
             }
             File file = new File(dirPath, fileName);
             if (!file.exists()) {
@@ -107,6 +115,14 @@ public class FileUtil {
             if (!dir.exists()) {
                 if(!dir.mkdirs()){
                     dir = context.getCacheDir();
+                }
+            }else if(!dir.isDirectory()){
+                boolean delete = dir.delete();
+                if(delete){
+                    return getDirFile(context, dirName);
+                }else{
+                    UIHelper.showLog(TAG+"getDirFile dir !isDirectory and delete fail");
+                    return null;
                 }
             }
         }else{
