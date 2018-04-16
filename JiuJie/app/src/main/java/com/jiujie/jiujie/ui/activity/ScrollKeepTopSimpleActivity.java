@@ -1,14 +1,14 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.activity;
 
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import com.flyco.tablayout.SlidingTabLayout;
 import com.jiujie.base.activity.BaseScrollKeepHeaderActivity;
 import com.jiujie.base.adapter.ViewPagerFragmentTabAdapter;
+import com.jiujie.jiujie.R;
+import com.jiujie.jiujie.ui.fragment.SimpleListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ScrollKeepTopActivity extends BaseScrollKeepHeaderActivity {
+public class ScrollKeepTopSimpleActivity extends BaseScrollKeepHeaderActivity {
 
     @Bind(R.id.hpc_tabLayout)
     SlidingTabLayout slidingTabLayout;

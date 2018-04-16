@@ -1,9 +1,10 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.activity;
 
 import android.widget.ImageView;
 
 import com.jiujie.base.util.WallpaperUtil;
 import com.jiujie.glide.GlideUtil;
+import com.jiujie.jiujie.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

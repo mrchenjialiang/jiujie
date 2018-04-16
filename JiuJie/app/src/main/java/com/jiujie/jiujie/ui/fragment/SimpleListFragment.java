@@ -1,11 +1,12 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.fragment;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
 import com.jiujie.base.fragment.BaseListSimpleFragment;
 import com.jiujie.base.util.recycler.RecyclerViewUtil;
+import com.jiujie.jiujie.R;
+import com.jiujie.jiujie.ui.adapter.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,6 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.activity;
+
+import com.jiujie.jiujie.R;
 
 public class AdCsActivity extends MyBaseActivity {
 

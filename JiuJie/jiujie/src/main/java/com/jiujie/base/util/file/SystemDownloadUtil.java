@@ -94,7 +94,6 @@ public class SystemDownloadUtil {
         if (downloadManager != null) {
             downloadId = downloadManager.enqueue(request);
 
-
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override

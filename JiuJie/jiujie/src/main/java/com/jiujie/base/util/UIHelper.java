@@ -879,6 +879,22 @@ public class UIHelper {
     }
 
     /**
+     * 保留1位小数→Str
+     */
+    public static Double getOneDecimalDouble(double num) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        return Double.valueOf(df.format(num));
+    }
+
+    /**
+     * 保留1位小数→Str
+     */
+    public static Float getOneDecimalFloat(float num) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        return Float.valueOf(df.format(num));
+    }
+
+    /**
      * 保留两位小数→Str
      */
     public static String getTwoDecimal(float num) {

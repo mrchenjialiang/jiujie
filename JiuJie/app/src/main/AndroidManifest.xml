@@ -36,7 +36,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".MyApp"
+        android:name=".app.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -44,7 +44,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:theme="@style/Slide.trans">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,20 +56,22 @@
             android:name=".grouplist.GroupListActivity"
             android:theme="@style/Slide.trans" />
         <activity
-            android:name=".FragmentActivity"
+            android:name=".ui.activity.FragmentActivity"
             android:theme="@style/Slide.trans" />
         <activity
-            android:name=".ImageActivity"
+            android:name=".ui.activity.ImageActivity"
             android:theme="@style/Slide.trans.FullScreen" />
         <activity
-            android:name=".VideoActivity"
+            android:name=".ui.activity.VideoActivity"
             android:theme="@style/Slide.trans" />
-        <activity android:name=".AdCsActivity" />
-        <activity android:name=".ScrollKeepTopActivity"
+        <activity android:name=".ui.activity.AdCsActivity" />
+        <activity android:name=".ui.activity.ScrollKeepTopSimpleActivity"
             android:theme="@style/Slide.trans"/>
         <activity android:name=".autocompletetextview.AutoCompleteTextViewActivity"
             android:theme="@style/Slide.trans"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity android:name=".ui.activity.ScrollKeepTopGameActivity"
+            android:theme="@style/Slide.trans" />
 
         <service android:name=".service.JiuJieKeepService" />
         <service
