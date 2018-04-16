@@ -84,7 +84,7 @@ dependencies {
 
 
 //    compile project(':glide3')
-    compile(name: 'glide3-release', ext: 'aar')
+//    compile(name: 'glide3-release', ext: 'aar')
     compile "${rootProject.ext.glide}"
     compile "${rootProject.ext.glide_transformations}"
 
