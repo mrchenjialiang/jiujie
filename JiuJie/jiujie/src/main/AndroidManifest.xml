@@ -30,7 +30,7 @@
         </provider>
 
         <meta-data
-            android:name="com.jiujie.com.jiujie.glide.GlideModuleMine"
+            android:name="com.jiujie.glide.GlideModuleMine"
             android:value="GlideModule" />
 
         <activity

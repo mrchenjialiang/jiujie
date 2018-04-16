@@ -14,15 +14,15 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.jiujie.base.adapter.BaseExpandAdapter;
+import com.jiujie.base.jk.OnExpandableListViewScrollListener;
 
 
 /**
  * 改自github 的 PinnedHeaderExpandableListView
  * author : Created by ChenJiaLiang on 2016/8/31.
  * Email 576507648@qq.com
- * android:groupIndicator="@null"---去掉默认箭头
  */
-public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView implements OnScrollListener,OnGroupClickListener {
+public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView implements OnScrollListener, OnGroupClickListener {
 
     private final String TAG = "ExpandableListViewOneHeaderKeepTop";
     private static final int MAX_ALPHA = 255;
@@ -34,10 +34,13 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
     private float mDownX;
     private float mDownY;
     private KeepTopHeaderStatus mCurrentHeaderStatus = KeepTopHeaderStatus.GONE;
+    private boolean isKeepTopClickable;
+    private OnExpandableListViewScrollListener onExpandableListViewScrollListener;
+    private int groupPosition, childPosition;
 
-    public enum KeepTopHeaderStatus{
+    public enum KeepTopHeaderStatus {
         //       NO_INIT,
-        GONE,VISIBLE,PUSHING_UP
+        GONE, VISIBLE, PUSHING_UP
     }
 
     public ExpandableListViewOneHeaderKeepTop(Context context, AttributeSet attrs, int defStyle) {
@@ -73,6 +76,10 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
         setOnGroupClickListener(this);
     }
 
+    public void setKeepTopClickable(boolean keepTopClickable) {
+        isKeepTopClickable = keepTopClickable;
+    }
+
     /**
      * 点击 mKeepTopHeaderView 触发的事件
      */
@@ -81,9 +88,9 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
 
         int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
 
-        if(this.isGroupExpanded(groupPosition)){
+        if (this.isGroupExpanded(groupPosition)) {
             this.collapseGroup(groupPosition);
-        }else{
+        } else {
             this.expandGroup(groupPosition);
         }
 
@@ -97,7 +104,7 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mCurrentHeaderStatus!=KeepTopHeaderStatus.GONE&& mKeepTopHeaderView != null) {
+        if (mCurrentHeaderStatus != KeepTopHeaderStatus.GONE && mKeepTopHeaderView != null) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = ev.getX();
@@ -107,15 +114,17 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    float x = ev.getX();
-                    float y = ev.getY();
+                    if (isKeepTopClickable) {
+                        float x = ev.getX();
+                        float y = ev.getY();
 
-                    float offsetX = Math.abs(x - mDownX);
-                    float offsetY = Math.abs(y - mDownY);
-                    // 如果 mKeepTopHeaderView 是可见的 , 点击在 mKeepTopHeaderView 内 , 那么触发 headerClick()
-                    if (offsetX <= 5 && offsetY <= 5 && x <= mHeaderViewWidth && y <= mHeaderViewHeight) {
-                        onKeepTopHeaderClick();
-                        return true;
+                        float offsetX = Math.abs(x - mDownX);
+                        float offsetY = Math.abs(y - mDownY);
+                        // 如果 mKeepTopHeaderView 是可见的 , 点击在 mKeepTopHeaderView 内 , 那么触发 headerClick()
+                        if (offsetX <= 5 && offsetY <= 5 && x <= mHeaderViewWidth && y <= mHeaderViewHeight) {
+                            onKeepTopHeaderClick();
+                            return true;
+                        }
                     }
                     break;
                 default:
@@ -128,7 +137,7 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
     @Override
     public void setAdapter(ExpandableListAdapter adapter) {
         super.setAdapter(adapter);
-        if(adapter instanceof BaseExpandAdapter){
+        if (adapter instanceof BaseExpandAdapter) {
             mAdapter = (BaseExpandAdapter) adapter;
             setKeepTopHeaderView(mAdapter.getKeepTopHeaderView(this));
         }
@@ -138,8 +147,8 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
      * 点击了 Group 触发的事件 , 要根据根据当前点击 Group 的状态来
      */
     @Override
-    public boolean onGroupClick(ExpandableListView parent,View v,int groupPosition,long id) {
-        if(parent.isGroupExpanded(groupPosition))
+    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+        if (parent.isGroupExpanded(groupPosition))
             parent.collapseGroup(groupPosition);
         else
             parent.expandGroup(groupPosition);
@@ -158,29 +167,41 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
     }
 
     private KeepTopHeaderStatus getHeaderState(int groupPosition, int childPosition) {
-        if(groupPosition<0&&childPosition<0){
+        if (groupPosition < 0 && childPosition < 0) {
             return KeepTopHeaderStatus.GONE;
         }
-        if(mAdapter==null)return KeepTopHeaderStatus.GONE;
+        if (mAdapter == null) return KeepTopHeaderStatus.GONE;
         final int childCount = mAdapter.getChildrenCount(groupPosition);
         if (childPosition == childCount - 1) {
             return KeepTopHeaderStatus.PUSHING_UP;
-        } else if (childPosition == -1&& !isGroupExpanded(groupPosition)) {
+        } else if (childPosition == -1 && !isGroupExpanded(groupPosition)) {
             return KeepTopHeaderStatus.GONE;
         } else {
             return KeepTopHeaderStatus.VISIBLE;
         }
     }
 
+    public void setOnExpandableListViewScrollListener(OnExpandableListViewScrollListener onExpandableListViewScrollListener) {
+        this.onExpandableListViewScrollListener = onExpandableListViewScrollListener;
+    }
+
     private void bindKeepTopHeaderView(int groupPosition, int childPosition) {
         if (mKeepTopHeaderView == null || mAdapter == null || mAdapter.getGroupCount() == 0) {
             return;
         }
+        if (this.groupPosition == groupPosition && this.childPosition == childPosition) {
+            return;
+        }
+        this.groupPosition = groupPosition;
+        this.childPosition = childPosition;
 
-        if(mCurrentHeaderStatus==KeepTopHeaderStatus.VISIBLE){
+        if (mCurrentHeaderStatus == KeepTopHeaderStatus.VISIBLE) {
+            if (onExpandableListViewScrollListener != null) {
+                onExpandableListViewScrollListener.onScroll(groupPosition, childPosition);
+            }
             mAdapter.bindKeepTopHeaderView(this, mKeepTopHeaderView, groupPosition, childPosition, MAX_ALPHA);
             mKeepTopHeaderView.layout(0, 0, mHeaderViewWidth, mHeaderViewHeight);
-        }else if(mCurrentHeaderStatus==KeepTopHeaderStatus.PUSHING_UP){
+        } else if (mCurrentHeaderStatus == KeepTopHeaderStatus.PUSHING_UP) {
             View firstView = getChildAt(0);
             int bottom = firstView.getBottom();
             int y;
@@ -191,6 +212,9 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
             } else {
                 y = 0;
                 alpha = MAX_ALPHA;
+            }
+            if (onExpandableListViewScrollListener != null) {
+                onExpandableListViewScrollListener.onScroll(groupPosition, childPosition);
             }
             mAdapter.bindKeepTopHeaderView(this, mKeepTopHeaderView, groupPosition, childPosition, alpha);
 
@@ -207,14 +231,14 @@ public class ExpandableListViewOneHeaderKeepTop extends ExpandableListView imple
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        if (mCurrentHeaderStatus!=KeepTopHeaderStatus.GONE&&mKeepTopHeaderView!=null) {
+        if (mCurrentHeaderStatus != KeepTopHeaderStatus.GONE && mKeepTopHeaderView != null) {
             //分组栏是直接绘制到界面中，而不是加入到ViewGroup中
             drawChild(canvas, mKeepTopHeaderView, getDrawingTime());
         }
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
         final long flatPos = getExpandableListPosition(firstVisibleItem);
         int groupPosition = ExpandableListView.getPackedPositionGroup(flatPos);

@@ -34,6 +34,7 @@ import android.os.Looper;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -97,6 +98,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -106,6 +108,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,9 +118,27 @@ import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 @SuppressLint("SimpleDateFormat")
 public class UIHelper {
     private static String TIME_ZONE_ID = "GMT+08";
+    private static long currentAndServiceTimeJg;//当前时间-服务器时间
 
-    public static void setTimeZoneId(String timeZoneId){
-        if(!TextUtils.isEmpty(timeZoneId)){
+    public static void initTime() {
+        long timeMillis = System.currentTimeMillis();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            String currentTimeZoneId = getCurrentTimeZoneId();
+            setTimeZoneId(currentTimeZoneId);
+
+            String serviceTime = timeLongHaoMiaoToString(timeMillis, "yyyy-MM-dd HH:mm:ss", "GMT+08");
+            String currentTime = timeLongHaoMiaoToString(timeMillis, "yyyy-MM-dd HH:mm:ss", currentTimeZoneId);
+            Date serviceDate = df.parse(serviceTime);
+            Date currentDate = df.parse(currentTime);
+            currentAndServiceTimeJg = currentDate.getTime() - serviceDate.getTime();
+        } catch (Exception e) {
+            currentAndServiceTimeJg = 0;
+        }
+    }
+
+    public static void setTimeZoneId(String timeZoneId) {
+        if (!TextUtils.isEmpty(timeZoneId)) {
             TIME_ZONE_ID = timeZoneId;
         }
     }
@@ -128,6 +149,11 @@ public class UIHelper {
     public static String getCurrentTimeZoneId() {
         TimeZone tz = TimeZone.getDefault();
         return tz.getID();
+    }
+
+    public static long getCurrentServiceTime() {
+        long timeMillis = System.currentTimeMillis();
+        return timeMillis - currentAndServiceTimeJg;
     }
 
     /**
@@ -589,6 +615,15 @@ public class UIHelper {
     }
 
     /**
+     * 毫秒 时间戳转换为String
+     */
+    public static String timeLongHaoMiaoToString(long millis, String timeForm, String timeZoneId) {
+        SimpleDateFormat sdf = new SimpleDateFormat(timeForm);
+        sdf.setTimeZone(TimeZone.getTimeZone(timeZoneId));
+        return sdf.format(new Date(millis));
+    }
+
+    /**
      * 生成随机的num位的字符串(数字+字母)
      */
     public static String getRandomStr(int num) {
@@ -939,14 +974,6 @@ public class UIHelper {
      */
     public static double getThreeDecimal1(double num) {
         DecimalFormat df = new DecimalFormat("0.000");
-        return Double.valueOf(df.format(num));
-    }
-
-    /**
-     * 保留1位小数→double
-     */
-    public static double getOneDecimalDouble(double num) {
-        DecimalFormat df = new DecimalFormat("0.0");
         return Double.valueOf(df.format(num));
     }
 
@@ -1800,5 +1827,24 @@ public class UIHelper {
             sb.append(num);
         }
         return sb.toString();
+    }
+
+    public static String getDeviceId() {
+        try {
+            String tmDevice = "";
+            if (ActivityCompat.checkSelfPermission(APP.getContext(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                TelephonyManager tm = (TelephonyManager) APP.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+                tmDevice = tm.getDeviceId();
+            }
+
+            final String androidId = Settings.Secure.getString(APP.getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+            UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32));
+
+            return deviceUuid.toString();
+        } catch (Exception e) {
+            showLog("Exception when getDeviceId " + e);
+        }
+        return "";
     }
 }

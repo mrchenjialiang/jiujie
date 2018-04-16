@@ -32,21 +32,6 @@ public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
         }
     }
 
-    /**
-     * @param type 0:first,1:refresh,2:loadNextPage
-     */
-    protected void setLoadDataStart(int type){
-        if(type==0){
-            setLoading();
-            setEnd(false);
-        }else if(type==1){
-            recyclerViewUtil.setRefreshing(true);
-            setEnd(false);
-        }else if(type==2){
-            recyclerViewUtil.setReadMore();
-        }
-    }
-
     protected void setLoadDataEnd(int type, T result) {
         if(type==0||type==1){
             dataList.clear();

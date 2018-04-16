@@ -50,6 +50,9 @@ public abstract class BaseActivity extends BaseTitleActivity {
 		if(isTitleBarTextDark()){
 			immersionBar = ImmersionBar.with(this);
 			immersionBar.fitsSystemWindows(false).statusBarDarkFont(true).init();
+		}else{
+			immersionBar = ImmersionBar.with(this);
+			immersionBar.fitsSystemWindows(false).statusBarDarkFont(false).init();
 		}
 	}
 

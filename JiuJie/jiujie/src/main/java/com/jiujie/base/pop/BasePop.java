@@ -10,7 +10,7 @@ import android.view.View.MeasureSpec;
 import android.widget.PopupWindow;
 
 import com.jiujie.base.jk.OnPopItemClickListen;
-import com.jiujie.base.jk.onShowHideListen;
+import com.jiujie.base.jk.OnShowHideListen;
 import com.jiujie.base.util.UIHelper;
 
 public abstract class BasePop extends PopupWindow {
@@ -20,12 +20,12 @@ public abstract class BasePop extends PopupWindow {
 	private boolean isInit = false;
 	private int x = -1;
 	private int y = -1;
-	private onShowHideListen listen;
+	private OnShowHideListen listen;
 	private Activity activity;
 	protected OnPopItemClickListen onItemClickListen;
 	private View layout;
 
-	public void setOnShowHideListen(onShowHideListen listen) {
+	public void setOnShowHideListen(OnShowHideListen listen) {
 		this.listen = listen;
 	}
 

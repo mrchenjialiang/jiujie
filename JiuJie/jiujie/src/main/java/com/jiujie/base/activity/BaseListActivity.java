@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import com.jiujie.base.R;
 import com.jiujie.base.jk.OnTitleClickMoveToTopListen;
 import com.jiujie.base.jk.Refresh;
+import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.recycler.RecyclerViewUtil;
 
 
@@ -60,5 +61,56 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 	public void moveToTop() {
 		if(recyclerViewUtil==null)return;
 		recyclerViewUtil.getRecyclerView().smoothScrollToPosition(0);
+	}
+
+	/**
+	 * @param type 0:first,1:refresh,2:loadNextPage
+	 */
+	protected void setLoadDataStart(int type){
+		if(type==0){
+			setLoading();
+			setEnd(false);
+		}else if(type==1){
+			recyclerViewUtil.setRefreshing(true);
+			setEnd(false);
+		}else if(type==2){
+			recyclerViewUtil.setReadMore();
+		}
+	}
+
+	protected void setLoadDataUIEnd(int type) {
+		recyclerViewUtil.isLoadingData(false);
+		if(type==0){
+			setLoadingEnd();
+		}else if(type==1){
+			recyclerViewUtil.setRefreshing(false);
+		}
+		if(isEnd()){
+			recyclerViewUtil.setReadEnd();
+		}
+		recyclerViewUtil.notifyDataSetChanged(type==0||type==1);
+	}
+
+	@Override
+	public void setLoadingFail() {
+		super.setLoadingFail();
+		recyclerViewUtil.isLoadingData(false);
+	}
+
+	protected void setLoadDataFail(int type, String error) {
+		recyclerViewUtil.isLoadingData(false);
+		if(type==0){
+			setLoadingFail();
+		}else if(type==1){
+			recyclerViewUtil.setRefreshing(false);
+		}else if(type==2){
+			recyclerViewUtil.setReadFail();
+		}
+		if(type==1){
+			UIHelper.showToastShort(mActivity,error);
+		}else if(type==2){
+			page--;
+			UIHelper.showToastShort(mActivity,error);
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.jiujie.base.widget;
 
 import android.content.Context;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -42,15 +43,15 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         refresh();
     }
 
-    public void refresh(){
+    public void refresh() {
         childViewList.clear();
-        for (int i = 0;i<getChildCount();i++){
+        for (int i = 0; i < getChildCount(); i++) {
             View childAt = getChildAt(i);
             childAt.setTag(i);
             childAt.setOnClickListener(this);
             childViewList.add(childAt);
         }
-        check(mCurrentPosition,true);
+        check(mCurrentPosition, true);
     }
 
     @Override
@@ -58,16 +59,18 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         childViewList.clear();
-        for (int i = 0;i<getChildCount();i++){
+        for (int i = 0; i < getChildCount(); i++) {
             View childAt = getChildAt(i);
             childAt.setTag(i);
             childAt.setOnClickListener(this);
             childViewList.add(childAt);
         }
+//        if(childViewList.size()>0)check(0);
+        check(mCurrentPosition, true);
     }
 
-    public void clearCheck(){
-        for (int i = 0;i<childViewList.size();i++){
+    public void clearCheck() {
+        for (int i = 0; i < childViewList.size(); i++) {
             childViewList.get(i).setSelected(false);
         }
         mCurrentPosition = -1;
@@ -77,19 +80,30 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         return mCurrentPosition;
     }
 
-    public void check(int position){
-        check(position,false);
+    public void check(int position) {
+        check(position, false);
     }
 
-    public void check(int position,boolean isForce){
-        if(mCurrentPosition!=position||isForce){
+    public void check(int position, boolean isForce) {
+        check(position, isForce, true);
+    }
+
+    /**
+     * @param isForce 默认false
+     * @param isNotice 默认true
+     */
+    public void check(int position, boolean isForce, boolean isNotice) {
+        if(isForce){
+            clearCheck();
+        }
+        if (mCurrentPosition != position || isForce) {
             mCurrentPosition = position;
-            for (int i = 0;i<childViewList.size();i++){
-                childViewList.get(i).setSelected(i==position);
+            for (int i = 0; i < childViewList.size(); i++) {
+                childViewList.get(i).setSelected(i == position);
             }
         }
 
-        if(onSelectListener!=null){
+        if (onSelectListener != null && isNotice) {
             onSelectListener.onSelect(position);
         }
     }
@@ -98,5 +112,24 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
     public void onClick(View v) {
         int position = (int) v.getTag();
         check(position);
+    }
+
+    public void bindViewPager(final ViewPager viewPager) {
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                int childCount = getChildCount();
+                if (childCount > 0) check(position % childCount, true);
+            }
+        });
+        int childCount = getChildCount();
+        if (childCount > 0) check(0, true);
+
+        setOnSelectListener(new OnSelectListener() {
+            @Override
+            public void onSelect(int position) {
+                viewPager.setCurrentItem(position);
+            }
+        });
     }
 }
