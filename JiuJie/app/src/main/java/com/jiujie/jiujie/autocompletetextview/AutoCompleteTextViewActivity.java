@@ -5,8 +5,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
-import com.jiujie.base.util.UIHelper;
-import com.jiujie.jiujie.MyBaseActivity;
+import com.jiujie.jiujie.ui.activity.MyBaseActivity;
 import com.jiujie.jiujie.R;
 
 import java.util.ArrayList;

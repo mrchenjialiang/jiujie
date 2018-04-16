@@ -1,7 +1,9 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.activity;
 
 import android.os.Environment;
 import android.widget.VideoView;
+
+import com.jiujie.jiujie.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -37,7 +37,6 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
      * @param type 0:first,1:refresh,2:loadNextPage
      */
     protected void setLoadDataStart(int type){
-        recyclerViewUtil.isLoadingData(true);
         if(type==0){
             setLoading();
             setEnd(false);
@@ -50,7 +49,6 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
     }
 
     protected void setLoadDataEnd(int type, T result) {
-        recyclerViewUtil.isLoadingData(false);
         if(type==0||type==1){
             dataList.clear();
         }
@@ -77,6 +75,7 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
     }
 
     protected void setLoadDataUIEnd(int type) {
+        recyclerViewUtil.isLoadingData(false);
         if(type==0){
             setLoadingEnd();
         }else if(type==1){
@@ -86,6 +85,12 @@ public abstract class BaseListSimpleActivity<T,V> extends BaseListActivity{
             recyclerViewUtil.setReadEnd();
         }
         recyclerViewUtil.notifyDataSetChanged(type==0||type==1);
+    }
+
+    @Override
+    public void setLoadingFail() {
+        super.setLoadingFail();
+        recyclerViewUtil.isLoadingData(false);
     }
 
     protected void setLoadDataFail(int type, String error) {

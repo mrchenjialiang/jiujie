@@ -12,6 +12,10 @@ android {
         versionCode 1
         versionName "1.0"
 //        multiDexEnabled true
+
+        //ImageUtil 中 高斯模糊要求最低 api 17 支持需配置下面两个
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {

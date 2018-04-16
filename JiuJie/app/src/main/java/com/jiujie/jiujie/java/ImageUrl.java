@@ -1,10 +1,9 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.java;
 
 /**
  * Created by ChenJiaLiang on 2018/4/9.
  * Email:576507648@qq.com
  */
-
 public class ImageUrl {
     public static String text = "04-09 15:09:24.109!!http://s.3987.com/uploadfile/2018/0408/thumb_5ac9cbf238c76.jpg==" +
             "04-09 15:09:24.118!!http://s.3987.com/uploadfile/2018/0408/thumb_5ac9d59e5f0d4.jpg==" +

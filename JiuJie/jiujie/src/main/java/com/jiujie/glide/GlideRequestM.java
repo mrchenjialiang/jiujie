@@ -24,7 +24,7 @@ public class GlideRequestM {
         this.imageView = imageView;
     }
 
-    boolean isShouldReturn() {
+    public boolean isShouldReturn() {
         return isShouldReturn;
     }
 
@@ -49,6 +49,9 @@ public class GlideRequestM {
             Fragment fragment = (Fragment) contextObject;
             requestManager = Glide.with(fragment);
             context = fragment.getContext();
+        }else if(contextObject!=null&&contextObject instanceof Context){
+            context = ((Context) contextObject).getApplicationContext();
+            requestManager = Glide.with(context);
         }else if(imageView!=null){
             requestManager = Glide.with(imageView.getContext());
             context = imageView.getContext();

@@ -1,4 +1,4 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.java;
 
 
 public class SimpleText {

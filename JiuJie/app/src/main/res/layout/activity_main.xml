@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.jiujie.jiujie.MainActivity">
+    tools:context="com.jiujie.jiujie.ui.activity.MainActivity">
 
 
     <TextView
@@ -61,9 +61,17 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/s_item_bg"
-        android:onClick="toScrollKeyTop"
+        android:onClick="toScrollKeepTop"
         android:gravity="center"
-        android:text="toScrollKeyTop"/>
+        android:text="toScrollKeepTop"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
+        android:onClick="toScrollKeepTopGame"
+        android:gravity="center"
+        android:text="toScrollKeepTopGame"/>
 
     <TextView
         android:layout_width="match_parent"

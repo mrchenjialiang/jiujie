@@ -1,6 +1,9 @@
-package com.jiujie.jiujie;
+package com.jiujie.jiujie.ui.activity;
 
 import android.os.Bundle;
+
+import com.jiujie.jiujie.R;
+import com.jiujie.jiujie.ui.fragment.SimpleListFragment;
 
 public class FragmentActivity extends MyBaseActivity {
 

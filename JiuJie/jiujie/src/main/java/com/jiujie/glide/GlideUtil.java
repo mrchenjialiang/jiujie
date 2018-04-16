@@ -66,131 +66,131 @@ public class GlideUtil implements ImageLoader{
         this.onGlideStartListener = onGlideStartListener;
     }
 
-    public void setSimpleImage(Object contextObject,String url,ImageView imageView){
+    public <T>void setSimpleImage(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,0,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleImage(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setSimpleImage(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,boolean isCenterCrop){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,boolean isCenterCrop){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCrop,isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int width,int height){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int width,int height){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId,boolean isCenterCrop){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId,boolean isCenterCrop){
         setImage(contextObject,url,imageView,defaultId,isCenterCrop,isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId,int width,int height){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId,int width,int height){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId,OnLoadImageListener<Drawable> listener){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId,OnLoadImageListener<Drawable> listener){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), listener);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId,boolean isCenterCrop,OnLoadImageListener<Drawable> listener){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId,boolean isCenterCrop,OnLoadImageListener<Drawable> listener){
         setImage(contextObject,url,imageView,defaultId,isCenterCrop,isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), listener);
     }
 
-    public void setDefaultImage(Object contextObject,String url,ImageView imageView,int defaultId,boolean isCenterCrop,boolean isShowAnim,OnLoadImageListener<Drawable> listener){
+    public <T>void setDefaultImage(Object contextObject,T url,ImageView imageView,int defaultId,boolean isCenterCrop,boolean isShowAnim,OnLoadImageListener<Drawable> listener){
         setImage(contextObject,url,imageView,defaultId,isCenterCrop,isShowAnim,isCircleDefault(),isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), listener);
     }
 
-    public void setDefaultNoCacheImage(Object contextObject,String url,ImageView imageView){
+    public <T>void setDefaultNoCacheImage(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setDefaultNoCacheImage(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setDefaultNoCacheImage(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setCircleImage(Object contextObject,String url,ImageView imageView){
+    public <T>void setCircleImage(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,circleDefaultId,isCenterCropDefault(),isShowAnimDefault(),true,isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setCircleImage(Object contextObject,String url,ImageView imageView,int width,int height){
+    public <T>void setCircleImage(Object contextObject,T url,ImageView imageView,int width,int height){
         setImage(contextObject,url,imageView,circleDefaultId,isCenterCropDefault(),isShowAnimDefault(),true,isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setCircleImage(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setCircleImage(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),true,isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setCircleImage(Object contextObject,String url,ImageView imageView,int defaultId,int width,int height){
+    public <T>void setCircleImage(Object contextObject,T url,ImageView imageView,int defaultId,int width,int height){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),true,isUseCacheDefault(),getConnerDefault(),getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setCircleNoCacheImage(Object contextObject,String url,ImageView imageView){
+    public <T>void setCircleNoCacheImage(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,circleDefaultId,isCenterCropDefault(),isShowAnimDefault(),true,false,getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setCircleNoCacheImage(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setCircleNoCacheImage(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),true,false,getConnerDefault(),getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setConnerImage(Object contextObject,String url,ImageView imageView,int conner){
+    public <T>void setConnerImage(Object contextObject,T url,ImageView imageView,int conner){
         setImage(contextObject,url,imageView,connerDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),conner,getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setConnerImage(Object contextObject,String url,ImageView imageView,int conner,int width,int height){
+    public <T>void setConnerImage(Object contextObject,T url,ImageView imageView,int conner,int width,int height){
         setImage(contextObject,url,imageView,connerDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),conner,getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setConnerImage(Object contextObject,String url,ImageView imageView,int conner,int defaultId){
+    public <T>void setConnerImage(Object contextObject,T url,ImageView imageView,int conner,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),conner,getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setConnerImage(Object contextObject,String url,ImageView imageView,int conner,int defaultId,int width,int height){
+    public <T>void setConnerImage(Object contextObject,T url,ImageView imageView,int conner,int defaultId,int width,int height){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),conner,getRadioDefault(),getSimplingDefault(), width, height, null);
     }
 
-    public void setConnerNoCacheImage(Object contextObject,String url,ImageView imageView,int conner){
+    public <T>void setConnerNoCacheImage(Object contextObject,T url,ImageView imageView,int conner){
         setImage(contextObject,url,imageView,connerDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,conner,getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setConnerNoCacheImage(Object contextObject,String url,ImageView imageView,int conner,int defaultId){
+    public <T>void setConnerNoCacheImage(Object contextObject,T url,ImageView imageView,int conner,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,conner,getRadioDefault(),getSimplingDefault(), getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlur(Object contextObject,String url,ImageView imageView){
+    public <T>void setSimpleBlur(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),15,1, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlur(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setSimpleBlur(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),15,1, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlur(Object contextObject,String url,ImageView imageView,int defaultId,int blurRadio,int blurSimpling){
+    public <T>void setSimpleBlur(Object contextObject,T url,ImageView imageView,int defaultId,int blurRadio,int blurSimpling){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),isUseCacheDefault(),getConnerDefault(),blurRadio,blurSimpling, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlur(Object contextObject,String url,ImageView imageView,int defaultId,int blurRadio,int blurSimpling,boolean isShowAnim){
+    public <T>void setSimpleBlur(Object contextObject,T url,ImageView imageView,int defaultId,int blurRadio,int blurSimpling,boolean isShowAnim){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnim,isCircleDefault(),isUseCacheDefault(),getConnerDefault(),blurRadio,blurSimpling, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlur(Object contextObject,String url,ImageView imageView,int defaultId,boolean isShowAnim){
+    public <T>void setSimpleBlur(Object contextObject,T url,ImageView imageView,int defaultId,boolean isShowAnim){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnim,isCircleDefault(),isUseCacheDefault(),getConnerDefault(),15,1, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlurNoCache(Object contextObject,String url,ImageView imageView){
+    public <T>void setSimpleBlurNoCache(Object contextObject,T url,ImageView imageView){
         setImage(contextObject,url,imageView,normalDefaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,getConnerDefault(),15,1, getWidthDefault(), getHeightDefault(), null);
     }
 
-    public void setSimpleBlurNoCache(Object contextObject,String url,ImageView imageView,int defaultId){
+    public <T>void setSimpleBlurNoCache(Object contextObject,T url,ImageView imageView,int defaultId){
         setImage(contextObject,url,imageView,defaultId,isCenterCropDefault(),isShowAnimDefault(),isCircleDefault(),false,getConnerDefault(),15,1,getWidthDefault(), getHeightDefault(),null);
     }
 
