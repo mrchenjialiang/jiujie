@@ -47,26 +47,17 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
         childViewList.clear();
         for (int i = 0; i < getChildCount(); i++) {
             View childAt = getChildAt(i);
+            childAt.setSelected(i==mCurrentPosition);
             childAt.setTag(i);
             childAt.setOnClickListener(this);
             childViewList.add(childAt);
         }
-        check(mCurrentPosition, true);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        childViewList.clear();
-        for (int i = 0; i < getChildCount(); i++) {
-            View childAt = getChildAt(i);
-            childAt.setTag(i);
-            childAt.setOnClickListener(this);
-            childViewList.add(childAt);
-        }
-//        if(childViewList.size()>0)check(0);
-        check(mCurrentPosition, true);
+        refresh();
     }
 
     public void clearCheck() {
@@ -93,18 +84,29 @@ public class RadioGroupLayout extends LinearLayout implements View.OnClickListen
      * @param isNotice 默认true
      */
     public void check(int position, boolean isForce, boolean isNotice) {
-        if(isForce){
-            clearCheck();
+        if(childViewList==null||childViewList.size()==0){
+            return;
+        }
+        boolean isShouldQuFan = false;
+        if(position<0){
+            isShouldQuFan = true;
+            position = Math.abs(position);
+        }
+        if(position>childViewList.size() - 1){
+            position = position % childViewList.size();
+        }
+        if(isShouldQuFan){
+            position = childViewList.size() - position;
         }
         if (mCurrentPosition != position || isForce) {
             mCurrentPosition = position;
             for (int i = 0; i < childViewList.size(); i++) {
                 childViewList.get(i).setSelected(i == position);
             }
-        }
 
-        if (onSelectListener != null && isNotice) {
-            onSelectListener.onSelect(position);
+            if (onSelectListener != null && isNotice) {
+                onSelectListener.onSelect(position);
+            }
         }
     }
 
