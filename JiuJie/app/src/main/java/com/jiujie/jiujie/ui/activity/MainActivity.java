@@ -3,6 +3,7 @@ package com.jiujie.jiujie.ui.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
@@ -28,6 +29,33 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
+
+        Toast.makeText(getApplicationContext(),"主线程 getApplicationContext",Toast.LENGTH_SHORT).show();
+        UIHelper.showLog("主线程 getApplicationContext");
+        Toast.makeText(MainActivity.this,"主线程 Activity",Toast.LENGTH_SHORT).show();
+        UIHelper.showLog("主线程 Activity");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showToastShort("线程 getApplicationContext");
+//                Toast.makeText(getApplicationContext(),"线程 Activity",Toast.LENGTH_SHORT).show();
+                UIHelper.showLog("线程 getApplicationContext");
+                UIHelper.showToastShort("线程 Activity");
+//                Toast.makeText(MainActivity.this,"线程 Activity",Toast.LENGTH_SHORT).show();
+                UIHelper.showLog("线程 Activity");
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        UIHelper.showToastShort("主线程 getApplicationContext onDestroy");
+//                Toast.makeText(getApplicationContext(),"线程 Activity",Toast.LENGTH_SHORT).show();
+        UIHelper.showLog("主线程 getApplicationContext onDestroy");
+        UIHelper.showToastShort("主线程 Activity onDestroy");
+//                Toast.makeText(MainActivity.this,"线程 Activity",Toast.LENGTH_SHORT).show();
+        UIHelper.showLog("主线程 Activity onDestroy");
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -48,7 +76,7 @@ public class MainActivity extends MyBaseActivity {
             getPhotoUtil = new GetPhotoUtil(mActivity) {
                 @Override
                 public void onGetPhotoEnd(boolean isFromCamera, List<String> imagePathList) {
-                    UIHelper.showToastShort(mActivity,"isFromCamera "+isFromCamera+",imagePathList size "+imagePathList.size());
+                    UIHelper.showToastShort("isFromCamera "+isFromCamera+",imagePathList size "+imagePathList.size());
                 }
 
                 @Override
@@ -93,13 +121,13 @@ public class MainActivity extends MyBaseActivity {
             @Override
             public void onFail(String error) {
                 UIHelper.showLog(UIHelper.isRunInUIThread());
-                UIHelper.showToastShort(mActivity,error);
+                UIHelper.showToastShort(error);
             }
 
             @Override
             public void onFinish(String filePath) {
                 UIHelper.showLog(UIHelper.isRunInUIThread());
-                UIHelper.showToastShort(mActivity,filePath);
+                UIHelper.showToastShort(filePath);
             }
 
             @Override

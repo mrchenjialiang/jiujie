@@ -44,11 +44,15 @@ public class APP {
             crashHandler.init(context.getApplicationContext());
         }
 
-        UIHelper.showLog("APP", "20180413");
+        UIHelper.initTime();
+    }
+
+    public static void init(Context context, boolean isCrashError, boolean isDeBug) {
+        init(context, false, isCrashError, null, isDeBug, context.getPackageName()+".fileProvider");
     }
 
     public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug) {
-        init(context, isUseUMeng, isCrashError, defaultDoMain, isDeBug, null);
+        init(context, isUseUMeng, isCrashError, defaultDoMain, isDeBug, context.getPackageName()+".fileProvider");
     }
 
     public static String getProviderAuthorities() {

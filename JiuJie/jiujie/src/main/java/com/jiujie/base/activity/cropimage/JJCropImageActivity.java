@@ -99,12 +99,12 @@ public class JJCropImageActivity extends BaseActivity {
         Intent intent = getIntent();
         String mPath = intent.getStringExtra("path");
         if(TextUtils.isEmpty(mPath)){
-            UIHelper.showToastShort(mActivity,"图片不存在");
+            UIHelper.showToastShort("图片不存在");
             finish();
             return;
         }
         if(!new File(mPath).exists()){
-            UIHelper.showToastShort(mActivity,"图片不存在");
+            UIHelper.showToastShort("图片不存在");
             finish();
             return;
         }

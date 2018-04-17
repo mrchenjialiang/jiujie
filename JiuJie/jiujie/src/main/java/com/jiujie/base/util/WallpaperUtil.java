@@ -27,7 +27,7 @@ public class WallpaperUtil {
         final Dialog waitingDialog = UIHelper.getWaitingDialog(mActivity);
         waitingDialog.setCanceledOnTouchOutside(false);
         waitingDialog.show();
-        UIHelper.showToastShort(mActivity, "正在设置壁纸...");
+        UIHelper.showToastShort("正在设置壁纸...");
         requestPermissions(new OnListener<Boolean>() {
             @Override
             public void onListen(Boolean isHas) {
@@ -35,7 +35,7 @@ public class WallpaperUtil {
                     doSetWallpaper(mActivity, url, waitingDialog);
                 } else {
                     if (waitingDialog.isShowing()) waitingDialog.dismiss();
-                    UIHelper.showToastShort(mActivity, "设置失败，无设置壁纸权限");
+                    UIHelper.showToastShort("设置失败，无设置壁纸权限");
                 }
             }
         });
@@ -116,7 +116,7 @@ public class WallpaperUtil {
                                 String message = e.getMessage();
                                 File logFile = FileUtil.createLogFile(mActivity, "setWallpaperFailLog.txt");
                                 UIHelper.writeStringToFile(logFile.getParentFile().getAbsolutePath(), logFile.getName(), message);
-                                UIHelper.showToastShort(mActivity, "图片处理失败");
+                                UIHelper.showToastShort("图片处理失败");
                             }
                         }
                     });
@@ -128,9 +128,9 @@ public class WallpaperUtil {
             public void runOnUIThread(Boolean isSuccess) {
                 if (waitingDialog != null && waitingDialog.isShowing()) waitingDialog.dismiss();
                 if (isSuccess) {
-                    UIHelper.showToastShort(mActivity, "设置壁纸成功");
+                    UIHelper.showToastShort("设置壁纸成功");
                 } else {
-                    UIHelper.showToastShort(mActivity, "设置壁纸失败");
+                    UIHelper.showToastShort("设置壁纸失败");
                 }
             }
         }.start();

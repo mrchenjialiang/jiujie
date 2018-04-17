@@ -107,10 +107,10 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 			recyclerViewUtil.setReadFail();
 		}
 		if(type==1){
-			UIHelper.showToastShort(mActivity,error);
+			UIHelper.showToastShort(error);
 		}else if(type==2){
 			page--;
-			UIHelper.showToastShort(mActivity,error);
+			UIHelper.showToastShort(error);
 		}
 	}
 }

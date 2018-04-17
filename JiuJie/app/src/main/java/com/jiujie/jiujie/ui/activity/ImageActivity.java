@@ -2,6 +2,7 @@ package com.jiujie.jiujie.ui.activity;
 
 import android.widget.ImageView;
 
+import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.WallpaperUtil;
 import com.jiujie.glide.GlideUtil;
 import com.jiujie.jiujie.R;
@@ -40,5 +41,28 @@ public class ImageActivity extends MyBaseActivity {
     @OnClick(R.id.i_btn_set_wallpaper)
     public void onSetWallpaper(){
         WallpaperUtil.setWallPaper(mActivity,imageUrl);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    UIHelper.showToastShort("线程 getApplicationContext");
+//                Toast.makeText(getApplicationContext(),"线程 Activity",Toast.LENGTH_SHORT).show();
+                    UIHelper.showLog("线程 getApplicationContext");
+                    Thread.sleep(1000);
+                    UIHelper.showToastShort("线程 Activity");
+//                Toast.makeText(MainActivity.this,"线程 Activity",Toast.LENGTH_SHORT).show();
+                    UIHelper.showLog("线程 Activity");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }

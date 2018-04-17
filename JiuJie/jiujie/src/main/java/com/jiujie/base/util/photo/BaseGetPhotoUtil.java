@@ -15,7 +15,6 @@ import com.jiujie.base.activity.cropimage.JJCropImageActivity;
 import com.jiujie.base.jk.ICallbackSimple;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
-import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.UriUtil;
@@ -84,7 +83,7 @@ abstract class BaseGetPhotoUtil implements GetPhotoRequest{
 			@Override
 			public void onListen(Boolean isHasPermissions) {
 				if(!isHasPermissions){
-					UIHelper.showToastShort(mActivity,"权限不足，无法进行拍照");
+					UIHelper.showToastShort("权限不足，无法进行拍照");
 					return;
 				}
 
@@ -100,7 +99,7 @@ abstract class BaseGetPhotoUtil implements GetPhotoRequest{
 	private void doOpenCameraMethod2(){
 		mCameraFile = FileUtil.createFile(getCameraOutPutDir(), getCameraOutPutFileName());
 		if(mCameraFile==null){
-			UIHelper.showToastShort(mActivity,"创建文件失败");
+			UIHelper.showToastShort("创建文件失败");
 			return;
 		}
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -126,11 +125,11 @@ abstract class BaseGetPhotoUtil implements GetPhotoRequest{
                 mActivity.startActivityForResult(intent, REQUEST_CAMERA);
             } else {
                 mCameraFile = null;
-                UIHelper.showToastShort(mActivity,"创建文件失败");
+                UIHelper.showToastShort("创建文件失败");
             }
         } else {
             mCameraFile = null;
-            UIHelper.showToastShort(mActivity,"系统不支持拍照");
+            UIHelper.showToastShort("系统不支持拍照");
         }
 	}
 
@@ -140,7 +139,7 @@ abstract class BaseGetPhotoUtil implements GetPhotoRequest{
 			@Override
 			public void onListen(Boolean isHasPermissions) {
 				if(!isHasPermissions){
-					UIHelper.showToastShort(mActivity,"无查看相册权限");
+					UIHelper.showToastShort("无查看相册权限");
 					return;
 				}
 				ChoosePhotoActivity.launch(mActivity, getPhotoMaxSize(),getCheckedPhotoList(), new ICallbackSimple<List<String>>() {

@@ -41,7 +41,7 @@ public class MyWallpaperServer extends WallpaperService {
             intent = new Intent("android.service.wallpaper.CHANGE_LIVE_WALLPAPER");
             intent.putExtra("android.service.wallpaper.extra.LIVE_WALLPAPER_COMPONENT", componentName);
             if (!UIHelper.isIntentExisting(activity, intent)) {
-                UIHelper.showToastShort(activity, "您的机型不支持设置动态壁纸");
+                UIHelper.showToastShort("您的机型不支持设置动态壁纸");
                 return;
             }
         }

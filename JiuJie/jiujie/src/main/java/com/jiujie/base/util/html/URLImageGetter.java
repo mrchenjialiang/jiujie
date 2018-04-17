@@ -41,7 +41,7 @@ public class URLImageGetter implements Html.ImageGetter {
             e.printStackTrace();
             if (APP.isDeBug) {
                 UIHelper.showLog("Exception:" + e);
-                UIHelper.showToastLong(activity, "Exception:" + e);
+                UIHelper.showToastLong("Exception:" + e);
             } else {
                 UIHelper.showLog("Exception:" + e);
             }

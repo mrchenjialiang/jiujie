@@ -221,36 +221,12 @@ public class UIHelper {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 
-    public static void showToastShort(final Activity context, final String text) {
-        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(text.trim())) {
-            return;
-        }
-        if (isRunInUIThread()) {
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-        } else {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+    public static void showToastShort(String text) {
+        ToastUtil.showToastShort(text);
     }
 
-    public static void showToastLong(final Activity context, final String text) {
-        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(text.trim())) {
-            return;
-        }
-        if (isRunInUIThread()) {
-            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-        } else {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-                }
-            });
-        }
+    public static void showToastLong(final String text) {
+        ToastUtil.showToastLong(text);
     }
 
     public static void showLog(Object... text) {
@@ -725,7 +701,7 @@ public class UIHelper {
      */
     public static void copyText(Activity activity, CharSequence text, boolean isShowToast) {
         boolean isSuccess = copyText(activity, text);
-        if (isShowToast) showToastShort(activity, isSuccess ? "复制成功" : "复制失败");
+        if (isShowToast) showToastShort(isSuccess ? "复制成功" : "复制失败");
     }
 
     /**
@@ -769,11 +745,11 @@ public class UIHelper {
 
 
     public static void waitDevelopment(Activity context) {
-        showToastShort(context, "相关功能正在研发中，敬请期待！");
+        showToastShort("相关功能正在研发中，敬请期待！");
     }
 
     public static void waitForOpen(Activity context) {
-        showToastShort(context, "尚未开放，敬请期待！");
+        showToastShort("尚未开放，敬请期待！");
     }
 
     /**

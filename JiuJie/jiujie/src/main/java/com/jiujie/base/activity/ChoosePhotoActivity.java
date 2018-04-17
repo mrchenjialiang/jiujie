@@ -167,7 +167,7 @@ public class ChoosePhotoActivity extends BaseActivity{
                         return;
                     }
                 }
-                UIHelper.showToastShort(mActivity,"手机里没有相关图片");
+                UIHelper.showToastShort("手机里没有相关图片");
             }
         });
     }

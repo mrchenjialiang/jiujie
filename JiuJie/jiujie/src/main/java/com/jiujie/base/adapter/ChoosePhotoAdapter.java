@@ -72,7 +72,7 @@ public class ChoosePhotoAdapter extends BaseRecyclerViewSimpleAdapter<Image,Choo
                     isChange = true;
                 }else{
                     if(checkedList.size()>=maxCheckCount){
-                        UIHelper.showToastShort(mActivity,"最多选"+maxCheckCount+"张");
+                        UIHelper.showToastShort("最多选"+maxCheckCount+"张");
                         isChange = false;
                     }else{
                         checkedList.add(d.getPath());

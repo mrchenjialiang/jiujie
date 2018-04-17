@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * BD--接口直接获取数据类型
+ * ID--Item使用数据类型
  * Created by ChenJiaLiang on 2017/6/12.
  * Email:576507648@qq.com
  */
+public abstract class BaseListSimpleFragment<BD,ID> extends BaseListFragment{
 
-public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
-
-    protected List<V> dataList = new ArrayList<>();
-    protected class MyCallback implements ICallback<T>{
+    protected class MyCallback implements ICallback<BD>{
         private final int type;
         public MyCallback(int type) {
             this.type = type;
@@ -22,7 +22,7 @@ public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
         }
 
         @Override
-        public void onSucceed(T result) {
+        public void onSucceed(BD result) {
             setLoadDataEnd(type,result);
         }
 
@@ -31,25 +31,32 @@ public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
             setLoadDataFail(type,error);
         }
     }
+    
+    
+    protected List<ID> dataList = new ArrayList<>();
+    private boolean isDataChange;
 
-    protected void setLoadDataEnd(int type, T result) {
-        if(type==0||type==1){
+    protected void setLoadDataEnd(int type, BD result) {
+        int oldSize = dataList.size();
+        if (type == 0 || type == 1) {
             dataList.clear();
         }
-        List<V> list = analysisData(result);
-        boolean isEnd = list==null||(isEndFromSize()?list.size()<size:list.size()<1);
+        List<ID> list = analysisData(result);
+        boolean isEnd = list == null || (isEndFromSize() ? list.size() < this.size : list.size() < 1);
         boolean isHasData = list != null && list.size() > 0;
-        if(isHasData){
-            if(isAddDataWithQuChong()){
-                for (V d:list){
-                    if(!dataList.contains(d)){
+        if (isHasData) {
+            if (isAddDataWithQuChong()) {
+                for (ID d : list) {
+                    if (!dataList.contains(d)) {
                         dataList.add(d);
                     }
                 }
-            }else{
+            } else {
                 dataList.addAll(list);
             }
         }
+        int newSize = dataList.size();
+        isDataChange = type != 2 || oldSize != newSize;
         setEnd(isEnd);
         setLoadDataUIEnd(type);
     }
@@ -68,7 +75,13 @@ public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
         if(isEnd()){
             recyclerViewUtil.setReadEnd();
         }
-        recyclerViewUtil.notifyDataSetChanged(type==0||type==1);
+        if(type==0||type==1){
+            recyclerViewUtil.notifyDataSetChanged(true);
+        }else{
+            if(isDataChange){
+                recyclerViewUtil.notifyDataSetChanged(false);
+            }
+        }
     }
 
     @Override
@@ -87,12 +100,12 @@ public abstract class BaseListSimpleFragment<T,V> extends BaseListFragment{
             recyclerViewUtil.setReadFail();
         }
         if(type==1){
-            UIHelper.showToastShort(mActivity,error);
+            UIHelper.showToastShort(error);
         }else if(type==2){
             page--;
-            UIHelper.showToastShort(mActivity,error);
+            UIHelper.showToastShort(error);
         }
     }
 
-    protected abstract List<V> analysisData(T result);
+    protected abstract List<ID> analysisData(BD result);
 }

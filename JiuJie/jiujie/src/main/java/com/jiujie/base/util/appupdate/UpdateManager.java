@@ -212,7 +212,7 @@ public class UpdateManager implements MyHandlerInterface {
 			if(resultCode!=Activity.RESULT_OK){
 				//下载了，却取消安装或者安装失败
 				if(mActivity!=null){
-					UIHelper.showToastLong(mActivity, "安装失败，请先卸载然后再安装");
+					UIHelper.showToastLong("安装失败，请先卸载然后再安装");
 					if(updateListen!=null)updateListen.cancel();
 				}
 			}
