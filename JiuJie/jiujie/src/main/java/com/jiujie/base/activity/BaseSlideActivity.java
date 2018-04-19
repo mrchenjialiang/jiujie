@@ -1,6 +1,7 @@
 package com.jiujie.base.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.jiujie.base.R;
@@ -32,6 +33,10 @@ public abstract class BaseSlideActivity extends BaseMostActivity {
 //    }
 
     protected boolean isOpenSlideBack(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            //8.0+不开启侧滑
+            return false;
+        }
         return true;
     }
 
