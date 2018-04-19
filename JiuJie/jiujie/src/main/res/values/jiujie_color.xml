@@ -45,10 +45,6 @@
     <color name="item_bg_n">@color/white</color>
     <color name="item_bg_p">#c5c5c5</color>
 
-
-    <!--裁剪页面-->
-    <color name="gl_background">#e6e6e6</color>
-
     <color name="press_bg">#33626262</color>
     <color name="btn_press_bg">#66ffffff</color>
 

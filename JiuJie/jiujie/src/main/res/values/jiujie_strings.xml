@@ -14,7 +14,4 @@
     <string name="menu_lock">锁定</string>
     <string name="menu_unlock">解锁</string>
 
-    <!--  裁剪图片界面 -->
-    <string name="gl_wait">请稍等</string>
-
 </resources>

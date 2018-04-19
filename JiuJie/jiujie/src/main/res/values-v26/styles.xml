@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--targetSdk>=26的，就需要下面两个主题做更改了-->
+
+    <!--8.0+-->
+    <!--android:windowIsTranslucent 和 -->
+    <!--清单文件里的-->
+    <!--android:screenOrientation="portrait" -->
+    <!--只能保留一个-->
+    <!--只有全屏不透明的activity才可以设置方向-->
+
+
+    <style name="Slide.trans" parent="BaseAppTheme">
+        <!--系统有全黑底色，没办法半透明之类的图片-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <item name="android:windowBackground">@drawable/slide_bg_black</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="Slide.trans.FullScreen" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <item name="android:windowBackground">@drawable/slide_bg_black</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+</resources>

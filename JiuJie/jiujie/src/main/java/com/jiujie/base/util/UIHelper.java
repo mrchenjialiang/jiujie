@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -1555,19 +1556,54 @@ public class UIHelper {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    public static boolean installNormal(Context context, String filePath) {
-        File file = new File(filePath);
-        return installNormal(context, file);
+    public static void installNormal(String filePath) {
+        installNormal(new File(filePath));
     }
 
-    public static boolean installNormal(Context context, File file) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        if (!file.exists() || !file.isFile() || file.length() <= 0) {
-            return false;
+    public static void installNormal(final File apkFile) {
+        if (apkFile == null || !apkFile.exists() || apkFile.length() == 0) {
+            ToastUtil.showToastLong("下载文件不存在");
+            if (apkFile != null&&apkFile.exists()) {
+                apkFile.delete();
+            }
+            return;
         }
-        i.setDataAndType(UriUtil.getUri(context, i, file), "application/vnd.android.package-archive");
-        context.startActivity(i);
-        return true;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            >=26 8.0+的手机，需要申请权限
+            boolean canRequestPackageInstalls = APP.getContext().getPackageManager().canRequestPackageInstalls();
+            if(canRequestPackageInstalls){
+                doInstallReal(apkFile);
+            }else{
+                PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+                    @Override
+                    public void onListen(Boolean isHas) {
+                        if(isHas){
+                            doInstallReal(apkFile);
+                        }else{
+                            UIHelper.showToastShort("没有安装权限，无法继续");
+                        }
+                    }
+                }, Manifest.permission.REQUEST_INSTALL_PACKAGES);
+            }
+        }else{
+            doInstallReal(apkFile);
+        }
+    }
+
+    private static void doInstallReal(File apkFile) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri uri = UriUtil.getUri(APP.getContext(), intent, apkFile);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            if (UIHelper.isIntentExisting(APP.getContext(), intent)) {
+                APP.getContext().startActivity(intent);
+            } else {
+                ToastUtil.showToastLong("安装失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtil.showToastLong("安装失败，请卸载后重新安装");
+        }
     }
 
     /**
@@ -1822,5 +1858,21 @@ public class UIHelper {
             showLog("Exception when getDeviceId " + e);
         }
         return "";
+    }
+
+    public static String getUMengChannel() {
+        return getAppMetaData("UMENG_CHANNEL");
+    }
+
+    public static String getAppMetaData(String key) {
+        String resultData = null;
+        try {
+            ApplicationInfo appInfo = APP.getContext().getPackageManager()
+                    .getApplicationInfo(APP.getContext().getPackageName(), PackageManager.GET_META_DATA);
+            resultData = appInfo.metaData.getString(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resultData;
     }
 }

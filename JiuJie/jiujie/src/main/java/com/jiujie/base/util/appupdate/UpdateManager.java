@@ -18,7 +18,6 @@ import com.jiujie.base.jk.UpdateListen;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.MyHandler;
 import com.jiujie.base.util.UIHelper;
-import com.jiujie.base.util.UriUtil;
 
 import java.io.File;
 
@@ -115,7 +114,7 @@ public class UpdateManager implements MyHandlerInterface {
 				isUpdating = false;
 				notificationUtil.clearNotification();
 				// 安装文件
-				installApk();
+				UIHelper.installNormal(new File(mSavePath, appName));
 				break;
 			default:
 				break;
@@ -207,17 +206,17 @@ public class UpdateManager implements MyHandlerInterface {
 		ensureDialog.show();
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(requestCode==UpdateAppRequestCode){
-			if(resultCode!=Activity.RESULT_OK){
-				//下载了，却取消安装或者安装失败
-				if(mActivity!=null){
-					UIHelper.showToastLong("安装失败，请先卸载然后再安装");
-					if(updateListen!=null)updateListen.cancel();
-				}
-			}
-		}
-	}
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		if(requestCode==UpdateAppRequestCode){
+//			if(resultCode!=Activity.RESULT_OK){
+//				//下载了，却取消安装或者安装失败
+//				if(mActivity!=null){
+//					UIHelper.showToastLong("安装失败，请先卸载然后再安装");
+//					if(updateListen!=null)updateListen.cancel();
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * 下载apk文件
@@ -253,23 +252,5 @@ public class UpdateManager implements MyHandlerInterface {
 				mHandler.sendEmptyMessage(DOWNLOAD_ING);
 			}
 		}).start();
-	}
-
-	/**
-	 * 安装APK文件
-	 */
-	private void installApk() {
-		File apkFile = new File(mSavePath, appName);
-		if (!apkFile.exists()) {
-			return;
-		}
-		// 通过Intent安装APK文件
-		Intent i = new Intent(Intent.ACTION_VIEW);
-//		Uri uri = Uri.parse("file://" + apkFile.toString());
-		Uri uri = UriUtil.getUri(mActivity,i,apkFile);
-		i.setDataAndType(uri,"application/vnd.android.package-archive");
-//		mActivity.startActivity(i);
-		mActivity.startActivityForResult(i, UpdateAppRequestCode);
-		notificationUtil.clearNotification();
 	}
 }
