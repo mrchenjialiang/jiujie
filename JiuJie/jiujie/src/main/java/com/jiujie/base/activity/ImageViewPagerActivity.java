@@ -208,7 +208,7 @@ public class ImageViewPagerActivity extends BaseActivity {
 	}
 
 	@Override
-	protected String getPageName() {
+	public String getPageName() {
 		return "看大图";
 	}
 }

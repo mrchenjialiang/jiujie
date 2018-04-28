@@ -33,8 +33,10 @@ public abstract class BaseSlideActivity extends BaseMostActivity {
 //    }
 
     protected boolean isOpenSlideBack(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            //8.0+不开启侧滑
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && getApplicationInfo().targetSdkVersion > 26){
+//            8.0+的手机，并且targetSdkVersion>26的暂不开启侧滑
+//            要注意values-v26下的styles选择一套注释掉
             return false;
         }
         return true;

@@ -22,9 +22,9 @@ import com.jiujie.base.util.UIHelper;
  * 初始化的时候，千万千万注意，是Activity的，还是Fragment的，否则，可能造成多个fragment中的fragment不显示
  */
 public class RecyclerViewUtil {
-    private final int type;
-    private final int num;
-    private final View header;
+    private int type;
+    private int num;
+    private View header;
     private Refresh refresh;
     private SwipeRefreshLayout mSwipeRefreshWidget;
     private Activity mActivity;
@@ -36,7 +36,11 @@ public class RecyclerViewUtil {
     private boolean isFooterEnable = true;
     private int advanceSize;
 
-    public RecyclerViewUtil(Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter,int type,int num,View header){
+    private RecyclerViewUtil(){
+    }
+
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter,int type,int num,View header){
+        this.refresh = refresh;
         this.mActivity = mActivity;
         this.adapter = adapter;
         this.mSwipeRefreshWidget = swipeRefreshLayout;
@@ -47,18 +51,19 @@ public class RecyclerViewUtil {
         init();
     }
 
-    public RecyclerViewUtil(Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter,int type,int num){
-        this(mActivity,swipeRefreshLayout,recyclerView,adapter,type,num,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter,int type,int num){
+        this(refresh,mActivity,swipeRefreshLayout,recyclerView,adapter,type,num,null);
     }
 
-    public RecyclerViewUtil(Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter){
-        this(mActivity,swipeRefreshLayout,recyclerView,adapter,0,0,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, SwipeRefreshLayout swipeRefreshLayout, RecyclerView recyclerView, RecyclerView.Adapter adapter){
+        this(refresh,mActivity,swipeRefreshLayout,recyclerView,adapter,0,0,null);
     }
 
     /**
      * use in Activity
      */
-    public RecyclerViewUtil(Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num,View header){
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num,View header){
+        this.refresh = refresh;
         this.mActivity = mActivity;
         this.adapter = adapter;
         this.type = type;
@@ -72,19 +77,20 @@ public class RecyclerViewUtil {
     /**
      * use in Activity
      */
-    public RecyclerViewUtil(Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num){
-        this(mActivity,swipeRefreshLayoutId,recyclerViewId,adapter,type,num,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num){
+        this(refresh,mActivity,swipeRefreshLayoutId,recyclerViewId,adapter,type,num,null);
     }
     /**
      * use in Activity
      */
-    public RecyclerViewUtil(Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter){
-        this(mActivity,swipeRefreshLayoutId,recyclerViewId,adapter,0,0,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter){
+        this(refresh,mActivity,swipeRefreshLayoutId,recyclerViewId,adapter,0,0,null);
     }
     /**
      * use in Fragment
      */
-    public RecyclerViewUtil(Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num,View header){
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num,View header){
+        this.refresh = refresh;
         this.mActivity = mActivity;
         this.adapter = adapter;
         this.type = type;
@@ -97,14 +103,14 @@ public class RecyclerViewUtil {
     /**
      * use in Fragment
      */
-    public RecyclerViewUtil(Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num){
-        this(mActivity,rootView,swipeRefreshLayoutId,recyclerViewId,adapter,type,num,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter,int type,int num){
+        this(refresh,mActivity,rootView,swipeRefreshLayoutId,recyclerViewId,adapter,type,num,null);
     }
     /**
      * use in Fragment
      */
-    public RecyclerViewUtil(Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter){
-        this(mActivity,rootView,swipeRefreshLayoutId,recyclerViewId,adapter,0,0,null);
+    public RecyclerViewUtil(Refresh refresh,Activity mActivity, View rootView, int swipeRefreshLayoutId, int recyclerViewId, RecyclerView.Adapter adapter){
+        this(refresh,mActivity,rootView,swipeRefreshLayoutId,recyclerViewId,adapter,0,0,null);
     }
 
     public void setRefreshEnable(boolean isEnable){
@@ -172,7 +178,7 @@ public class RecyclerViewUtil {
             private void checkLoadMore() {
                 if(adapter instanceof BaseRecyclerViewAdapter &&!isEnd){
                     BaseRecyclerViewAdapter mAdapter = (BaseRecyclerViewAdapter) adapter;
-                    if(mAdapter.getCount()>0){
+                    if(mAdapter.getCount()>=(refresh!=null&&refresh.isEndFromSize()?refresh.getSize():1)){
                         if(mAdapter.getLastPosition() + 1 >= adapter.getItemCount()- (isLoadMoreFail()?0:advanceSize)) {
                             if (!isFooterEnable) return;
 
@@ -241,10 +247,6 @@ public class RecyclerViewUtil {
 
     private void initRecyclerView() {
         UIHelper.initRecyclerView(mActivity,mRecyclerView,type,num);
-    }
-
-    public void setRefreshListen(Refresh refresh){
-        this.refresh = refresh;
     }
 
     public void setRefreshing(boolean isRefreshing){

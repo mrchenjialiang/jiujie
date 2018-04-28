@@ -34,10 +34,6 @@ public abstract class BaseMostActivity extends AppCompatActivity{
 //        }
     }
 
-    public String getClassName(){
-        return this.getClass().getName();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -77,8 +73,12 @@ public abstract class BaseMostActivity extends AppCompatActivity{
         }
     }
 
-    protected String getPageName(){
-        return getClass().getSimpleName();
+    public String getClassName(){
+        return this.getClass().getName();
+    }
+
+    public String getPageName(){
+        return this.getClass().getSimpleName();
     }
 
 }

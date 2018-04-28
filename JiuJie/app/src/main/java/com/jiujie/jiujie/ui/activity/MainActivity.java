@@ -2,13 +2,13 @@ package com.jiujie.jiujie.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
-import android.widget.Toast;
 
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.ImageUtil;
-import com.jiujie.base.util.PermissionsManager;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
 import com.jiujie.base.util.photo.GetPhotoUtil;
@@ -29,33 +29,6 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
-
-        Toast.makeText(getApplicationContext(),"主线程 getApplicationContext",Toast.LENGTH_SHORT).show();
-        UIHelper.showLog("主线程 getApplicationContext");
-        Toast.makeText(MainActivity.this,"主线程 Activity",Toast.LENGTH_SHORT).show();
-        UIHelper.showLog("主线程 Activity");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UIHelper.showToastShort("线程 getApplicationContext");
-//                Toast.makeText(getApplicationContext(),"线程 Activity",Toast.LENGTH_SHORT).show();
-                UIHelper.showLog("线程 getApplicationContext");
-                UIHelper.showToastShort("线程 Activity");
-//                Toast.makeText(MainActivity.this,"线程 Activity",Toast.LENGTH_SHORT).show();
-                UIHelper.showLog("线程 Activity");
-            }
-        }).start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        UIHelper.showToastShort("主线程 getApplicationContext onDestroy");
-//                Toast.makeText(getApplicationContext(),"线程 Activity",Toast.LENGTH_SHORT).show();
-        UIHelper.showLog("主线程 getApplicationContext onDestroy");
-        UIHelper.showToastShort("主线程 Activity onDestroy");
-//                Toast.makeText(MainActivity.this,"线程 Activity",Toast.LENGTH_SHORT).show();
-        UIHelper.showLog("主线程 Activity onDestroy");
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -93,19 +66,30 @@ public class MainActivity extends MyBaseActivity {
         getPhotoUtil.showChooseImageDialog();
     }
 
-    public void doAction1(View view) {
-        PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
-            @Override
-            public void onListen(Boolean isHasPermission) {
-//                UIHelper
-            }
-        }, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
+    public void doCropImage(View view) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            boolean canRequestPackageInstalls = getPackageManager().canRequestPackageInstalls();
+            UIHelper.showLog("8.0安装权限 canRequestPackageInstalls："+canRequestPackageInstalls);
+            PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
+                @Override
+                public void onListen(Boolean isHas) {
+                    UIHelper.showLog("8.0安装权限："+isHas);
+                    boolean canRequestPackageInstalls = getPackageManager().canRequestPackageInstalls();
+                    UIHelper.showLog("8.0安装权限 canRequestPackageInstalls1："+canRequestPackageInstalls);
+                }
+            },Manifest.permission.REQUEST_INSTALL_PACKAGES);
+        }
+
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getPhotoUtil.onActivityResult(mActivity,requestCode,resultCode,data);
+        if(getPhotoUtil!=null)getPhotoUtil.onActivityResult(mActivity,requestCode,resultCode,data);
+        if(requestCode==11111){
+
+        }
     }
 
     public void toGroupList(View view) {

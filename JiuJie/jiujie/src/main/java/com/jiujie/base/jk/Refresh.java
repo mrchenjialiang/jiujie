@@ -6,4 +6,7 @@ package com.jiujie.base.jk;
 public interface Refresh {
     void refresh();
     void loadMore();
+    int getPage();
+    int getSize();
+    boolean isEndFromSize();
 }

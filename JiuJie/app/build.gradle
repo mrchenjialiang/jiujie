@@ -86,6 +86,7 @@ dependencies {
     compile "${rootProject.ext.butterknife7}"
     compile "${rootProject.ext.tablayout}"
 
+
 //    compile(name: 'jiujie-release', ext: 'aar')
     compile project(':jiujie')
 

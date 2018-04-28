@@ -6,6 +6,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.util.permission.PermissionsManager;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -136,8 +137,8 @@ public class FileUtil {
     }
 
     public static boolean deleteFile(File file){
-        boolean isSuccess = true;
         if(file==null||!file.exists()) return true;
+        boolean isSuccess = true;
         if(file.isDirectory()){
             File[] fileList = file.listFiles();
             for (File f : fileList) {
@@ -153,16 +154,20 @@ public class FileUtil {
 
     // 获取指定文件夹内所有文件大小的和
     public static long getFileSize(File... files){
+        if(files==null||files.length==0)return 0;
         long size = 0;
         for (File file : files){
-            if(file==null||!file.exists()) return size;
-            if(file.isDirectory()){
-                File[] fileList = file.listFiles();
-                for (File f : fileList) {
-                    size = size + getFileSize(f);
-                }
+            if(file==null||!file.exists()){
+                size+=0;
             }else{
-                size += file.length();
+                if(file.isDirectory()){
+                    File[] fileList = file.listFiles();
+                    for (File f : fileList) {
+                        size = size + getFileSize(f);
+                    }
+                }else{
+                    size += file.length();
+                }
             }
         }
         return size;

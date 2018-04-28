@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -16,6 +17,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -44,7 +46,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.telephony.TelephonyManager;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -75,7 +76,9 @@ import com.jiujie.base.jk.InputAction;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.OnScrollListener;
 import com.jiujie.base.jk.OnSimpleListener;
+import com.jiujie.base.model.VideoInfo;
 import com.jiujie.base.util.appupdate.NotificationUtil;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.recycler.MyGridLayoutManager;
 import com.jiujie.base.util.recycler.MyLinearLayoutManager;
 import com.jiujie.base.util.recycler.MyStaggeredGridLayoutManager;
@@ -105,6 +108,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -476,13 +480,23 @@ public class UIHelper {
                     IBinder windowToken = currentFocus.getWindowToken();
                     if (windowToken != null) {
                         InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (manager != null)
+                        if (manager != null){
                             manager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
+                        }else{
+                            showLog("fail in hidePan because InputMethodManager==null");
+                        }
+                    }else{
+                        showLog("fail in hidePan because windowToken==null");
                     }
+                }else{
+                    showLog("fail in hidePan because currentFocus View ==null");
                 }
+            }else{
+                showLog("fail in hidePan because activity==null");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            showLog("fail in hidePan because "+e);
         }
     }
 
@@ -1451,12 +1465,11 @@ public class UIHelper {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED || actionId == EditorInfo.IME_ACTION_GO) {
                     if (activity != null) UIHelper.hidePan(activity);
                     if (inputAction != null) {
-                        Editable text = editText.getText();
-                        if (TextUtils.isEmpty(text.toString().trim())) {
+                        if (TextUtils.isEmpty(editText.getText())||TextUtils.isEmpty(editText.getText().toString().trim())) {
                             inputAction.send("");
                         } else {
-                            inputAction.send(editText.getText().toString().trim());
-                            editText.setSelection(text.length());
+                            String textStr = editText.getText().toString().trim();
+                            inputAction.send(textStr);
                         }
                     }
                 }
@@ -1570,8 +1583,8 @@ public class UIHelper {
             }
             return;
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            >=26 8.0+的手机，需要申请权限
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&APP.getContext().getApplicationInfo().targetSdkVersion > 26){
+//            >26 8.0+的手机，需要申请权限
             boolean canRequestPackageInstalls = APP.getContext().getPackageManager().canRequestPackageInstalls();
             if(canRequestPackageInstalls){
                 doInstallReal(apkFile);
@@ -1881,7 +1894,7 @@ public class UIHelper {
     /**
      * 将cookie同步到WebView
      * @param url WebView要加载的url
-     * @param cookie 要同步的cookie
+     * @param cookie 要同步的cookie  "key=value"
      * @return true 同步cookie成功，false同步cookie失败
      */
     public static boolean syncCookie(String url,String cookie) {
@@ -1892,5 +1905,103 @@ public class UIHelper {
         cookieManager.setCookie(url, cookie);//如果没有特殊需求，这里只需要将session id以"key=value"形式作为cookie即可
         String newCookie = cookieManager.getCookie(url);
         return !TextUtils.isEmpty(newCookie);
+    }
+
+    /**
+     * 判断APP是否有通知权限
+     */
+    public static boolean isNotificationEnabled() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
+            try {
+                Context context = APP.getContext();
+                AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+                ApplicationInfo appInfo = context.getApplicationInfo();
+                String pkg = context.getApplicationContext().getPackageName();
+                int uid = appInfo.uid;
+                Class appOpsClass = Class.forName(AppOpsManager.class.getName());
+                Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+
+                Field opPostNotificationValue = appOpsClass.getDeclaredField("OP_POST_NOTIFICATION");
+                int value = (int) opPostNotificationValue.get(Integer.class);
+
+                return ((int) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * 打开设置--应用--应用信息页面--------一般里面会有通知管理，权限隐私的设置选项
+     */
+    public static void openAppInfoPage(){
+        try {
+            Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+            String pkg = "com.android.settings";
+            String cls = "com.android.settings.applications.InstalledAppDetails";
+            intent.setComponent(new ComponentName(pkg, cls));
+            intent.setData(Uri.parse("package:" + APP.getContext().getPackageName()));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if(isIntentExisting(APP.getContext(),intent)){
+                APP.getContext().startActivity(intent);
+            }else{
+                showToastShort("打开失败");
+            }
+        }catch (Exception e){
+            showToastShort("打开失败");
+        }
+    }
+
+    /**
+     * 要先申请读写权限
+     * PermissionsManager.getPermissionSimple(onListener, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+     */
+    public static List<VideoInfo> getSystemVideoSimpleList(String... videoType){
+        List<VideoInfo> list = null;
+        try {
+            String[] selectionType;
+            if(videoType==null||videoType.length==0){
+                selectionType = new String[]{"video/*"};
+            }else{
+                selectionType = new String[videoType.length];
+                for (int i = 0;i<videoType.length;i++){
+                    selectionType[i] = "video/"+videoType[i];
+                }
+            }
+            Cursor cursor = APP.getContext().getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,  null,
+                    MediaStore.Video.Media.MIME_TYPE + "=? or "
+                            + MediaStore.Video.Media.MIME_TYPE + "=?",
+                    selectionType, MediaStore.Video.Media.DATE_ADDED+" DESC");
+            if (cursor != null) {
+                list = new ArrayList<>();
+                while (cursor.moveToNext()) {
+//                int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
+//                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));  //视频文件的标题内容
+//                String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.ALBUM));
+//                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST));
+//                String displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
+//                String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE));
+                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));  //
+                    long duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
+                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
+                    if(duration>0&&size>0) {
+                        if(!TextUtils.isEmpty(path)){
+                            File file = new File(path);
+                            if(file.isFile()&&file.exists()&&file.length()>0){
+                                VideoInfo videoInfo = new VideoInfo(path, duration);
+                                list.add(videoInfo);
+                            }
+                        }
+                    }
+                }
+                cursor.close();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return list;
     }
 }

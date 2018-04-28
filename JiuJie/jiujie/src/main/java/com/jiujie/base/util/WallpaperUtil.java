@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.glide.GlideUtil;
 
 import java.io.File;

@@ -2,6 +2,7 @@ package com.jiujie.base.fragment;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
@@ -13,7 +14,9 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
     @Override
     public void startActivity(Intent intent) {
         super.startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_right_in, R.anim.no_anim);
+        FragmentActivity activity = getActivity();
+        if(activity==null)return;
+        activity.overridePendingTransition(R.anim.slide_right_in, R.anim.no_anim);
     }
 
 //    @Override
@@ -21,10 +24,6 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //        PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //    }
-
-    public String getClassName(){
-        return this.getClass().getName();
-    }
 
     @Override
     public void onResume() {
@@ -42,10 +41,12 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
         }
     }
 
+    public String getClassName(){
+        return this.getClass().getName();
+    }
+
     public String getPageName(){
-        String className = getClassName();
-        if(className.contains("."))className = className.substring(className.lastIndexOf(".")+1);
-        return className;
+        return this.getClass().getSimpleName();
     }
 
 }

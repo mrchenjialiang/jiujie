@@ -178,7 +178,7 @@ public class ChoosePhotoActivity extends BaseActivity{
     }
 
     @Override
-    protected String getPageName() {
+    public String getPageName() {
         return "选择图片";
     }
 }

@@ -48,7 +48,7 @@ public class SimpleListFragment extends BaseListSimpleFragment<String,String> {
     }
 
     @Override
-    protected boolean isEndFromSize() {
+    public boolean isEndFromSize() {
         return false;
     }
 
@@ -59,7 +59,7 @@ public class SimpleListFragment extends BaseListSimpleFragment<String,String> {
 
     @Override
     public RecyclerViewUtil getRecyclerViewUtil() {
-        return new RecyclerViewUtil(mActivity,mView,0, getRecyclerViewId(),getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
+        return new RecyclerViewUtil(this,mActivity,mView,0, getRecyclerViewId(),getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
     }
 
     protected int getRecyclerViewId() {

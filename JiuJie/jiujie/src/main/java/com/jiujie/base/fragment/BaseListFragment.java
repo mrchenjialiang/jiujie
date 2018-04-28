@@ -25,10 +25,19 @@ public abstract class BaseListFragment extends BaseFragment implements Refresh, 
     public abstract BaseRecyclerViewAdapter getAdapter();
 
     @Override
+    public int getPage() {
+        return page;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    @Override
     protected void initView() {
         super.initView();
         recyclerViewUtil = getRecyclerViewUtil();
-        recyclerViewUtil.setRefreshListen(this);
         int recycleViewType = getRecycleViewType();
         if (recycleViewType == 0) {
             size = 20;
@@ -40,12 +49,13 @@ public abstract class BaseListFragment extends BaseFragment implements Refresh, 
         }
     }
 
-    protected boolean isEndFromSize() {
+    @Override
+    public boolean isEndFromSize() {
         return false;
     }
 
     protected RecyclerViewUtil getRecyclerViewUtil() {
-        return new RecyclerViewUtil(mActivity, mView, getSwipeRefreshLayoutId(), getRecyclerViewId(), getAdapter(), getRecycleViewType(), getRecycleViewGridNum());
+        return new RecyclerViewUtil(this,mActivity, mView, getSwipeRefreshLayoutId(), getRecyclerViewId(), getAdapter(), getRecycleViewType(), getRecycleViewGridNum());
     }
 
     protected int getRecyclerViewId() {

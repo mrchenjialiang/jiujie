@@ -5,15 +5,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
+import com.jiujie.base.dialog.BaseDialog;
+import com.jiujie.base.dialog.EnsureDialog;
+import com.jiujie.base.jk.OnBaseDialogClickListener;
 import com.jiujie.base.util.UIHelper;
 
 import java.util.ArrayList;
@@ -26,8 +31,9 @@ public class PermissionsActivity extends Activity {
 
     private static PermissionListener onListener;
     private final int REQUEST_CODE_PERMISSIONS = 1211;
-    private final int GET_UNKNOWN_APP_SOURCES = 1212;
+    private final int REQUEST_CODE_GET_INSTALL_PERMISSION = 1212;
     private Map<String,Boolean> permissionResultMap = new HashMap<>();
+    private Activity mActivity;
 
     public static void launch(Context context, PermissionListener onListener, String... permissions){
         if(permissions==null||permissions.length==0||onListener==null){
@@ -53,6 +59,7 @@ public class PermissionsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = this;
         if(savedInstanceState==null){
             handleIntent(getIntent());
         }
@@ -79,15 +86,14 @@ public class PermissionsActivity extends Activity {
                     permissionResultMap.put(permissions[i],grantResults[i]==PackageManager.PERMISSION_GRANTED);
                 }
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&getApplicationInfo().targetSdkVersion > Build.VERSION_CODES.O){
+                    //对于这个权限来说，并不能动态申请，动态申请
                     String installPermissionInAndroid8 = Manifest.permission.REQUEST_INSTALL_PACKAGES;
-                    if(permissionResultMap.containsKey(installPermissionInAndroid8)&&!permissionResultMap.get(installPermissionInAndroid8)){
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-                        if (UIHelper.isIntentExisting(this, intent)) {
-                            String appName = APP.getContext().getResources().getString(R.string.app_name);
-                            UIHelper.showToastShort("请先给予"+ appName+"安装权限");
-                            startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
-                            //符合这个条件的就先不检查权限结果，等 onActivityResult 再检查
+                    if(permissionResultMap.containsKey(installPermissionInAndroid8)){
+                        boolean canRequestPackageInstalls = getPackageManager().canRequestPackageInstalls();
+                        permissionResultMap.put(installPermissionInAndroid8,canRequestPackageInstalls);
+                        if(!canRequestPackageInstalls){
+                            showRequestInstallPermissionDialog();
                             return;
                         }
                     }
@@ -97,10 +103,48 @@ public class PermissionsActivity extends Activity {
         }
     }
 
+    private void showRequestInstallPermissionDialog() {
+        String appName = APP.getContext().getResources().getString(R.string.app_name);
+        EnsureDialog ensureDialog = new EnsureDialog(mActivity);
+        ensureDialog.create();
+        UIHelper.setDialogNoDismissByTouchAndBackPress(ensureDialog.getDialog());
+        ensureDialog.setText("\""+appName+"\"正在请求安装应用权限，是否去设置？")
+                .setBtnLeft("下次再说", new OnBaseDialogClickListener() {
+                    @Override
+                    public void onClick(BaseDialog dialog, View v) {
+                        dialog.dismiss();
+                        checkResultPermissions();
+                    }
+                })
+                .setBtnRight("去设置", new OnBaseDialogClickListener() {
+                    @Override
+                    public void onClick(BaseDialog dialog, View v) {
+                        dialog.dismiss();
+                        toOpenInstallPermission();
+                    }
+                }).show();
+    }
+
+    private void toOpenInstallPermission() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+            intent.setData(Uri.parse("package:" + APP.getContext().getPackageName()));
+//          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//如果加了这句，onActivityResult的回调就会在startActivityForResult时调用，而非返回了再回调
+            if (UIHelper.isIntentExisting(mActivity, intent)) {
+                startActivityForResult(intent, REQUEST_CODE_GET_INSTALL_PERMISSION);
+                //符合这个条件的就先不检查权限结果，等 onActivityResult 再检查
+            }else{
+                checkResultPermissions();
+            }
+        }else{
+            checkResultPermissions();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&requestCode == GET_UNKNOWN_APP_SOURCES){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&requestCode == REQUEST_CODE_GET_INSTALL_PERMISSION){
             boolean canRequestPackageInstalls = getPackageManager().canRequestPackageInstalls();
             permissionResultMap.put(Manifest.permission.REQUEST_INSTALL_PACKAGES,canRequestPackageInstalls);
             checkResultPermissions();

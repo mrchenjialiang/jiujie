@@ -15,7 +15,7 @@ import com.jiujie.base.activity.cropimage.JJCropImageActivity;
 import com.jiujie.base.jk.ICallbackSimple;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
-import com.jiujie.base.util.PermissionsManager;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.UriUtil;
 

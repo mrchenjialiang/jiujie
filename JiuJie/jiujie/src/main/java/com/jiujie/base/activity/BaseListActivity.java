@@ -19,6 +19,16 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 	public int size = 20;
 
 	@Override
+	public int getPage() {
+		return page;
+	}
+
+	@Override
+	public int getSize() {
+		return size;
+	}
+
+	@Override
 	public int getLayoutId() {
 		return R.layout.refresh_recyclerview;
 	}
@@ -28,11 +38,11 @@ public abstract class BaseListActivity extends BaseActivity implements Refresh,O
 	@Override
 	protected void initView() {
 		super.initView();
-		recyclerViewUtil = new RecyclerViewUtil(mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
-		recyclerViewUtil.setRefreshListen(this);
+		recyclerViewUtil = new RecyclerViewUtil(this,mActivity,R.id.rr_SwipeRefreshLayout,R.id.rr_recyclerView,getAdapter(),getRecycleViewType(),getRecycleViewGridNum());
 	}
 
-	protected boolean isEndFromSize(){
+	@Override
+	public boolean isEndFromSize(){
 		return false;
 	}
 

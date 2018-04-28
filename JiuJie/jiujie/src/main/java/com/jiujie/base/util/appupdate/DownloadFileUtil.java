@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.jiujie.base.jk.DownloadFileListen;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.util.FileUtil;
-import com.jiujie.base.util.PermissionsManager;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 
 import java.io.File;

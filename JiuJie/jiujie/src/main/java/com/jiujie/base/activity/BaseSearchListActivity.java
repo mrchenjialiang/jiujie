@@ -24,7 +24,7 @@ public abstract class BaseSearchListActivity extends BaseListActivity {
     }
 
     @Override
-    protected String getPageName() {
+    public String getPageName() {
         return "搜索";
     }
 }
