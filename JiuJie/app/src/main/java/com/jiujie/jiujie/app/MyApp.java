@@ -15,5 +15,6 @@ public class MyApp extends Application{
     public void onCreate() {
         super.onCreate();
         APP.init(this,false,false,null,true,"com.jiujie.demo.fileProvider");
+        //测试回退，这是新增
     }
 }
