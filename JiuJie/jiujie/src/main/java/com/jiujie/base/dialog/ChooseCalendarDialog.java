@@ -58,18 +58,18 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
             int currentPosition = 0;
             for (int i = 1; i < 50; i++) {
                 currentPosition++;
-                mDataListYear.add(0, (mSelectYear + i) + "");
+                mDataListYear.add(0, (mSelectYear - i) + "");
             }
             mDataListYear.add(mSelectYear + "");
             for (int i = 1; i < 50; i++) {
-                mDataListYear.add((mSelectYear - i) + "");
+                mDataListYear.add((mSelectYear + i) + "");
             }
             mPickerYear.setData(mDataListYear, currentPosition);
         } else {
             for (int i = 0; i < 100; i++) {
-                mDataListYear.add((mSelectYear - i) + "");
+                mDataListYear.add(0, (mSelectYear - i) + "");
             }
-            mPickerYear.setData(mDataListYear, 0);
+            mPickerYear.setData(mDataListYear, mDataListYear.size() - 1);
         }
 
         final List<String> mDataListMonth = new ArrayList<>();
@@ -93,7 +93,7 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
 
                 mDataListDay.clear();
                 int daySizeOfMonth = DateUtil.getDaySizeOfMonth(mSelectYear, mSelectMonth - 1);
-                if(mSelectDay>daySizeOfMonth){
+                if (mSelectDay > daySizeOfMonth) {
                     mSelectDay = daySizeOfMonth;
                 }
                 for (int i = 1; i <= daySizeOfMonth; i++) {
@@ -105,13 +105,11 @@ public class ChooseCalendarDialog extends BaseDialog implements View.OnClickList
         mPickerMonth.setOnSelectListener(new OnSelectListener() {
             @Override
             public void onSelect(int position) {
-//                mSelectMonth = position + 1;
                 mSelectMonth = Integer.valueOf(mDataListMonth.get(position));
-//                if(showForTextView!=null)showForTextView.setText(mSelectYear + "-" + mSelectMonth + "-" + mSelectDay);
 
                 mDataListDay.clear();
                 int daySizeOfMonth = DateUtil.getDaySizeOfMonth(mSelectYear, mSelectMonth - 1);
-                if(mSelectDay>daySizeOfMonth){
+                if (mSelectDay > daySizeOfMonth) {
                     mSelectDay = daySizeOfMonth;
                 }
                 for (int i = 1; i <= daySizeOfMonth; i++) {
