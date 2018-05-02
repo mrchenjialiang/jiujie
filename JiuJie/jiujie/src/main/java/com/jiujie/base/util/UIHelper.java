@@ -1908,6 +1908,21 @@ public class UIHelper {
     }
 
     /**
+     * 查看正则是否匹配
+     * @param text 是否匹配的字符串
+     * @param regex 正则规则
+     */
+    public static boolean isMatcher(String text,String regex){
+        // 编译正则表达式
+        Pattern pattern = Pattern.compile(regex);
+        // 忽略大小写的写法
+        // Pattern pat = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+        // 查找字符串中是否有匹配正则表达式的字符/字符串
+        return matcher.find();
+    }
+
+    /**
      * 判断APP是否有通知权限
      */
     public static boolean isNotificationEnabled() {
