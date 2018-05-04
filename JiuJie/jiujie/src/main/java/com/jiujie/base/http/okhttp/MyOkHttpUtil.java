@@ -63,7 +63,7 @@ public abstract class MyOkHttpUtil {
             }
         });
         if (APP.isDeBug) {
-            builder.addInterceptor(new LoggerInterceptor("LOG",true));
+            builder.addInterceptor(new LoggerInterceptor(true));
         }
         builder.addNetworkInterceptor(new Interceptor() {//添加网络拦截器
             @Override
@@ -422,7 +422,7 @@ public abstract class MyOkHttpUtil {
         OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
         OkHttpClient mOkHttpClient = okHttpBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).writeTimeout(10,TimeUnit.SECONDS).build();
         if (APP.isDeBug) {
-            okHttpBuilder.addInterceptor(new LoggerInterceptor("LOG",true));
+            okHttpBuilder.addInterceptor(new LoggerInterceptor(true));
         }
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override

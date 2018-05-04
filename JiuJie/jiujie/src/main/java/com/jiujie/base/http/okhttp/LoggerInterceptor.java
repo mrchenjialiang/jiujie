@@ -1,11 +1,14 @@
 package com.jiujie.base.http.okhttp;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.jiujie.base.util.UIHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -15,20 +18,11 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 
 public class LoggerInterceptor implements Interceptor {
-    public static final String TAG = "OkHttpUtils";
-    private String tag;
     private boolean showResponse;
+    private Map<String,List<String>> logMap = new HashMap<>();
 
-    public LoggerInterceptor(String tag, boolean showResponse) {
-        if (TextUtils.isEmpty(tag)) {
-            tag = TAG;
-        }
+    public LoggerInterceptor(boolean showResponse) {
         this.showResponse = showResponse;
-        this.tag = tag;
-    }
-
-    public LoggerInterceptor(String tag) {
-        this(tag, false);
     }
 
     @Override
@@ -38,25 +32,52 @@ public class LoggerInterceptor implements Interceptor {
         return logForResponse(response);
     }
 
+    private void addLog(String url,String text){
+        if(TextUtils.isEmpty(text))return;
+        List<String> logStrList;
+        if(logMap.containsKey(url)){
+            logStrList = logMap.get(url);
+        }else{
+            logStrList = new ArrayList<>();
+            logMap.put(url,logStrList);
+        }
+        logStrList.add(text);
+    }
+
+    private void showLog(String url){
+        if(logMap.containsKey(url)){
+            List<String> logStrList = logMap.get(url);
+            if(logStrList!=null&&logStrList.size()>0){
+                UIHelper.showLog("┌─────────────────Http Log Start───────────────────");
+//                for (int i = 0;i<logStrList.size();i++){
+                for (String text : logStrList){
+                    text = "│    " + text;
+                    UIHelper.showLog(text);
+                }
+                UIHelper.showLog("└─────────────────Http Log end  ───────────────────");
+                logMap.remove(url);
+            }
+        }
+    }
+
     private Response logForResponse(Response response) {
         try {
-            //===>response log
-            Log.e(tag, "========Http Log Start=======");
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
-            Log.e(tag, "url : " + clone.request().url());
-            Log.e(tag, "method : " + clone.request().method());
-            Log.e(tag, "code : " + clone.code());
-            Log.e(tag, "protocol : " + clone.protocol());
+            String url = clone.request().url().toString();
+            addLog(url,"url : " + url);
+            addLog(url,"method : " + clone.request().method());
+            addLog(url,"code : " + clone.code());
+            addLog(url,"protocol : " + clone.protocol());
             if (!TextUtils.isEmpty(clone.message()))
-                Log.e(tag, "message : " + clone.message());
+                addLog(url,"message : " + clone.message());
 
             if (showResponse) {
                 ResponseBody body = clone.body();
                 if (body != null) {
                     MediaType mediaType = body.contentType();
                     if (mediaType != null) {
-                        Log.e(tag, "responseBody's contentType : " + mediaType.toString());
+                        addLog(url,"responseBody's contentType : " + mediaType.toString());
                         if (isText(mediaType)) {
                             String resp = UIHelper.decode(body.string());
                             if(!TextUtils.isEmpty(resp)){
@@ -65,28 +86,29 @@ public class LoggerInterceptor implements Interceptor {
                                     while (text.length()>2048){
                                         String show = text.substring(0, 2048);
                                         text = text.substring(2048);
-                                        Log.e(tag, "responseBody's content : " + show);
+                                        addLog(url,"responseBody's content : " + show);
                                     }
-                                    Log.e(tag, "responseBody's content : " + text);
+                                    addLog(url,"responseBody's content : " + text);
                                 }else{
-                                    Log.e(tag, "responseBody's content : " + resp);
+                                    addLog(url,"responseBody's content : " + resp);
                                 }
 
                             }else{
-                                Log.e(tag, "responseBody's content : " + resp);
+                                addLog(url,"responseBody's content : " + resp);
                             }
-                            Log.e(tag, "========Http Log End=======");
+
+                            showLog(url);
 
                             body = ResponseBody.create(mediaType, resp);
                             return response.newBuilder().body(body).build();
                         } else {
-                            Log.e(tag, "responseBody's content : " + " maybe [file part] , too large too print , ignored!");
+                            addLog(url,"responseBody's content : " + " maybe [file part] , too large too print , ignored!");
                         }
                     }
                 }
             }
 
-            Log.e(tag, "========Http Log End=======");
+            showLog(url);
         } catch (Exception e) {
 //            e.printStackTrace();
         }
@@ -118,7 +140,7 @@ public class LoggerInterceptor implements Interceptor {
             final Buffer buffer = new Buffer();
             copy.body().writeTo(buffer);
             return buffer.readUtf8();
-        } catch (final IOException e) {
+        } catch (Exception e) {
             return "something error when show requestBody.";
         }
     }

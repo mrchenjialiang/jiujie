@@ -72,7 +72,7 @@ public abstract class BaseHttpMethods<T> {
             }
         });
         if (APP.isDeBug) {
-            builder.addInterceptor(new LoggerInterceptor("LOG",true));
+            builder.addInterceptor(new LoggerInterceptor(true));
         }
         builder.addNetworkInterceptor(new Interceptor() {//添加网络拦截器
             @Override
@@ -117,7 +117,7 @@ public abstract class BaseHttpMethods<T> {
                 .client(okHttpClient)
 //                .addConverterFactory(ScalarsConverterFactory.create())//只能用于请求String等基本类型数据
 //                .addConverterFactory(GsonConverterFactory.create())//只能请求json
-                .addConverterFactory(getConverterFactory())//只能请求json
+                .addConverterFactory(getConverterFactory())//交给外部决定
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(getBaseUrl())
                 .build();
