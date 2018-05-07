@@ -1,9 +1,12 @@
 package com.jiujie.jiujie.ui.fragment;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.jiujie.base.adapter.BaseRecyclerViewAdapter;
 import com.jiujie.base.fragment.BaseListSimpleFragment;
+import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.recycler.RecyclerViewUtil;
 import com.jiujie.jiujie.R;
 import com.jiujie.jiujie.ui.adapter.SimpleListAdapter;
@@ -18,19 +21,47 @@ import java.util.List;
 
 public class SimpleListFragment extends BaseListSimpleFragment<String,String> {
 
+    private int type;
+
     @Override
     public void initUI() {
+        UIHelper.showLog(this,type+" initUI");
 //        mTitle.setLeftButtonBack();
 //        mTitle.setTitleText("哇哈哈");
     }
 
     @Override
+    public boolean isInitUIAndDataOnlyWhenVisibleToUser() {
+        return true;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        UIHelper.showLog(this,type+" onCreate");
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        UIHelper.showLog(this,type+" onHiddenChanged hidden:"+hidden);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        UIHelper.showLog(this,type+" setUserVisibleHint isVisibleToUser:"+isVisibleToUser);
+    }
+
+    @Override
     public BaseRecyclerViewAdapter getAdapter() {
+        UIHelper.showLog(this,type+" getAdapter");
         return new SimpleListAdapter(dataList);
     }
 
     @Override
     public void initData() {
+        UIHelper.showLog(this,type+" initData");
         for (int i = 0;i<100;i++){
             dataList.add(""+i);
         }
@@ -76,5 +107,9 @@ public class SimpleListFragment extends BaseListSimpleFragment<String,String> {
             return list;
         }
         return null;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

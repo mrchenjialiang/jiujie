@@ -236,31 +236,28 @@ public class UIHelper {
         ToastUtil.showToastLong(text);
     }
 
-    public static void showLog(Object... text) {
+    public static void showLog(Object object) {
         if (APP.isDeBug) {
-            if (text != null) {
-                for (Object o : text) {
-                    Log.e("LOG", "" + o.toString());
-                }
-            }
+            LoggerUtil.addLog(object);
         }
     }
 
-    public static void showLog(Object key,String text) {
+    public static void showLog(Object... object) {
         if (APP.isDeBug) {
-            if(key==null){
-                return;
-            }
-            if(key instanceof String){
-                Log.e(key.toString(), ""+text);
-            }else{
-                Log.e(key.getClass().getSimpleName(), ""+text);
-            }
+            LoggerUtil.addLog(object);
         }
     }
 
-    public static void showLog(String text) {
-        showLog("LOG", text);
+    public static void showLog(Object key,Object object) {
+        if (APP.isDeBug) {
+            LoggerUtil.addLog(key, object);
+        }
+    }
+
+    public static void showLog(String key,Object... object) {
+        if (APP.isDeBug) {
+            LoggerUtil.addLog(key, object);
+        }
     }
 
     public static void showLogInFile(String text) {

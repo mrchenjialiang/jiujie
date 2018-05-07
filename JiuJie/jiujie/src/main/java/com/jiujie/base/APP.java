@@ -60,10 +60,9 @@ public class APP {
     }
 
     private static void initUMeng() {
-//        AnalyticsConfig.setAppkey()
         MobclickAgent.setDebugMode(APP.isDeBug);
         MobclickAgent.setSessionContinueMillis(30000);//退出应用，再过多长时间进来表示不同的启动
-        MobclickAgent.openActivityDurationTrack(true);//页面统计
+//        MobclickAgent.openActivityDurationTrack(true);//页面统计
     }
 
     public static Context getContext() {

@@ -1,6 +1,7 @@
 package com.jiujie.base.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,16 @@ import com.jiujie.base.jk.OnTitleClickMoveToTopListen;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.glide.GlideCacheUtil;
 
+/**
+ * 执行顺序 setUserVisibleHint false
+ *          setUserVisibleHint true
+ *          onCreate
+ *          onCreateView
+ *          	initView
+ *          		getAdapter if list
+ *          	initUI
+ *          	initData
+ */
 public abstract class BaseFragment extends BaseMostFragment {
 
 	public Title mTitle;
@@ -28,22 +39,54 @@ public abstract class BaseFragment extends BaseMostFragment {
 	private final int Status_Load_Fail = 2;
 	private final int Status_Tag = 3;
 	private int Status = Status_Loaded;
+	public boolean isVisibleToUser;
+	private boolean isInitUIAndData;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		if(!this.isVisibleToUser&&isVisibleToUser){
+			//由不可见→可见
+			if(mView!=null&&!isInitUIAndData){
+				//已经执行过 onCreateView，但还没执行 initUIAndData
+				initUIAndData();
+			}
+		}
+		this.isVisibleToUser = isVisibleToUser;
+	}
+
+	/**
+	 * 是否页面对用户可见时才执行 initUIAndData
+	 * 特别注意，setUserVisibleHint 貌似仅在 类似viewpager pagerAdapter中的Fragment才会调用.....
+	 */
+	public boolean isInitUIAndDataOnlyWhenVisibleToUser(){
+		return false;
+	}
+
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
 		if(mView==null){
 			if(isTitleContentOverLap()){
-				mView = inflater.inflate(R.layout.fragment_base_overlap, null);
+				mView = inflater.inflate(R.layout.fragment_base_overlap, container,false);
 			}else{
-				mView = inflater.inflate(R.layout.fragment_base, null);
+				mView = inflater.inflate(R.layout.fragment_base, container,false);
 			}
 			mActivity = getActivity();
-			initView();
-			initUI();
-			initData();
+			if(isInitUIAndDataOnlyWhenVisibleToUser()){
+				if(isVisibleToUser)initUIAndData();
+			}else{
+				initUIAndData();
+			}
 		}
 		return mView;
+	}
+
+	private void initUIAndData() {
+		isInitUIAndData = true;
+		initView();
+		initUI();
+		initData();
 	}
 
 	public abstract void initUI();
@@ -57,13 +100,13 @@ public abstract class BaseFragment extends BaseMostFragment {
 		return false;
 	}
 
-
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		GlideCacheUtil.getInstance(mActivity).clearCacheMemory();
 		if(mView!=null&&mView.getParent()!=null){
 			((ViewGroup)mView.getParent()).removeView(mView);
+			isInitUIAndData = false;
 		}
 	}
 
@@ -154,7 +197,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 	private void initLoading() {
 		mLoadingLine = mView.findViewById(R.id.base_loading_line);
 		mLoadingFail = mView.findViewById(R.id.base_loading_fail);
-		mTagLayout = (LinearLayout)mView.findViewById(R.id.base_tag_layout);
+		mTagLayout = mView.findViewById(R.id.base_tag_layout);
 
 		if(getLoadingLayoutId()!=0){
 			mLoadingLine.addView(LayoutInflater.from(mActivity).inflate(getLoadingLayoutId(),mLoadingLine,false), ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

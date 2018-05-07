@@ -31,12 +31,17 @@ public class ScrollKeepTopSimpleActivity extends BaseScrollKeepHeaderActivity {
 
         List<Fragment> fragmentList = new ArrayList<>();
         List<String> titleList = new ArrayList<>();
-        fragmentList.add(new SimpleListFragment());
-        fragmentList.add(new SimpleListFragment());
+        SimpleListFragment listFragment = new SimpleListFragment();
+        listFragment.setType(1);
+        fragmentList.add(listFragment);
+        SimpleListFragment listFragment1 = new SimpleListFragment();
+        listFragment1.setType(2);
+        fragmentList.add(listFragment1);
         titleList.add("11111");
         titleList.add("22222");
         viewPager.setAdapter(new ViewPagerFragmentTabAdapter(getSupportFragmentManager(),fragmentList,titleList));
         slidingTabLayout.setViewPager(viewPager);
+        viewPager.setCurrentItem(1);
     }
 
     @Override

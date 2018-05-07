@@ -18,11 +18,9 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 
 public class LoggerInterceptor implements Interceptor {
-    private boolean showResponse;
     private Map<String,List<String>> logMap = new HashMap<>();
 
-    public LoggerInterceptor(boolean showResponse) {
-        this.showResponse = showResponse;
+    public LoggerInterceptor() {
     }
 
     @Override
@@ -41,26 +39,32 @@ public class LoggerInterceptor implements Interceptor {
             logStrList = new ArrayList<>();
             logMap.put(url,logStrList);
         }
-        logStrList.add(text);
+        logStrList.add("│    " + text);
     }
 
     private void showLog(String url){
         if(logMap.containsKey(url)){
             List<String> logStrList = logMap.get(url);
             if(logStrList!=null&&logStrList.size()>0){
-                UIHelper.showLog("┌─────────────────Http Log Start───────────────────");
-//                for (int i = 0;i<logStrList.size();i++){
-                for (String text : logStrList){
-                    text = "│    " + text;
-                    UIHelper.showLog(text);
-                }
-                UIHelper.showLog("└─────────────────Http Log end  ───────────────────");
-                logMap.remove(url);
+                logStrList.add(0,"┌─────────────────Http Log Start───────────────────");
+                logStrList.add("└─────────────────Http Log end  ───────────────────");
+                UIHelper.showLog(logStrList);
+
+//                UIHelper.showLog("┌─────────────────Http Log Start───────────────────");
+//                for (String text : logStrList){
+//                    text = "│    " + text;
+//                    UIHelper.showLog(text);
+//                }
+//                UIHelper.showLog("└─────────────────Http Log end  ───────────────────");
+//                logMap.remove(url);
             }
+            logMap.remove(url);
         }
     }
 
     private Response logForResponse(Response response) {
+        MediaType mediaType = null;
+        String resp = null;
         try {
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
@@ -72,48 +76,57 @@ public class LoggerInterceptor implements Interceptor {
             if (!TextUtils.isEmpty(clone.message()))
                 addLog(url,"message : " + clone.message());
 
-            if (showResponse) {
-                ResponseBody body = clone.body();
-                if (body != null) {
-                    MediaType mediaType = body.contentType();
-                    if (mediaType != null) {
-                        addLog(url,"responseBody's contentType : " + mediaType.toString());
-                        if (isText(mediaType)) {
-                            String resp = UIHelper.decode(body.string());
-                            if(!TextUtils.isEmpty(resp)){
-                                if(resp.length()>2048){
-                                    String text = resp;
-                                    while (text.length()>2048){
-                                        String show = text.substring(0, 2048);
-                                        text = text.substring(2048);
-                                        addLog(url,"responseBody's content : " + show);
-                                    }
-                                    addLog(url,"responseBody's content : " + text);
-                                }else{
-                                    addLog(url,"responseBody's content : " + resp);
+            ResponseBody body = clone.body();
+            if (body != null) {
+                mediaType = body.contentType();
+                if (mediaType != null) {
+                    addLog(url,"responseBody's contentType : " + mediaType.toString());
+                    if (isText(mediaType)) {
+                        resp = UIHelper.decode(body.string());
+                        if(!TextUtils.isEmpty(resp)){
+                            if(resp.length()>2048){
+                                String text = resp;
+                                while (text.length()>2048){
+                                    String show = text.substring(0, 2048);
+                                    text = text.substring(2048);
+                                    addLog(url,"responseBody's content : " + show);
                                 }
-
+                                addLog(url,"responseBody's content : " + text);
                             }else{
                                 addLog(url,"responseBody's content : " + resp);
                             }
 
-                            showLog(url);
-
-                            body = ResponseBody.create(mediaType, resp);
-                            return response.newBuilder().body(body).build();
-                        } else {
-                            addLog(url,"responseBody's content : " + " maybe [file part] , too large too print , ignored!");
+                        }else{
+                            addLog(url,"responseBody's content : " + resp);
                         }
+
+                        showLog(url);
+
+                        return response.newBuilder().body(ResponseBody.create(mediaType, resp)).build();
+                    } else {
+                        addLog(url,"responseBody's content : " + " maybe [file part] , too large too print , ignored!");
                     }
                 }
             }
 
             showLog(url);
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
-        return response;
+        if(mediaType==null||resp==null){
+            try {
+                ResponseBody body = response.body();
+                mediaType = body.contentType();
+                resp = body.string();
+                return response.newBuilder().body(ResponseBody.create(mediaType, resp)).build();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return response;
+            }
+        }else{
+            return response.newBuilder().body(ResponseBody.create(mediaType, resp)).build();
+        }
     }
 
     private boolean isText(MediaType mediaType) {

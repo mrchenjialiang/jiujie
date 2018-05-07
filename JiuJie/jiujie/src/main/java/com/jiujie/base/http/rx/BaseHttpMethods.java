@@ -72,7 +72,7 @@ public abstract class BaseHttpMethods<T> {
             }
         });
         if (APP.isDeBug) {
-            builder.addInterceptor(new LoggerInterceptor(true));
+            builder.addInterceptor(new LoggerInterceptor());
         }
         builder.addNetworkInterceptor(new Interceptor() {//添加网络拦截器
             @Override

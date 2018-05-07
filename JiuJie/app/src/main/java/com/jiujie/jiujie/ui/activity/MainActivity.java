@@ -18,6 +18,7 @@ import com.jiujie.jiujie.grouplist.GroupListActivity;
 import com.jiujie.jiujie.service.MyWallpaperServer;
 import com.jiujie.jiujie.service.TransWallpaperServer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends MyBaseActivity {
@@ -37,6 +38,14 @@ public class MainActivity extends MyBaseActivity {
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
 
+        UIHelper.showLog("1123","1123","1123","1123");
+        UIHelper.showLog(this,new int[]{111,222,333,444});
+        UIHelper.showLog(this,new Integer[]{111,222,333,444});
+        List<String> list = new ArrayList<>();
+        list.add("aaa");
+        list.add("bbb");
+        list.add("ccc");
+        UIHelper.showLog(list);
     }
 
     @Override
