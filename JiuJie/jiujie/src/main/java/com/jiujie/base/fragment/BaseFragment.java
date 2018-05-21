@@ -40,16 +40,16 @@ public abstract class BaseFragment extends BaseMostFragment {
 	private final int Status_Tag = 3;
 	private int Status = Status_Loaded;
 	public boolean isVisibleToUser;
-	private boolean isInitUIAndData;
+	public boolean isDoInitData;
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if(!this.isVisibleToUser&&isVisibleToUser){
 			//由不可见→可见
-			if(mView!=null&&!isInitUIAndData){
+			if(mView!=null&&!isDoInitData){
 				//已经执行过 onCreateView，但还没执行 initUIAndData
-				initUIAndData();
+				doInitData();
 			}
 		}
 		this.isVisibleToUser = isVisibleToUser;
@@ -59,7 +59,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 	 * 是否页面对用户可见时才执行 initUIAndData
 	 * 特别注意，setUserVisibleHint 貌似仅在 类似viewpager pagerAdapter中的Fragment才会调用.....
 	 */
-	public boolean isInitUIAndDataOnlyWhenVisibleToUser(){
+	public boolean isInitDataAfterVisibleToUser(){
 		return false;
 	}
 
@@ -73,19 +73,19 @@ public abstract class BaseFragment extends BaseMostFragment {
 				mView = inflater.inflate(R.layout.fragment_base, container,false);
 			}
 			mActivity = getActivity();
-			if(isInitUIAndDataOnlyWhenVisibleToUser()){
-				if(isVisibleToUser)initUIAndData();
+			initView();
+			initUI();
+			if(isInitDataAfterVisibleToUser()){
+				if(isVisibleToUser)doInitData();
 			}else{
-				initUIAndData();
+				doInitData();
 			}
 		}
 		return mView;
 	}
 
-	private void initUIAndData() {
-		isInitUIAndData = true;
-		initView();
-		initUI();
+	public void doInitData() {
+		isDoInitData = true;
 		initData();
 	}
 
@@ -106,7 +106,7 @@ public abstract class BaseFragment extends BaseMostFragment {
 		GlideCacheUtil.getInstance(mActivity).clearCacheMemory();
 		if(mView!=null&&mView.getParent()!=null){
 			((ViewGroup)mView.getParent()).removeView(mView);
-			isInitUIAndData = false;
+			isDoInitData = false;
 		}
 	}
 

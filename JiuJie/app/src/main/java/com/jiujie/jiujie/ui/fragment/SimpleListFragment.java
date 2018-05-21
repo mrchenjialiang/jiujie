@@ -31,7 +31,7 @@ public class SimpleListFragment extends BaseListSimpleFragment<String,String> {
     }
 
     @Override
-    public boolean isInitUIAndDataOnlyWhenVisibleToUser() {
+    public boolean isInitDataAfterVisibleToUser() {
         return true;
     }
 

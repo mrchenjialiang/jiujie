@@ -37,15 +37,6 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
-
-        UIHelper.showLog("1123","1123","1123","1123");
-        UIHelper.showLog(this,new int[]{111,222,333,444});
-        UIHelper.showLog(this,new Integer[]{111,222,333,444});
-        List<String> list = new ArrayList<>();
-        list.add("aaa");
-        list.add("bbb");
-        list.add("ccc");
-        UIHelper.showLog(list);
     }
 
     @Override
@@ -164,5 +155,21 @@ public class MainActivity extends MyBaseActivity {
                 myWallpaperServer.start(mActivity);
             }
         },Manifest.permission.CAMERA,"android.hardware.camera","android.hardware.camera.autofocus","android.permission.FLASHLIGHT");
+    }
+
+    public void toVideo(View view) {
+        startActivity(new Intent(mActivity,VideoActivity.class));
+    }
+
+    public void toVideoMediaPlayer(View view) {
+        startActivity(new Intent(mActivity,VideoMediaPlayerActivity.class));
+    }
+
+    public void toAdCs(View view) {
+        startActivity(new Intent(mActivity,CsActivity.class));
+    }
+
+    public void toVideoThumb(View view) {
+        startActivity(new Intent(mActivity,VideoThumbActivity.class));
     }
 }

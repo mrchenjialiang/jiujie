@@ -3,6 +3,8 @@ package com.jiujie.jiujie.app;
 import android.app.Application;
 
 import com.jiujie.base.APP;
+import com.jiujie.jiujie.video.VideoCacheUtil;
+import com.xunrui.ad.AdManager;
 
 /**
  * Created by ChenJiaLiang on 2017/11/14.
@@ -14,7 +16,20 @@ public class MyApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        APP.init(this,false,false,null,true,"com.jiujie.demo.fileProvider");
-        //测试回退，这是新增
+        APP.init(this,false,false,null,Config.isDebug,"com.jiujie.demo.fileProvider");
+        VideoCacheUtil.instance().init(this,Config.VIDEO_SAVE_PATH,getExternalCacheDir()+"/video/",500*1024*1024);
+        initAd();
+    }
+
+    private void initAd() {
+        AdManager.instance(this).init(Config.isDebug,
+                Config.GDT_APP_ID,
+                Config.GDT_NATIVE_HENG_ID,
+                Config.GDT_NATIVE_SHU_ID,
+                Config.GDT_BANNER_ID,
+                Config.GDT_SPLASH_ID,
+                Config.GDT_CHAPING_ID,
+                Config.GDT_NATIVE_VIDEO_ID,
+                Config.GDT_NATIVE_EXPRESS_ID);
     }
 }

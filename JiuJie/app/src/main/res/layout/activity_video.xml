@@ -5,9 +5,21 @@
     android:layout_height="match_parent"
     tools:context="com.jiujie.jiujie.ui.activity.VideoActivity">
 
-    <VideoView
-        android:id="@+id/v_videoView"
+    <!--<com.jiujie.jiujie.video.MyVideoView-->
+        <!--android:id="@+id/v_videoView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"/>-->
+
+    <com.jiujie.jiujie.video.FixedTextureVideoView
+        android:id="@+id/v_FixedTextureVideoView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
+
+    <View
+        android:id="@+id/v_video_controller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

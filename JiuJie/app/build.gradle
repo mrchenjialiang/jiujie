@@ -89,12 +89,17 @@ dependencies {
 
 //    compile(name: 'jiujie-release', ext: 'aar')
     compile project(':jiujie')
+    compile(name: 'gdt_ad-release', ext: 'aar')
+
+
+//    视频缓存
+    compile 'com.danikula:videocache:2.7.0'
 
 //    compile "${rootProject.ext.glide}"
 //    compile "${rootProject.ext.glide_transformations}"
 
 
-//    glide4需求  start
+//    glide4需求  doStart
 //    compile(name: 'glide4-release', ext: 'aar')
 //    compile "${rootProject.ext.glide_transformations}"
 //    compile 'com.github.bumptech.glide:glide:4.6.1'

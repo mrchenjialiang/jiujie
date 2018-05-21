@@ -21,10 +21,15 @@ public class FileComparator implements Comparator<File> {
 
     @Override
     public int compare(File file1, File file2) {
-        if (file1.lastModified() < file2.lastModified()) {
-            return isDownByTime?1:-1;
-        } else {
-            return isDownByTime?-1:1;
+        if(file1==null||file2==null||!file1.exists()||!file2.exists()){
+            return 0;
+        }
+        Long key1 = file1.lastModified();
+        Long key2 = file2.lastModified();
+        if(isDownByTime){
+            return key2.compareTo(key1);
+        }else{
+            return key1.compareTo(key2);
         }
     }
 }

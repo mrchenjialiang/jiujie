@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/ad_pass"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp50"
+        android:gravity="center"
+        android:text="跳过"
+        android:textSize="@dimen/dp16"
+        android:background="@drawable/s_item_bg"/>
+
+    <View style="@style/HLine_app_bg1"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp50"
+        android:onClick="onStartThread"
+        android:gravity="center"
+        android:text="启动"
+        android:textSize="@dimen/dp16"
+        android:background="@drawable/s_item_bg"/>
+
+    <View style="@style/HLine_app_bg1"/>
+
+    <FrameLayout
+        android:id="@+id/cs_ad_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -42,7 +42,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.activity.MainActivity"
             android:theme="@style/Slide.trans">
@@ -52,6 +51,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.activity.CsActivity"
+            android:theme="@style/Slide.trans"/>
         <activity
             android:name=".grouplist.GroupListActivity"
             android:theme="@style/Slide.trans" />
@@ -64,6 +67,9 @@
         <activity
             android:name=".ui.activity.VideoActivity"
             android:theme="@style/Slide.trans" />
+        <activity
+            android:name=".ui.activity.VideoMediaPlayerActivity"
+            android:theme="@style/Slide.trans" />
         <activity android:name=".ui.activity.AdCsActivity" />
         <activity android:name=".ui.activity.ScrollKeepTopSimpleActivity"
             android:theme="@style/Slide.trans"/>
@@ -72,6 +78,12 @@
             android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".ui.activity.ScrollKeepTopGameActivity"
             android:theme="@style/Slide.trans" />
+        <activity android:name=".ui.activity.VideoThumbActivity"
+            android:theme="@style/Slide.trans"/>
+
+
+
+
 
         <service android:name=".service.JiuJieKeepService" />
         <service

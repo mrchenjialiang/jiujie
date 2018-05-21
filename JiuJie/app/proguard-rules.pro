@@ -732,7 +732,7 @@ public static java.lang.String TABLENAME;
 -keep class com.jiujie.base.** {*; }
 -keep class com.jiujie.base.*.** {*; }
 
-#Glide start
+#Glide doStart
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
@@ -741,7 +741,7 @@ public static java.lang.String TABLENAME;
 #Glide end
 
 
-#http okhttp3 rx start
+#http okhttp3 rx doStart
 -keep class org.apache.*.** {*; }
 -keep class okhttp3.** {*; }
 -keep class okhttp3.Request$Builder

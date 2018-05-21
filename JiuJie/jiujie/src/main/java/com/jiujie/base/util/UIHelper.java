@@ -804,7 +804,8 @@ public class UIHelper {
             while ((line = bufReader.readLine()) != null)
                 builder.append(line);
         } catch (Exception e) {
-            Toast.makeText(context, "出异常了!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            showLog("getDataFromAssets "+e);
             return null;
         }
         return builder.toString();
