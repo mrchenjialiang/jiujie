@@ -1,4 +1,4 @@
-package com.jiujie.jiujie.video;
+package com.jiujie.base.util.video;
 
 /**
  * Created by ChenJiaLiang on 2018/5/8.

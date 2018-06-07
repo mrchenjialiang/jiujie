@@ -5,7 +5,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -112,16 +111,22 @@ class LoggerUtil {
         if(isLogging){
             return;
         }
-        while (logList.size()!=0){
+        while (logList.size()>0){
             isLogging = true;
             String text = logList.get(0);
-            if(text.contains(",")){
+            if(!TextUtils.isEmpty(text)&&text.contains(",")){
                 int index = text.indexOf(",");
                 String key = text.substring(0, index);
                 String value = text.substring(index+1);
+                if(TextUtils.isEmpty(key)){
+                    key = "LOG";
+                }
+                if(TextUtils.isEmpty(value)){
+                    value = "UNKNOWN";
+                }
                 Log.e(key,value);
             }
-            logList.remove(0);
+            if(logList.size()>0)logList.remove(0);
         }
         isLogging = false;
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jiujie.jiujie.video;
+package com.jiujie.base.util.video;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -67,7 +67,7 @@ import java.util.Map;
  *     <li>removes code that uses hidden APIs and thus is not available (e.g. subtitle support)</li>
  * </ol>
  */
-public class FixedTextureVideoView extends TextureView
+public class OriginalTextureVideoView extends TextureView
     implements MediaPlayerControl {
     private String TAG = "TextureVideoView";
     // settable by the client
@@ -112,17 +112,17 @@ public class FixedTextureVideoView extends TextureView
     private int fixedHeight;
     private Matrix matrix;
 
-    public FixedTextureVideoView(Context context) {
+    public OriginalTextureVideoView(Context context) {
         super(context);
         initVideoView();
     }
 
-    public FixedTextureVideoView(Context context, AttributeSet attrs) {
+    public OriginalTextureVideoView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
         initVideoView();
     }
 
-    public FixedTextureVideoView(Context context, AttributeSet attrs, int defStyle) {
+    public OriginalTextureVideoView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initVideoView();
     }
@@ -219,13 +219,13 @@ public class FixedTextureVideoView extends TextureView
     @Override
     public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
-        event.setClassName(FixedTextureVideoView.class.getName());
+        event.setClassName(OriginalTextureVideoView.class.getName());
     }
 
     @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
-        info.setClassName(FixedTextureVideoView.class.getName());
+        info.setClassName(OriginalTextureVideoView.class.getName());
     }
 
     public int resolveAdjustedSize(int desiredSize, int measureSpec) {

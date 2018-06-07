@@ -5,7 +5,6 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.jiujie.base.util.UIHelper;
-import com.umeng.analytics.MobclickAgent;
 
 
 /**
@@ -14,7 +13,6 @@ import com.umeng.analytics.MobclickAgent;
  */
 public class APP {
 
-    public static boolean isUseUMeng;
     public static boolean isDeBug;
     public static String defaultDoMain;
     private static Context context;
@@ -22,9 +20,8 @@ public class APP {
     private static int titleHeight;
     private static String providerAuthorities;
 
-    public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug, String providerAuthorities) {
+    public static void init(Context context, boolean isCrashError, String defaultDoMain, boolean isDeBug, String providerAuthorities) {
         APP.context = context;
-        APP.isUseUMeng = isUseUMeng;
         APP.isDeBug = isDeBug;
         APP.defaultDoMain = defaultDoMain;
         APP.providerAuthorities = providerAuthorities;
@@ -36,8 +33,6 @@ public class APP {
             }
         }
 
-        if (isUseUMeng) initUMeng();
-
         if (isCrashError) {
             //初始化捕捉异常类
             CrashHandler crashHandler = CrashHandler.getInstance();
@@ -48,21 +43,15 @@ public class APP {
     }
 
     public static void init(Context context, boolean isCrashError, boolean isDeBug) {
-        init(context, false, isCrashError, null, isDeBug, context.getPackageName()+".fileProvider");
+        init(context, isCrashError, null, isDeBug, context.getPackageName()+".fileProvider");
     }
 
-    public static void init(Context context, boolean isUseUMeng, boolean isCrashError, String defaultDoMain, boolean isDeBug) {
-        init(context, isUseUMeng, isCrashError, defaultDoMain, isDeBug, context.getPackageName()+".fileProvider");
+    public static void init(Context context, boolean isCrashError, String defaultDoMain, boolean isDeBug) {
+        init(context, isCrashError, defaultDoMain, isDeBug, context.getPackageName()+".fileProvider");
     }
 
     public static String getProviderAuthorities() {
         return providerAuthorities;
-    }
-
-    private static void initUMeng() {
-        MobclickAgent.setDebugMode(APP.isDeBug);
-        MobclickAgent.setSessionContinueMillis(30000);//退出应用，再过多长时间进来表示不同的启动
-//        MobclickAgent.openActivityDurationTrack(true);//页面统计
     }
 
     public static Context getContext() {

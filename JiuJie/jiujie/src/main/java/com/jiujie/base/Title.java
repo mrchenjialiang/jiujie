@@ -122,12 +122,16 @@ public class Title {
 		if(title_left_btn_image!=null&&drawId>0){
 			title_left_btn_image.setImageResource(drawId);
 			title_left_btn.setVisibility(View.VISIBLE);
+		}else{
+			title_left_btn.setVisibility(View.GONE);
 		}
 	}
 	public void setLeftButtonImage(int normalId,int pressId){
 		if(title_left_btn_image!=null){
 			title_left_btn_image.setImageSelector(normalId, pressId);
 			title_left_btn.setVisibility(View.VISIBLE);
+		}else{
+			title_left_btn.setVisibility(View.GONE);
 		}
 	}
 	public void setLeftButtonClick(OnClickListener clickListener){
@@ -139,12 +143,16 @@ public class Title {
 		if(title_right_btn_image!=null&&drawId>0){
 			title_right_btn_image.setImageResource(drawId);
 			title_right_btn.setVisibility(View.VISIBLE);
+		}else{
+			title_right_btn.setVisibility(View.GONE);
 		}
 	}
 	public void setRightButtonImage(int normalId,int pressId){
 		if(title_right_btn_image!=null){
 			title_right_btn_image.setImageSelector(normalId, pressId);
 			title_right_btn.setVisibility(View.VISIBLE);
+		}else{
+			title_right_btn.setVisibility(View.GONE);
 		}
 	}
 	public void setRightButtonClick(OnClickListener clickListener){
@@ -228,12 +236,16 @@ public class Title {
 		if(title_right_btn_image2!=null&&drawId>0){
 			title_right_btn_image2.setImageResource(drawId);
 			title_right_btn2.setVisibility(View.VISIBLE);
+		}else{
+			title_right_btn2.setVisibility(View.GONE);
 		}
 	}
 	public void setRight2ButtonImage(int normalId,int pressId){
 		if(title_right_btn_image2!=null){
 			title_right_btn_image2.setImageSelector(normalId, pressId);
 			title_right_btn2.setVisibility(View.VISIBLE);
+		}else{
+			title_right_btn2.setVisibility(View.GONE);
 		}
 	}
 	public void setRight2ButtonClick(OnClickListener clickListener){

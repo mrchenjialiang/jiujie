@@ -8,17 +8,19 @@ import android.view.View;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.ImageUtil;
-import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
+import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.photo.GetPhotoUtil;
+import com.jiujie.base.util.screen.OnScreenStatusListener;
+import com.jiujie.base.util.screen.ScreenHelper;
 import com.jiujie.jiujie.R;
 import com.jiujie.jiujie.autocompletetextview.AutoCompleteTextViewActivity;
 import com.jiujie.jiujie.grouplist.GroupListActivity;
 import com.jiujie.jiujie.service.MyWallpaperServer;
 import com.jiujie.jiujie.service.TransWallpaperServer;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends MyBaseActivity {
@@ -30,6 +32,24 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initUI() {
         mTitle.setTitleText("JiuJie首页");
+        int screenWidth = UIHelper.getScreenWidth(mActivity);
+        int screenHeight = UIHelper.getScreenHeight(mActivity);
+        UIHelper.showLog("screenWidth:"+screenWidth);
+        UIHelper.showLog("screenHeight:"+screenHeight);
+
+        File externalCacheDir = getExternalCacheDir();
+        File cacheDir = getCacheDir();
+//        externalCacheDir:/storage/emulated/0/Android/data/com.jiujie.demo/cache
+//        cacheDir:/data/user/0/com.jiujie.demo/cache
+        UIHelper.showLog("externalCacheDir:"+externalCacheDir);
+        UIHelper.showLog("cacheDir:"+cacheDir);
+
+        PermissionsManager.requestWriteReadPermissions(new OnListener<Boolean>() {
+            @Override
+            public void onListen(Boolean isHasWriteReadPermission) {
+                UIHelper.showLog("isHasWriteReadPermission:"+isHasWriteReadPermission);
+            }
+        });
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -37,6 +57,11 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -161,15 +186,27 @@ public class MainActivity extends MyBaseActivity {
         startActivity(new Intent(mActivity,VideoActivity.class));
     }
 
+    public void toVideoExo(View view) {
+        startActivity(new Intent(mActivity,VideoExoActivity.class));
+    }
+
     public void toVideoMediaPlayer(View view) {
         startActivity(new Intent(mActivity,VideoMediaPlayerActivity.class));
     }
 
     public void toAdCs(View view) {
-        startActivity(new Intent(mActivity,CsActivity.class));
+//        startActivity(new Intent(mActivity,AdCsActivity.class));
     }
 
     public void toVideoThumb(View view) {
         startActivity(new Intent(mActivity,VideoThumbActivity.class));
+    }
+
+    public void toVideoCrop(View view) {
+
+    }
+
+    public void toTouchMove(View view) {
+        startActivity(new Intent(mActivity,TouchMoveActivity.class));
     }
 }

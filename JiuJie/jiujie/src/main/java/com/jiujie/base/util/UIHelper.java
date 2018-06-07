@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +35,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.provider.MediaStore;
@@ -67,7 +69,6 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.R;
@@ -99,6 +100,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -2016,5 +2018,74 @@ public class UIHelper {
             e.printStackTrace();
         }
         return list;
+    }
+
+    /**
+     * 耗时较长
+     * 获取单个文件的MD5值！
+     */
+    public static String getFileMD5_1(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+        MessageDigest digest;
+        FileInputStream in;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+        return bigInt.toString(16);
+    }
+
+    /**
+     * 耗时较短
+     * 获取单个文件的MD5值！
+     */
+    public static String getFileMD5(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+        MessageDigest digest;
+        FileInputStream in;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return bytesToHexString(digest.digest());
+    }
+
+    private static String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (byte aSrc : src) {
+            int v = aSrc & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString();
     }
 }

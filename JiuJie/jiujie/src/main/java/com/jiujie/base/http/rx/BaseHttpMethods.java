@@ -322,4 +322,8 @@ public abstract class BaseHttpMethods<T> {
         return url;
     }
 
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
+
 }

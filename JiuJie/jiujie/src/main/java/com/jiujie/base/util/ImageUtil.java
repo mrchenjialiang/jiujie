@@ -433,6 +433,50 @@ public class ImageUtil {
         return croppedImage;
     }
 
+    /**
+     * 居中裁剪图片，使图片不变形
+     */
+    public Bitmap cropImageCenterAndNotDeformation(Bitmap bitmap,int resultWidth,int resultHeight){
+        if(bitmap==null){
+            return null;
+        }
+        try {
+            int bitmapWidth = bitmap.getWidth();
+            int bitmapHeight = bitmap.getHeight();
+
+            //1,先把图片缩放成宽和需求一样宽或者高度和屏幕一样高，并且，另外一边要>=需求的
+            float scaleWidth = bitmapWidth * 1.0f / resultWidth;
+            float scaleHeight = bitmapHeight * 1.0f / resultHeight;
+            if (resultWidth != bitmapWidth || scaleHeight != bitmapHeight) {
+                int scaleResultRequestWidth;
+                int scaleResultRequestHeight;
+                if (scaleWidth <= scaleHeight) {
+                    scaleResultRequestWidth = resultWidth;
+                    scaleResultRequestHeight = (int) (bitmapHeight / scaleWidth);
+                } else {
+                    scaleResultRequestWidth = (int) (bitmapWidth / scaleHeight);
+                    scaleResultRequestHeight = resultHeight;
+                }
+                bitmap = ImageUtil.instance().scaleBitmap(bitmap, scaleResultRequestWidth, scaleResultRequestHeight);
+                bitmapWidth = bitmap.getWidth();
+                bitmapHeight = bitmap.getHeight();
+            }
+
+            //2,裁剪成需求尺寸
+            if (bitmapWidth != resultWidth || bitmapHeight != resultHeight) {
+                int top = Math.abs(bitmap.getHeight() - resultHeight) / 2;
+                int left = Math.abs(bitmap.getWidth() - resultWidth) / 2;
+                bitmap = ImageUtil.instance().cropImage(bitmap, resultWidth, resultHeight, left, top, left + resultWidth, top + resultHeight);
+            }
+
+            return bitmap;
+        }catch (Exception e){
+            UIHelper.showLog("cropImageCenterAndNotDeformation fail "+e);
+            System.gc();
+            return bitmap;
+        }
+    }
+
     public Bitmap scaleBitmap(Bitmap bm,int newWidth,int newHeight){
         // 获得图片的宽高
         int width = bm.getWidth();

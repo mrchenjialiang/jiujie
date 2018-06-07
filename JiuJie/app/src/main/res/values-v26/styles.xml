@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--targetSdk>=26的，就需要下面两个主题做更改了-->
+
+    <!--8.0+-->
+    <!--android:windowIsTranslucent  -->
+
+
+    <!--当targetSdk<=26时用-->
+    <style name="Slide.trans" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/Slide.anim</item>-->
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
+    </style>
+
+    <style name="Slide.trans.FullScreen" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/Slide.anim</item>-->
+        <item name="android:actionBarStyle">@style/Slide.actionBar</item>
+        <!--<item name="android:backgroundDimEnabled">true</item>--><!--背景是否模糊显示-->
+    </style>
+
+
+    <!--当targetSdk>26时用-->
+    <!--<style name="Slide.trans" parent="BaseAppTheme">-->
+        <!--&lt;!&ndash;系统有全黑底色，没办法半透明之类的图片&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:windowBackground">@android:color/transparent</item>&ndash;&gt;-->
+        <!--<item name="android:windowBackground">@drawable/slide_bg_black</item>-->
+        <!--<item name="android:windowIsTranslucent">false</item>-->
+        <!--<item name="android:actionBarStyle">@style/Slide.actionBar</item>-->
+        <!--<item name="android:windowDisablePreview">true</item>-->
+    <!--</style>-->
+
+    <!--<style name="Slide.trans.FullScreen" parent="Theme.AppCompat.Light.NoActionBar.FullScreen">-->
+        <!--&lt;!&ndash;<item name="android:windowBackground">@android:color/transparent</item>&ndash;&gt;-->
+        <!--<item name="android:windowBackground">@drawable/slide_bg_black</item>-->
+        <!--<item name="android:windowIsTranslucent">false</item>-->
+        <!--<item name="android:actionBarStyle">@style/Slide.actionBar</item>-->
+        <!--<item name="android:windowDisablePreview">true</item>-->
+    <!--</style>-->
+</resources>

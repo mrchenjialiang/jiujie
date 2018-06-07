@@ -210,7 +210,7 @@
 //    public void setLoading(){
 //        if(mLoadingAnimation==null){
 //            ImageView image = findViewById(R.id.base_loading_image);
-//            image.setImageResource(R.drawable.loading);
+//            image.setImageResource(R.drawable.onProgress);
 //            mLoadingAnimation = (AnimationDrawable) image.getDrawable();
 //        }
 //        mLoadingLine.setVisibility(View.VISIBLE);

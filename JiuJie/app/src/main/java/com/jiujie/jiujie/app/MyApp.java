@@ -3,8 +3,7 @@ package com.jiujie.jiujie.app;
 import android.app.Application;
 
 import com.jiujie.base.APP;
-import com.jiujie.jiujie.video.VideoCacheUtil;
-import com.xunrui.ad.AdManager;
+import com.jiujie.base.util.video.VideoCacheUtil;
 
 /**
  * Created by ChenJiaLiang on 2017/11/14.
@@ -22,14 +21,14 @@ public class MyApp extends Application{
     }
 
     private void initAd() {
-        AdManager.instance(this).init(Config.isDebug,
-                Config.GDT_APP_ID,
-                Config.GDT_NATIVE_HENG_ID,
-                Config.GDT_NATIVE_SHU_ID,
-                Config.GDT_BANNER_ID,
-                Config.GDT_SPLASH_ID,
-                Config.GDT_CHAPING_ID,
-                Config.GDT_NATIVE_VIDEO_ID,
-                Config.GDT_NATIVE_EXPRESS_ID);
+//        AdManager.instance(this).init(Config.isDebug,
+//                Config.GDT_APP_ID,
+//                Config.GDT_NATIVE_HENG_ID,
+//                Config.GDT_NATIVE_SHU_ID,
+//                Config.GDT_BANNER_ID,
+//                Config.GDT_SPLASH_ID,
+//                Config.GDT_CHAPING_ID,
+//                Config.GDT_NATIVE_VIDEO_ID,
+//                Config.GDT_NATIVE_EXPRESS_ID);
     }
 }

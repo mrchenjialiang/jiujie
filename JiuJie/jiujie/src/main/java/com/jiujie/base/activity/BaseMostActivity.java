@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.jiujie.base.APP;
 import com.jiujie.base.util.EventBusObject;
-import com.jiujie.base.util.UIHelper;
-import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,32 +41,6 @@ public abstract class BaseMostActivity extends AppCompatActivity{
     public void onEventFinish(EventBusObject.Object object){
         if(object == EventBusObject.Object.FINISH){
             finish();
-        }
-    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        PermissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        UIHelper.hidePan(mActivity);
-        MobclickAgent.onResume(this);
-        if(APP.isUseUMeng) {
-            MobclickAgent.onPageStart(getPageName());
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        UIHelper.hidePan(mActivity);
-        MobclickAgent.onPause(this);
-        if(APP.isUseUMeng){
-            MobclickAgent.onPageEnd(getPageName());
         }
     }
 

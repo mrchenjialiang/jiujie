@@ -33,16 +33,17 @@ task clean(type: Delete) {
 }
 
 ext {
-//    compileSdk = 26
-//    minSdk = 14
-//    targetSdk = 23
-//    support = "26.0.2"
-//    buildTools = "26.0.2"
-    compileSdk = 27
+    compileSdk = 26
     minSdk = 16
-    targetSdk = 27
-    support = "27.0.2"
-    buildTools = "27.0.2"
+    targetSdk = 23
+    support = "26.0.2"
+    buildTools = "26.0.2"
+
+//    compileSdk = 27
+//    minSdk = 16
+//    targetSdk = 27
+//    support = "27.0.2"
+//    buildTools = "27.0.2"
 
     appcompat = "com.android.support:appcompat-v7:${support}"
     recyclerview = "com.android.support:recyclerview-v7:${support}"
@@ -78,4 +79,5 @@ ext {
     umeng = "com.umeng.analytics:analytics:latest.integration"
     eventbus = "org.greenrobot:eventbus:3.0.0"
     barlibrary = "com.gyf.barlibrary:barlibrary:2.3.0"
+    videocache = "com.danikula:videocache:2.7.0"
 }

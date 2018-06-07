@@ -1,7 +1,6 @@
-package com.jiujie.jiujie.video;
+package com.jiujie.base.util.video;
 
 import android.media.MediaPlayer;
-import android.view.ViewGroup;
 
 /**
  * Created by ChenJiaLiang on 2018/5/8.
@@ -11,7 +10,8 @@ import android.view.ViewGroup;
 public interface VideoController {
     void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener);
     void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener);
-    void doPrepare(String url);
+    boolean isPrepared();
+    void doPrepare(String videoPath,String thumbUrl);
     void doStart();
     void doPause();
     void doSeekTo(int position);

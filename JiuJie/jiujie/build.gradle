@@ -79,11 +79,8 @@ dependencies {
     compile "${rootProject.ext.converter_gson}"
     compile "${rootProject.ext.adapter_rxjava}"
     compile "${rootProject.ext.converter_scalars}"
-    compile "${rootProject.ext.umeng}"
     compile "${rootProject.ext.photoview}"
     compile "${rootProject.ext.eventbus}"
-
-    compile "${rootProject.ext.rxpermissions}"
     compile "${rootProject.ext.barlibrary}"
 
 
@@ -93,7 +90,15 @@ dependencies {
     compile "${rootProject.ext.glide_transformations}"
 
 
+//    视频缓存
+    compile "${rootProject.ext.videocache}"
 
+    compile 'com.google.android.exoplayer:exoplayer:r2.5.1'
+    compile 'com.google.android.exoplayer:exoplayer-ui:r2.5.1'
+
+//    compile 'com.google.android.exoplayer:exoplayer:r2.8.0'
+//    compile 'com.google.android.exoplayer:extension-rtmp:r2.5.1'
+//    compile 'com.google.android.exoplayer:exoplayer:r2.6.1'
 
 //    使用implementation还是api需要视情况而定，implementation只能用于当前module，如果在库中以这种方式设置依赖，那么在app的module是引用不到的，但是api可以，api相当于compile。
 

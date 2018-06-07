@@ -11,8 +11,14 @@
         <!--android:layout_height="match_parent"-->
         <!--android:layout_gravity="center"/>-->
 
-    <com.jiujie.jiujie.video.FixedTextureVideoView
-        android:id="@+id/v_FixedTextureVideoView"
+    <!--<com.jiujie.base.util.video.OriginalTextureVideoView-->
+        <!--android:id="@+id/v_OriginalTextureVideoView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"/>-->
+
+    <com.jiujie.base.util.video.TextureVideoView
+        android:id="@+id/v_TextureVideoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"/>

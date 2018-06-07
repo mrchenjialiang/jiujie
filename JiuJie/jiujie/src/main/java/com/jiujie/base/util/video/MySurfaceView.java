@@ -1,4 +1,4 @@
-package com.jiujie.jiujie.video;
+package com.jiujie.base.util.video;
 
 import android.content.Context;
 import android.graphics.Canvas;

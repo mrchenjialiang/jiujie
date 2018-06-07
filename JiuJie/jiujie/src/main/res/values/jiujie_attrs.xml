@@ -148,4 +148,11 @@
             <enum name="FILL" value="1"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="VScrollViewGroup">
+        <attr name="orientation">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+    </declare-styleable>
 </resources>

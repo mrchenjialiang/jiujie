@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_white_conner_8">
+
+       <LinearLayout
+           android:id="@+id/dm_title_layout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical">
+
+           <TextView
+               android:id="@+id/dm_title"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="12dp"
+               android:textSize="17sp"
+               android:textColor="#333333"
+               android:text="标题"
+               android:gravity="center"/>
+
+           <View style="@style/HLine"/>
+
+       </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dm_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dm_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
+                android:padding="20dp"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:text="确定删除消息？"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <View style="@style/HLine"/>
+
+        <TextView
+            android:id="@+id/dm_btn_ensure"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:background="@drawable/selector_dialog_btn_single"
+            android:textSize="16sp"
+            android:text="确定"
+            android:textColor="#2D97EB"/>
+
+    </LinearLayout>
+
+</LinearLayout>
