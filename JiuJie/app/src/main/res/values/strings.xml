@@ -1,12 +1,13 @@
 <resources>
     <string name="app_name">JiuJie</string>
 
-
-
-    <declare-styleable name="VScrollViewGroup">
-        <attr name="orientation">
-            <enum name="vertical" value="0"/>
-            <enum name="horizontal" value="1"/>
-        </attr>
-    </declare-styleable>
+    <string-array name="logo_list">
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+    </string-array>
 </resources>

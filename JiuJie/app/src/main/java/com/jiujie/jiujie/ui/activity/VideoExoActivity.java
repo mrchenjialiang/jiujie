@@ -5,7 +5,6 @@ import android.view.SurfaceView;
 
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.video.VideoExoUtil;
-import com.jiujie.base.util.video.VideoUtil;
 import com.jiujie.jiujie.R;
 
 import butterknife.Bind;
@@ -16,9 +15,10 @@ public class VideoExoActivity extends MyBaseActivity {
 
     @Bind(R.id.ve_surfaceView)
     SurfaceView surfaceView;
-    private VideoUtil videoUtil;
+    private VideoExoUtil videoUtil;
 
     private String[] videoPaths = {
+            "/storage/emulated/0/Download/videowallpaper/liveWallpaper/dad153c5620a2c83546849dc3204f107.mp4",//竖屏视频--桌面上播放两遍就停了
             "http://s.3987.com/uploadfile/userload/vedio/2018/0507/20180507121253269.mp4",//竖屏视频
             "http://s.3987.com/uploadfile/video/2018/0428/20180428093338723.mp4",//横屏视频
             Environment.getExternalStorageDirectory()+"/wanghong.mp4",//问题网红
@@ -41,12 +41,14 @@ public class VideoExoActivity extends MyBaseActivity {
             videoUtil.doRelease();
         }
 
-        videoUtil = new VideoUtil(new VideoExoUtil(this,surfaceView,true,true, VideoExoUtil.VideoScaleType.SCALE_CROP_CENTER));
+        videoUtil = new VideoExoUtil(this,surfaceView,true,true, VideoExoUtil.VideoScaleType.SCALE_CROP_CENTER);
 
         index++;
         if(index>videoPaths.length-1){
             index = 0;
         }
+
+//        index = 0;
         UIHelper.showLog("videoPath:"+videoPaths[index]);
 //        videoUtil.doPrepare(VideoCacheUtil.instance().getVideoPath(videoPaths[index]),null);
         videoUtil.doPrepare(videoPaths[index],null);
@@ -62,7 +64,6 @@ public class VideoExoActivity extends MyBaseActivity {
             videoUtil.doPause();
         }else{
 //            videoUtil.doStart();
-
             reset();
         }
     }

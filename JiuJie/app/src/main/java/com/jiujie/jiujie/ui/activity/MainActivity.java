@@ -3,17 +3,20 @@ package com.jiujie.jiujie.ui.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Environment;
+import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.view.View;
 
+import com.jiujie.base.APP;
 import com.jiujie.base.jk.OnListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.ImageUtil;
+import com.jiujie.base.util.SharePHelper;
 import com.jiujie.base.util.UIHelper;
 import com.jiujie.base.util.file.SystemDownloadUtil;
 import com.jiujie.base.util.permission.PermissionsManager;
 import com.jiujie.base.util.photo.GetPhotoUtil;
-import com.jiujie.base.util.screen.OnScreenStatusListener;
-import com.jiujie.base.util.screen.ScreenHelper;
 import com.jiujie.jiujie.R;
 import com.jiujie.jiujie.autocompletetextview.AutoCompleteTextViewActivity;
 import com.jiujie.jiujie.grouplist.GroupListActivity;
@@ -50,6 +53,13 @@ public class MainActivity extends MyBaseActivity {
                 UIHelper.showLog("isHasWriteReadPermission:"+isHasWriteReadPermission);
             }
         });
+
+        String model = Build.MODEL;
+        UIHelper.showLog(this,"model:"+model);
+
+        UIHelper.showLog(this,"externalStoragePublicDirectory DIRECTORY_DCIM:"+Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
+        UIHelper.showLog(this,"externalStoragePublicDirectory DIRECTORY_MOVIES:"+Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath());
+
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -57,6 +67,36 @@ public class MainActivity extends MyBaseActivity {
     @Override
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
+
+        //操作复制，把内容复制到剪切板
+        UIHelper.copyText(this,"bbbba_oId=123");
+        //代码读取剪切板内容
+        String a_oId = get();
+        //打印
+        UIHelper.showLog("a_oId:"+a_oId);
+
+    }
+
+
+    public static String get(){
+        String a_oId;
+        ClipboardManager myClipboard = (ClipboardManager) APP.getContext().getSystemService(CLIPBOARD_SERVICE);
+        if (myClipboard == null) return null;
+        CharSequence text = myClipboard.getText();
+        if (TextUtils.isEmpty(text)) {
+            return null;
+        }
+        String textStr = text.toString();
+        if (!textStr.contains("a_oId=")) {
+            return null;
+        }
+        String[] split = textStr.split("=");
+        if (split.length == 2) {
+            a_oId = split[1];
+            SharePHelper.instance(APP.getContext()).saveObject("a_oId", a_oId);
+            return a_oId;
+        }
+        return null;
     }
 
     @Override
@@ -191,7 +231,7 @@ public class MainActivity extends MyBaseActivity {
     }
 
     public void toVideoMediaPlayer(View view) {
-        startActivity(new Intent(mActivity,VideoMediaPlayerActivity.class));
+//        startActivity(new Intent(mActivity,VideoMediaPlayerActivity.class));
     }
 
     public void toAdCs(View view) {
@@ -208,5 +248,9 @@ public class MainActivity extends MyBaseActivity {
 
     public void toTouchMove(View view) {
         startActivity(new Intent(mActivity,TouchMoveActivity.class));
+    }
+
+    public void toCs(View view) {
+        startActivity(new Intent(mActivity,CsActivity.class));
     }
 }

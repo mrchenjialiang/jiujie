@@ -25,6 +25,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Surface;
 import android.view.TextureView;
@@ -36,7 +37,7 @@ import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.UIHelper;
 
 public class MyTextureView extends TextureView implements VideoController{
-    private final String TAG = "TextureVideoView";
+    private final String TAG = "VideoController MyTextureView";
     private Surface mSurface = null;
     private MediaPlayer mMediaPlayer = null;
     private int         mAudioSession;
@@ -58,6 +59,7 @@ public class MyTextureView extends TextureView implements VideoController{
     private SurfaceTextureListener outsideSurfaceTextureListener;
     private float volume = -1;
     private boolean isPrepared;
+    private boolean isPause;
 
     public MyTextureView(Context context) {
         super(context);
@@ -244,13 +246,16 @@ public class MyTextureView extends TextureView implements VideoController{
 
             if(volume>=0)mMediaPlayer.setVolume(volume,volume);
 
-            if(isFirstPrepared){
-                isFirstPrepared = false;
-                if(isAutoStart){
+            UIHelper.showLog(TAG,"onPrepared isPause:"+isPause);
+            if(!isPause){
+                if(isFirstPrepared){
+                    isFirstPrepared = false;
+                    if(isAutoStart){
+                        doStart();
+                    }
+                }else if(isLoop){
                     doStart();
                 }
-            }else if(isLoop){
-                doStart();
             }
 
             mVideoWidth = mp.getVideoWidth();
@@ -270,6 +275,7 @@ public class MyTextureView extends TextureView implements VideoController{
             if(onVideoStatusListener!=null) {
                 onVideoStatusListener.onPrepare(mVideoWidth, mVideoHeight);
             }
+
         }
     };
 
@@ -336,6 +342,7 @@ public class MyTextureView extends TextureView implements VideoController{
     private SurfaceTextureListener mSurfaceTextureListener = new SurfaceTextureListener(){
         @Override
         public void onSurfaceTextureSizeChanged(final SurfaceTexture surface, final int width, final int height) {
+            UIHelper.showLog(TAG,"onSurfaceTextureSizeChanged");
             if(outsideSurfaceTextureListener!=null){
                 outsideSurfaceTextureListener.onSurfaceTextureSizeChanged(surface, width, height);
             }
@@ -343,6 +350,8 @@ public class MyTextureView extends TextureView implements VideoController{
 
         @Override
         public void onSurfaceTextureAvailable(final SurfaceTexture surface, final int width, final int height) {
+            //部分机型，很奇葩的，会在息屏后调用 onSurfaceTextureDestroyed 马上又调用 onSurfaceTextureAvailable，从而导致视频还在播放中
+            UIHelper.showLog(TAG,"onSurfaceTextureAvailable");
             mSurface = new Surface(surface);
             doPrepare(videoPath,thumbUrl);
             if(outsideSurfaceTextureListener!=null){
@@ -352,6 +361,7 @@ public class MyTextureView extends TextureView implements VideoController{
 
         @Override
         public boolean onSurfaceTextureDestroyed(final SurfaceTexture surface) {
+            UIHelper.showLog(TAG,"onSurfaceTextureDestroyed");
             if(outsideSurfaceTextureListener!=null){
                 outsideSurfaceTextureListener.onSurfaceTextureDestroyed(surface);
             }
@@ -397,7 +407,16 @@ public class MyTextureView extends TextureView implements VideoController{
     }
 
     @Override
+    public boolean isPause() {
+        return isPause;
+    }
+
+    @Override
     public void doPrepare(String videoPath, String thumbUrl) {
+        UIHelper.showLog(TAG,"doPrepare");
+        if(TextUtils.isEmpty(videoPath)){
+            return;
+        }
         this.videoPath = videoPath;
         this.thumbUrl = thumbUrl;
         Uri uri = Uri.parse(this.videoPath);
@@ -453,6 +472,8 @@ public class MyTextureView extends TextureView implements VideoController{
 
     @Override
     public void doStart() {
+        isPause = false;
+        UIHelper.showLog(TAG,"doStart");
         if(mMediaPlayer==null)return;
         try {
             mMediaPlayer.start();
@@ -478,6 +499,8 @@ public class MyTextureView extends TextureView implements VideoController{
 
     @Override
     public void doPause() {
+        isPause = true;
+        UIHelper.showLog(TAG,"doPause");
         if(mMediaPlayer==null)return;
         if(!mMediaPlayer.isPlaying())return;
         mMediaPlayer.pause();
@@ -488,17 +511,20 @@ public class MyTextureView extends TextureView implements VideoController{
 
     @Override
     public void doSeekTo(int position) {
+        UIHelper.showLog(TAG,"doSeekTo "+position);
         if(mMediaPlayer==null)return;
         mMediaPlayer.seekTo(position);
     }
 
     @Override
     public void doReStart() {
+        UIHelper.showLog(TAG,"doReStart ");
         doPrepare(videoPath,thumbUrl);
     }
 
     @Override
     public void doRelease() {
+        UIHelper.showLog(TAG,"doRelease ");
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
@@ -516,6 +542,7 @@ public class MyTextureView extends TextureView implements VideoController{
 
     @Override
     public void setVoice(float volume) {
+        UIHelper.showLog(TAG,"setVoice ");
         this.volume = volume;
         if(mMediaPlayer==null)return;
         mMediaPlayer.setVolume(volume,volume);

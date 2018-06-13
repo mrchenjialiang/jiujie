@@ -3,16 +3,18 @@ package com.jiujie.base.util.appupdate;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import com.jiujie.base.R;
+import com.jiujie.base.util.UIHelper;
 
 
 public class NotificationUtil {
@@ -82,6 +84,7 @@ public class NotificationUtil {
 
     /**
      * 下载中
+     *
      * @param progressStr 已下载量 5M
      * @param progressNum 进度百分比数 50
      */
@@ -107,38 +110,47 @@ public class NotificationUtil {
         }
     }
 
-    @SuppressWarnings("deprecation")
-
     public static void showNotification(Context context, int drawableId,
                                         String firstContent, Intent actionIntent, String showTitle,
                                         String showContent, int notifyId) {
-        //获取NotificationManager实例
-        NotificationManager notifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //实例化NotificationCompat.Builde并设置相关属性
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                //设置小图标
-                .setSmallIcon(drawableId)
-                //设置通知标题
+        if (TextUtils.isEmpty(firstContent)) {
+            firstContent = showTitle;
+        }
+        NotificationManager mNotificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (mNotificationManager == null) {
+            UIHelper.showLog("showNotification16 mNotificationManager==null");
+            return;
+        }
+        actionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                context,
+                0,
+                actionIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(context)
                 .setContentTitle(showTitle)
-                //设置通知内容
                 .setContentText(showContent)
-                .setTicker(firstContent)
-                //设置事件
-                .setAutoCancel(true)
-                .setContentIntent(PendingIntent.getActivity(context, 0,
-                        actionIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        //设置通知时间，默认为系统发出通知的时间，通常不用设置
-        //.setWhen(System.currentTimeMillis());
-        //通过builder.build()方法生成Notification对象,并发送通知,id=1
-        notifyManager.notify(notifyId, builder.build());
+                .setSmallIcon(drawableId)
+                .setContentIntent(contentIntent)
+//                .setVibrate(new long[]{0, 1000, 1000, 1000})
+                .setTicker(firstContent)   // 状态栏上显示
+                .setAutoCancel(true);
 
+        if (Build.VERSION.SDK_INT >= 26) {
+            String channelID = context.getPackageName() + notifyId;
+            String channelName = "消息通知";
+            NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            //创建通知时指定channelID
+            builder.setChannelId(channelID);
+        }
 
-//        showNotification16(context, drawableId, firstContent, actionIntent, showTitle, showContent, notifyId);
-
-//		if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
-//		}else{
-//			showNotification11(activity,drawableId,firstContent,actionIntent,showTitle,showContent,notifyId);
-//		}
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL; // FLAG_AUTO_CANCEL表明当通知被用户点击时，通知将被清除。
+        mNotificationManager.notify(notifyId, notification);
     }
 
     @TargetApi(16)
@@ -151,6 +163,7 @@ public class NotificationUtil {
         NotificationManager mNotificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
+        if (mNotificationManager == null) return;
         actionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 actionIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -200,28 +213,6 @@ public class NotificationUtil {
 
 //		notification.flags = Notification.FLAG_AUTO_CANCEL;
 
-
         mNotificationManager.notify(notifyId, notification);
-
-
     }
-
-//	@TargetApi(11)
-//	private static void showNotification11(Context activity, int drawableId,
-//										String firstContent, Intent actionIntent, String showTitle,
-//										String showContent,int notifyId) {
-//		NotificationManager mNotificationManager = (NotificationManager) activity
-//				.getSystemService(Context.NOTIFICATION_SERVICE);
-//		Notification notification = new Notification(drawableId, // 通知图片
-//				firstContent, System.currentTimeMillis());
-//
-//		notification.flags = Notification.FLAG_AUTO_CANCEL;
-//
-//		actionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		PendingIntent contentIntent = PendingIntent.getActivity(activity, 0,
-//				actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//		//过时
-//		notification.setLatestEventInfo(activity, showTitle, showContent,contentIntent);
-//		mNotificationManager.notify(notifyId, notification);
-//	}
 }

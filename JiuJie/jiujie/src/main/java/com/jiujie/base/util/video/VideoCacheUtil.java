@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.danikula.videocache.CacheListener;
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.danikula.videocache.file.Md5FileNameGenerator;
 import com.jiujie.base.util.UIHelper;
@@ -93,7 +94,14 @@ public class VideoCacheUtil {
                 return videoPath;
             } else {
                 //仅能操作网络视频
-                String proxyUrl = getProxyService().getProxyUrl(url);
+                HttpProxyCacheServer proxyService = getProxyService();
+                proxyService.registerCacheListener(new CacheListener() {
+                    @Override
+                    public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
+
+                    }
+                },url);
+                String proxyUrl = proxyService.getProxyUrl(url);
                 UIHelper.showLog(this,"getVideoPath return proxyUrl:"+proxyUrl);
                 return proxyUrl;
             }

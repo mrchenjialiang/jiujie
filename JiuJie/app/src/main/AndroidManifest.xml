@@ -83,11 +83,12 @@
         <activity
             android:name=".ui.activity.VideoThumbActivity"
             android:theme="@style/Slide.trans" />
-        <activity android:name=".ui.activity.TouchMoveActivity"
+        <activity
+            android:name=".ui.activity.TouchMoveActivity"
             android:theme="@style/Slide.trans" />
-        <activity android:name=".ui.activity.VideoExoActivity"
+        <activity
+            android:name=".ui.activity.VideoExoActivity"
             android:theme="@style/Slide.trans" />
-
 
         <service android:name=".service.JiuJieKeepService" />
         <service
@@ -113,6 +114,7 @@
                 android:resource="@xml/videowallpaper_path" />
         </service>
 
+        <activity android:name=".ui.activity.CsActivity"></activity>
     </application>
 
 </manifest>

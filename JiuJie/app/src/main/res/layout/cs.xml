@@ -1,126 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:jiujie="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/s_item_bg"
-        android:orientation="horizontal">
+    <com.jiujie.jiujie.ui.weight.RingView
+        android:id="@+id/ringView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:image_angle="15"
+        app:image_padding="20"
+        app:list="@array/logo_list" />
 
-        <View
-            android:id="@+id/icsp_left_line"
-            android:layout_width="8dp"
-            android:visibility="gone"
-            android:layout_height="match_parent"/>
+    <com.jiujie.jiujie.ui.weight.CircleScrollViewGroup
+        android:layout_width="200dp"
+        android:layout_height="200dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_launcher"/>
 
-            <com.jiujie.base.widget.ScaleFrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                jiujie:scaleHeight="1">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_launcher"/>
 
-                <ImageView
-                    android:id="@+id/icsp_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="#9900ff00"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_launcher"/>
 
-                <TextView
-                    android:id="@+id/icsp_photo_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:paddingLeft="4dp"
-                    android:layout_gravity="right|top"
-                    android:gravity="center"
-                    android:text="0P"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:background="@drawable/logo"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_launcher"/>
 
-            </com.jiujie.base.widget.ScaleFrameLayout>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_launcher"/>
 
-            <TextView
-                android:id="@+id/icsp_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textSize="15sp"
-                android:textColor="#1a1a1a"
-                android:text="帅气明星大比拼"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:id="@+id/icsp_userIcon"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:src="@drawable/logo"/>
-
-                <TextView
-                    android:id="@+id/icsp_userName"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:textColor="#1586dc"
-                    android:textSize="14sp"
-                    android:text="浪迹天涯哇哈哈"/>
-
-                <LinearLayout
-                    android:id="@+id/icsp_btn_zan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <com.jiujie.base.widget.SelectorImage
-                        android:layout_width="17dp"
-                        android:layout_height="wrap_content"
-                        jiujie:src_n="@drawable/logo"
-                        jiujie:src_p="@drawable/logo"/>
-
-                    <TextView
-                        android:id="@+id/icsp_zan_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:text="0"
-                        android:textSize="14sp"
-                        android:textColor="@color/title_bg"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/icsp_right_line"
-            android:layout_width="8dp"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
+    </com.jiujie.jiujie.ui.weight.CircleScrollViewGroup>
 
 </LinearLayout>

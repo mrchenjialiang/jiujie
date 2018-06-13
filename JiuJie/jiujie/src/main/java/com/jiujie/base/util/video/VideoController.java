@@ -11,6 +11,7 @@ public interface VideoController {
     void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener);
     void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener);
     boolean isPrepared();
+    boolean isPause();
     void doPrepare(String videoPath,String thumbUrl);
     void doStart();
     void doPause();

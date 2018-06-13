@@ -17,8 +17,8 @@
         <!--android:layout_height="match_parent"-->
         <!--android:layout_gravity="center"/>-->
 
-    <com.jiujie.base.util.video.TextureVideoView
-        android:id="@+id/v_TextureVideoView"
+    <com.jiujie.base.util.video.MyTextureView
+        android:id="@+id/v_MyTextureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"/>

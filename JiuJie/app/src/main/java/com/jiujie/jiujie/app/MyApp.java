@@ -15,7 +15,7 @@ public class MyApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        APP.init(this,false,false,null,Config.isDebug,"com.jiujie.demo.fileProvider");
+        APP.init(this,false,null,Config.isDebug,"com.jiujie.demo.fileProvider");
         VideoCacheUtil.instance().init(this,Config.VIDEO_SAVE_PATH,getExternalCacheDir()+"/video/",500*1024*1024);
         initAd();
     }

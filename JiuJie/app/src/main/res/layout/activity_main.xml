@@ -189,6 +189,16 @@
 
         <View style="@style/HLine_app_bg1"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/s_item_bg"
+            android:onClick="toCs"
+            android:gravity="center"
+            android:text="toCs"/>
+
+        <View style="@style/HLine_app_bg1"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="60dp"/>

@@ -11,76 +11,82 @@ import com.jiujie.base.jk.OnSimpleListener;
  */
 
 public class VideoTextureViewUtil implements VideoController{
-    private MyTextureView myTextureView;
+    private VideoController videoController;
 
     public VideoTextureViewUtil(MyTextureView myTextureView, boolean isLoop, boolean isAutoStart, ViewGroup containerView) {
         if(myTextureView==null)throw new NullPointerException("MyTextureView should not be null in VideoTextureViewUtil ");
-        this.myTextureView = myTextureView;
+        this.videoController = myTextureView;
         myTextureView.setSome(isLoop,isAutoStart,containerView);
     }
 
     public void setOnFirstSurfaceUpdateListener(OnSimpleListener onFirstSurfaceUpdateListener) {
-        if(myTextureView !=null) myTextureView.setOnFirstSurfaceUpdateListener(onFirstSurfaceUpdateListener);
+        if(videoController !=null&& videoController instanceof MyTextureView)
+            ((MyTextureView) videoController).setOnFirstSurfaceUpdateListener(onFirstSurfaceUpdateListener);
     }
 
     @Override
     public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
-        if(myTextureView !=null) myTextureView.setOnVideoStatusListener(onVideoStatusListener);
+        if(videoController !=null) videoController.setOnVideoStatusListener(onVideoStatusListener);
     }
 
     @Override
     public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-        if(myTextureView !=null) myTextureView.setOnVideoPrepareListener(onVideoPrepareListener);
+        if(videoController !=null) videoController.setOnVideoPrepareListener(onVideoPrepareListener);
     }
 
     @Override
     public boolean isPrepared() {
-        return myTextureView != null && myTextureView.isPrepared();
+        return videoController != null && videoController.isPrepared();
+    }
+
+    @Override
+    public boolean isPause() {
+        return videoController != null && videoController.isPause();
     }
 
     @Override
     public void doPrepare(String videoPath, String thumbUrl) {
-        if(myTextureView !=null) myTextureView.doPrepare(videoPath,thumbUrl);
+        if(videoController !=null) videoController.doPrepare(videoPath,thumbUrl);
     }
 
     @Override
     public void doStart(){
-        if(myTextureView !=null) myTextureView.doStart();
+        if(videoController !=null) videoController.doStart();
     }
 
     @Override
     public void doPause(){
-        if(myTextureView !=null) myTextureView.doPause();
+        if(videoController !=null) videoController.doPause();
     }
 
     @Override
     public boolean isPlaying() {
-        return myTextureView != null && myTextureView.isPlaying();
+        return videoController != null && videoController.isPlaying();
     }
 
     @Override
     public void setVoice(float volume){
-        if(myTextureView !=null) myTextureView.setVoice(volume);
+        if(videoController !=null) videoController.setVoice(volume);
     }
 
     @Override
     public MediaPlayer getMediaPlayer() {
-        if(myTextureView ==null)return null;
-        return myTextureView.getMediaPlayer();
+        if(videoController ==null)return null;
+        return videoController.getMediaPlayer();
     }
 
     @Override
     public void doSeekTo(int position) {
-        if(myTextureView !=null) myTextureView.doSeekTo(position);
+        if(videoController !=null) videoController.doSeekTo(position);
     }
 
     @Override
     public void doReStart() {
-        if(myTextureView !=null) myTextureView.doReStart();
+        if(videoController !=null) videoController.doReStart();
     }
 
     @Override
     public void doRelease() {
-        if(myTextureView !=null) myTextureView.doRelease();
+        if(videoController !=null) videoController.doRelease();
     }
 }

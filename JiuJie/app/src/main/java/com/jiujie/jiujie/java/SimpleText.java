@@ -6,8 +6,6 @@ import com.jiujie.base.util.UIHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SimpleText {
 

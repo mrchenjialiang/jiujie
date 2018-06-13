@@ -8,16 +8,22 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -32,8 +38,8 @@ import java.io.IOException;
  * Email:576507648@qq.com
  */
 
-public class VideoExoUtil implements VideoController{
-    private final String TAG = "VideoExoUtil";
+public class VideoExoUtil implements VideoController {
+    private final String TAG = "VideoController VideoExoUtil";
     private final Context context;
     private final VideoScaleType videoScaleType;
     private Surface surface;
@@ -45,9 +51,11 @@ public class VideoExoUtil implements VideoController{
     private boolean isAutoStart;
     private SimpleExoPlayer simpleExoPlayer;
     private String thumbUrl;
+    private OnVideoStatusListener onVideoStatusListener;
+    private OnVideoPrepareListener onVideoPrepareListener;
 
-    public enum VideoScaleType{
-        SCALE_FILL_XY,SCALE_CROP_CENTER
+    public enum VideoScaleType {
+        SCALE_FILL_XY, SCALE_CROP_CENTER
     }
 
     public VideoExoUtil(Context context, Surface surface, boolean isLoop, boolean isAutoStart, VideoScaleType videoScaleType) {
@@ -118,40 +126,116 @@ public class VideoExoUtil implements VideoController{
         // 自动播放?  开始/暂停 方法
         simpleExoPlayer.setPlayWhenReady(isAutoStart);
         //循环播放配置
-        simpleExoPlayer.setRepeatMode(isLoop?Player.REPEAT_MODE_ALL:Player.REPEAT_MODE_OFF);
+        simpleExoPlayer.setRepeatMode(isLoop ? Player.REPEAT_MODE_ALL : Player.REPEAT_MODE_OFF);
         //视频缩放配置
-        if(videoScaleType==VideoScaleType.SCALE_FILL_XY){
+        if (videoScaleType == VideoScaleType.SCALE_FILL_XY) {
             simpleExoPlayer.setVideoScalingMode(1);//fill xy
-        }else if(videoScaleType==VideoScaleType.SCALE_CROP_CENTER){
+        } else if (videoScaleType == VideoScaleType.SCALE_CROP_CENTER) {
             simpleExoPlayer.setVideoScalingMode(2);//crop center
         }
 
         bindPlayerToView();
-
         simpleExoPlayer.setVideoListener(new SimpleExoPlayer.VideoListener() {
             @Override
-            public void onVideoSizeChanged(int width, int height, int i2, float v) {
-                UIHelper.showLog(TAG,"onVideoSizeChanged "+width+","+height+","+i2+","+v);
+            public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+                if (onVideoStatusListener != null) {
+                    onVideoStatusListener.onPrepare(width, height);
+                }
+                if (onVideoPrepareListener != null) onVideoPrepareListener.onPrepare(width, height);
             }
 
             @Override
             public void onRenderedFirstFrame() {
-                UIHelper.showLog(TAG,"onRenderedFirstFrame");
+
+            }
+        });
+        simpleExoPlayer.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object o) {
+                UIHelper.showLog(TAG, "addListener onTimelineChanged");
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
+                UIHelper.showLog(TAG, "addListener onTracksChanged");
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+                UIHelper.showLog(TAG, "addListener onLoadingChanged isLoading:" + isLoading);
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                UIHelper.showLog(TAG, "addListener onPlayerStateChanged playWhenReady:" + playWhenReady + ",playbackState:" + playbackState + ",isPlaying:" + isPlaying());
+                switch (playbackState) {
+                    case ExoPlayer.STATE_IDLE://1
+                        UIHelper.showLog(TAG, "ExoPlayer idle!");
+                        if (onVideoStatusListener != null) {
+                            onVideoStatusListener.onCompleted(null);
+                        }
+                        break;
+                    case ExoPlayer.STATE_BUFFERING://2
+                        UIHelper.showLog(TAG, "ExoPlayer buffering true");
+                        if (onVideoStatusListener != null) {
+                            onVideoStatusListener.onBufferListen(true);
+                        }
+                        break;
+                    case ExoPlayer.STATE_READY://3
+                        UIHelper.showLog(TAG, "ExoPlayer buffering false");
+                        if (onVideoStatusListener != null) {
+                            onVideoStatusListener.onBufferListen(false);
+                        }
+                        break;
+                    case ExoPlayer.STATE_ENDED://4
+                        UIHelper.showLog(TAG, "Playback ended!");
+                        if(isLoop){
+                            simpleExoPlayer.seekTo(0);
+                        }
+                        if (onVideoStatusListener != null) {
+                            onVideoStatusListener.onCompleted(null);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onRepeatModeChanged(int i) {
+                UIHelper.showLog(TAG, "addListener onRepeatModeChanged");
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException e) {
+                e.printStackTrace();
+                UIHelper.showLog(TAG, "addListener onPlayerError " + e);
+
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+                UIHelper.showLog(TAG, "addListener onPositionDiscontinuity");
+
+            }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+                UIHelper.showLog(TAG, "addListener onPlaybackParametersChanged");
+
             }
         });
     }
 
     private void bindPlayerToView() {
         // bind the player to the view
-        if(surfaceView!=null){
+        if (surfaceView != null) {
             simpleExoPlayer.setVideoSurfaceView(surfaceView);
-        }else if(surface!=null){
+        } else if (surface != null) {
             simpleExoPlayer.setVideoSurface(surface);
-        }else if(textureView!=null){
+        } else if (textureView != null) {
             simpleExoPlayer.setVideoTextureView(textureView);
-        }else if(surfaceHolder!=null){
+        } else if (surfaceHolder != null) {
             simpleExoPlayer.setVideoSurfaceHolder(surfaceHolder);
-        }else{
+        } else {
             throw new NullPointerException("VideoExoUtil init should have a surfaceView or surface or textureView or surfaceHolder");
         }
 //        simpleExoPlayerView.setPlayer(simpleExoPlayer);
@@ -163,12 +247,12 @@ public class VideoExoUtil implements VideoController{
 
     @Override
     public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
-//        this.onVideoStatusListener = onVideoStatusListener;
+        this.onVideoStatusListener = onVideoStatusListener;
     }
 
     @Override
     public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-//        this.onVideoPrepareListener = onVideoPrepareListener;
+        this.onVideoPrepareListener = onVideoPrepareListener;
     }
 
     @Override
@@ -177,8 +261,13 @@ public class VideoExoUtil implements VideoController{
     }
 
     @Override
+    public boolean isPause() {
+        return false;
+    }
+
+    @Override
     public void doPrepare(String videoPath, String thumbUrl) {
-        if(simpleExoPlayer==null)return;
+        if (simpleExoPlayer == null) return;
         this.videoPath = videoPath;
         this.thumbUrl = thumbUrl;
         // 默认带宽测量
@@ -193,7 +282,7 @@ public class VideoExoUtil implements VideoController{
             @Override
             public void onLoadError(IOException e) {
                 e.printStackTrace();
-                UIHelper.showLog(TAG,"onLoadError " +e);
+                UIHelper.showLog(TAG, "onLoadError " + e);
             }
         });
         // 准备播放
@@ -203,25 +292,25 @@ public class VideoExoUtil implements VideoController{
     }
 
     @Override
-    public void doStart(){
-        if(simpleExoPlayer==null)return;
+    public void doStart() {
+        if (simpleExoPlayer == null) return;
         simpleExoPlayer.setPlayWhenReady(true);
     }
 
     @Override
-    public void doPause(){
-        if(simpleExoPlayer==null)return;
+    public void doPause() {
+        if (simpleExoPlayer == null) return;
         simpleExoPlayer.setPlayWhenReady(false);
     }
 
     @Override
-    public boolean isPlaying(){
+    public boolean isPlaying() {
         return simpleExoPlayer.getPlayWhenReady();
     }
 
     @Override
-    public void setVoice(float volume){
-        if(simpleExoPlayer==null)return;
+    public void setVoice(float volume) {
+        if (simpleExoPlayer == null) return;
         simpleExoPlayer.setVolume(volume);
     }
 
@@ -232,23 +321,24 @@ public class VideoExoUtil implements VideoController{
 
     @Override
     public void doSeekTo(int timeMillis) {
-        if(simpleExoPlayer==null)return;
+        if (simpleExoPlayer == null) return;
         simpleExoPlayer.seekTo(timeMillis);
     }
 
     public int getDuration() {
-        if(simpleExoPlayer==null)return 0;
+        if (simpleExoPlayer == null) return 0;
         return (int) simpleExoPlayer.getDuration();
     }
 
     @Override
     public void doReStart() {
-        doPrepare(videoPath,thumbUrl);
+        if (simpleExoPlayer != null) simpleExoPlayer.seekTo(0);
+//        doPrepare(videoPath, thumbUrl);
     }
 
     @Override
     public void doRelease() {
-        if(simpleExoPlayer==null)return;
+        if (simpleExoPlayer == null) return;
         simpleExoPlayer.release();
         simpleExoPlayer = null;
     }
