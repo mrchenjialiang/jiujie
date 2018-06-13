@@ -44,6 +44,7 @@ public class CircleScrollViewGroup extends FrameLayout {
     private long mDownTime;
     private float mTmpAngle;
     private AngleRunnable mAngleRunnable;
+    private float singleAngle;
 
     public CircleScrollViewGroup(@NonNull Context context) {
         super(context);
@@ -90,7 +91,7 @@ public class CircleScrollViewGroup extends FrameLayout {
         }
 
         int childCount = getChildCount();
-        float singleAngle = 360 * 1.0f / childCount;
+        singleAngle = 360 * 1.0f / childCount;
         float currentAngle = 0;
         int padding = getPaddingTop();
         int centerX = width / 2;
