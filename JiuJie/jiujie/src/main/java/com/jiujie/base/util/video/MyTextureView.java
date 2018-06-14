@@ -353,7 +353,9 @@ public class MyTextureView extends TextureView implements VideoController{
             //部分机型，很奇葩的，会在息屏后调用 onSurfaceTextureDestroyed 马上又调用 onSurfaceTextureAvailable，从而导致视频还在播放中
             UIHelper.showLog(TAG,"onSurfaceTextureAvailable");
             mSurface = new Surface(surface);
-            doPrepare(videoPath,thumbUrl);
+            if(!TextUtils.isEmpty(videoPath)){
+                doPrepare(videoPath,thumbUrl);
+            }
             if(outsideSurfaceTextureListener!=null){
                 outsideSurfaceTextureListener.onSurfaceTextureAvailable(surface, width, height);
             }
@@ -419,8 +421,10 @@ public class MyTextureView extends TextureView implements VideoController{
         }
         this.videoPath = videoPath;
         this.thumbUrl = thumbUrl;
-        Uri uri = Uri.parse(this.videoPath);
-        if (uri == null || mSurface == null) {
+        if(TextUtils.isEmpty(this.videoPath)){
+            return;
+        }
+        if (mSurface == null) {
             return;
         }
         isPrepared = false;
@@ -454,7 +458,7 @@ public class MyTextureView extends TextureView implements VideoController{
             mMediaPlayer.setOnInfoListener(mInfoListener);
             mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
             mCurrentBufferPercentage = 0;
-            mMediaPlayer.setDataSource(getContext().getApplicationContext(), uri);
+            mMediaPlayer.setDataSource(getContext().getApplicationContext(), Uri.parse(videoPath));
             mMediaPlayer.setSurface(mSurface);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);

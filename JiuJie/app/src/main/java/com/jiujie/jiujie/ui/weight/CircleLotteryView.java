@@ -53,23 +53,27 @@ public class CircleLotteryView extends ViewGroup {
     private float singleAngle;
     private RectF mRectF;
     private Paint mPaint;
-    private String[] texts = {"时时彩", "11选5", "快3", "低频彩", "快乐8", "PK拾"};
+    private String[] texts = {"111111", "22222", "33333", "44444", "555555", "6666"};
     private int[] values = {1, 2, 3, 4, 5, 6};
     private int[] bgColors = {
-            Color.parseColor("#FE961A"),
-            Color.parseColor("#00B6EC"),
-            Color.parseColor("#0095DB"),
-            Color.parseColor("#00B6EC"),
-            Color.parseColor("#FE961A"),
-            Color.parseColor("#00B6EC"),
-            Color.parseColor("#0095DB"),
-            Color.parseColor("#00B6EC")
+            Color.parseColor("#FE961A"),//1
+            Color.parseColor("#00B6EC"),//2
+            Color.parseColor("#0095DB"),//3
+            Color.parseColor("#00B6EC"),//2
+            Color.parseColor("#FE961A"),//1
+            Color.parseColor("#00B6EC"),//2
+            Color.parseColor("#0095DB"),//3
+            Color.parseColor("#00B6EC"),//2
+            Color.parseColor("#FE961A"),//1
+            Color.parseColor("#00B6EC"),//2
+            Color.parseColor("#0095DB"),//3
+            Color.parseColor("#00B6EC")//2
     };
     private int currentIndex = 0;
     private int currentValue = values[currentIndex];
     private OnListener<Integer> onItemChangeListener;
     private int itemHeight = 100;
-    private int circleAllItemSize = 8;
+    private int circleAllItemSize = 12;
     private int radius;
     private float y;
     private boolean isInitLayout;
@@ -93,7 +97,13 @@ public class CircleLotteryView extends ViewGroup {
         setClickable(true);
         mRectF = new RectF();
         mPaint = new Paint();
+        // 设置画笔相关属性
+        mPaint.setAntiAlias(true);
         itemHeight = UIHelper.dip2px(getContext(), 50);
+        /**
+         *  因为默认不走ondraw 所以设置背景透明
+         */
+        setBackgroundColor(0x00000000);
     }
 
     public void setOnItemChangeListener(OnListener<Integer> onItemChangeListener) {
@@ -187,10 +197,8 @@ public class CircleLotteryView extends ViewGroup {
             diameter = Math.min(getWidth(), getHeight());
             radius = diameter /2;
         }
-        // 设置画笔相关属性
-        mPaint.setAntiAlias(true);
-        //设置画布颜色
-        canvas.drawColor(Color.TRANSPARENT);
+//        //设置画布颜色
+//        canvas.drawColor(Color.TRANSPARENT);
         //设置圆环宽度
         mPaint.setStrokeWidth(itemHeight);
         //设置为空心圆
@@ -203,8 +211,8 @@ public class CircleLotteryView extends ViewGroup {
         mRectF.right = radius * 2 - itemHeight / 2; // 左下角x
         mRectF.bottom = radius * 2 - itemHeight / 2; // 右下角y
 
-        int jgAngle = 2;
 
+        int jgAngle = 2;
         singleAngle = (360 - jgAngle * circleAllItemSize) * 1.0f / circleAllItemSize;
         float startAngle = -90 - singleAngle / 2;
         for (int i = 0; i < circleAllItemSize; i++) {
@@ -227,7 +235,7 @@ public class CircleLotteryView extends ViewGroup {
 
 //        float x = radius;
 //        float y = itemHeight / 2 + 14;
-//        canvas.drawText("时时彩", x, y, mPaint);
+//        canvas.drawText("1111", x, y, mPaint);
 
 //        startAngle = -90 - singleAngle / 2;
 //        for (int i = 0; i < circleAllItemSize; i++) {

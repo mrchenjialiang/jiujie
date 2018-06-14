@@ -68,35 +68,6 @@ public class MainActivity extends MyBaseActivity {
     public void initData() {
 //        getSupportFragmentManager().beginTransaction().add(R.id.main_frameLayout,new SimpleListFragment()).commit();
 
-        //操作复制，把内容复制到剪切板
-        UIHelper.copyText(this,"bbbba_oId=123");
-        //代码读取剪切板内容
-        String a_oId = get();
-        //打印
-        UIHelper.showLog("a_oId:"+a_oId);
-
-    }
-
-
-    public static String get(){
-        String a_oId;
-        ClipboardManager myClipboard = (ClipboardManager) APP.getContext().getSystemService(CLIPBOARD_SERVICE);
-        if (myClipboard == null) return null;
-        CharSequence text = myClipboard.getText();
-        if (TextUtils.isEmpty(text)) {
-            return null;
-        }
-        String textStr = text.toString();
-        if (!textStr.contains("a_oId=")) {
-            return null;
-        }
-        String[] split = textStr.split("=");
-        if (split.length == 2) {
-            a_oId = split[1];
-            SharePHelper.instance(APP.getContext()).saveObject("a_oId", a_oId);
-            return a_oId;
-        }
-        return null;
     }
 
     @Override
