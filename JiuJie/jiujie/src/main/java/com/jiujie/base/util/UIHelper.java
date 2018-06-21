@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.app.Dialog;
-import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -35,7 +35,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.provider.MediaStore;
@@ -250,13 +249,13 @@ public class UIHelper {
         }
     }
 
-    public static void showLog(Object key,Object object) {
+    public static void showLog(Object key, Object object) {
         if (APP.isDeBug) {
             LoggerUtil.addLog(key, object);
         }
     }
 
-    public static void showLog(String key,Object... object) {
+    public static void showLog(String key, Object... object) {
         if (APP.isDeBug) {
             LoggerUtil.addLog(key, object);
         }
@@ -280,7 +279,7 @@ public class UIHelper {
         FileUtil.requestPermission(new OnListener<Boolean>() {
             @Override
             public void onListen(Boolean isHas) {
-                if(isHas){
+                if (isHas) {
                     File file = FileUtil.createFile(fileDic, fileName);
                     if (file == null) {
                         return;
@@ -442,7 +441,7 @@ public class UIHelper {
         Display display = mActivity.getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
         int screenWidth = Math.max(width, rootView.getWidth());
-        SharePHelper.instance(mActivity).saveObject("screenWidth",screenWidth);
+        SharePHelper.instance(mActivity).saveObject("screenWidth", screenWidth);
         return screenWidth;
     }
 
@@ -454,18 +453,18 @@ public class UIHelper {
         Display display = mActivity.getWindowManager().getDefaultDisplay();
         int height = display.getHeight();
         int screenHeight = Math.max(height, rootView.getHeight());
-        SharePHelper.instance(mActivity).saveObject("screenHeight",screenHeight);
+        SharePHelper.instance(mActivity).saveObject("screenHeight", screenHeight);
         return screenHeight;
     }
 
-    public static int getScreenWidthByRead(Context context){
+    public static int getScreenWidthByRead(Context context) {
         Integer screenWidth = SharePHelper.instance(context).readObject("screenWidth");
-        return screenWidth==null?0:screenWidth;
+        return screenWidth == null ? 0 : screenWidth;
     }
 
-    public static int getScreenHeightByRead(Context context){
+    public static int getScreenHeightByRead(Context context) {
         Integer screenHeight = SharePHelper.instance(context).readObject("screenHeight");
-        return screenHeight==null?0:screenHeight;
+        return screenHeight == null ? 0 : screenHeight;
     }
 
     /**
@@ -479,23 +478,23 @@ public class UIHelper {
                     IBinder windowToken = currentFocus.getWindowToken();
                     if (windowToken != null) {
                         InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (manager != null){
+                        if (manager != null) {
                             manager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS);
-                        }else{
+                        } else {
                             showLog("fail in hidePan because InputMethodManager==null");
                         }
-                    }else{
+                    } else {
                         showLog("fail in hidePan because windowToken==null");
                     }
-                }else{
+                } else {
                     showLog("fail in hidePan because currentFocus View ==null");
                 }
-            }else{
+            } else {
                 showLog("fail in hidePan because activity==null");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showLog("fail in hidePan because "+e);
+            showLog("fail in hidePan because " + e);
         }
     }
 
@@ -807,7 +806,7 @@ public class UIHelper {
                 builder.append(line);
         } catch (Exception e) {
             e.printStackTrace();
-            showLog("getDataFromAssets "+e);
+            showLog("getDataFromAssets " + e);
             return null;
         }
         return builder.toString();
@@ -1465,7 +1464,7 @@ public class UIHelper {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED || actionId == EditorInfo.IME_ACTION_GO) {
                     if (activity != null) UIHelper.hidePan(activity);
                     if (inputAction != null) {
-                        if (TextUtils.isEmpty(editText.getText())||TextUtils.isEmpty(editText.getText().toString().trim())) {
+                        if (TextUtils.isEmpty(editText.getText()) || TextUtils.isEmpty(editText.getText().toString().trim())) {
                             inputAction.send("");
                         } else {
                             String textStr = editText.getText().toString().trim();
@@ -1578,29 +1577,29 @@ public class UIHelper {
     public static void installNormal(final File apkFile) {
         if (apkFile == null || !apkFile.exists() || apkFile.length() == 0) {
             ToastUtil.showToastLong("下载文件不存在");
-            if (apkFile != null&&apkFile.exists()) {
+            if (apkFile != null && apkFile.exists()) {
                 apkFile.delete();
             }
             return;
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&APP.getContext().getApplicationInfo().targetSdkVersion > 26){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && APP.getContext().getApplicationInfo().targetSdkVersion > 26) {
 //            >26 8.0+的手机，需要申请权限
             boolean canRequestPackageInstalls = APP.getContext().getPackageManager().canRequestPackageInstalls();
-            if(canRequestPackageInstalls){
+            if (canRequestPackageInstalls) {
                 doInstallReal(apkFile);
-            }else{
+            } else {
                 PermissionsManager.getPermissionSimple(new OnListener<Boolean>() {
                     @Override
                     public void onListen(Boolean isHas) {
-                        if(isHas){
+                        if (isHas) {
                             doInstallReal(apkFile);
-                        }else{
+                        } else {
                             UIHelper.showToastShort("没有安装权限，无法继续");
                         }
                     }
                 }, Manifest.permission.REQUEST_INSTALL_PACKAGES);
             }
-        }else{
+        } else {
             doInstallReal(apkFile);
         }
     }
@@ -1893,11 +1892,12 @@ public class UIHelper {
 
     /**
      * 将cookie同步到WebView
-     * @param url WebView要加载的url
+     *
+     * @param url    WebView要加载的url
      * @param cookie 要同步的cookie  "key=value"
      * @return true 同步cookie成功，false同步cookie失败
      */
-    public static boolean syncCookie(String url,String cookie) {
+    public static boolean syncCookie(String url, String cookie) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.createInstance(APP.getContext());
         }
@@ -1909,10 +1909,11 @@ public class UIHelper {
 
     /**
      * 查看正则是否匹配
-     * @param text 是否匹配的字符串
+     *
+     * @param text  是否匹配的字符串
      * @param regex 正则规则
      */
-    public static boolean isMatcher(String text,String regex){
+    public static boolean isMatcher(String text, String regex) {
         // 编译正则表达式
         Pattern pattern = Pattern.compile(regex);
         // 忽略大小写的写法
@@ -1926,7 +1927,7 @@ public class UIHelper {
      * 判断APP是否有通知权限
      */
     public static boolean isNotificationEnabled() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 Context context = APP.getContext();
                 AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -1944,7 +1945,7 @@ public class UIHelper {
                 e.printStackTrace();
             }
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -1952,7 +1953,7 @@ public class UIHelper {
     /**
      * 打开设置--应用--应用信息页面--------一般里面会有通知管理，权限隐私的设置选项
      */
-    public static void openAppInfoPage(){
+    public static void openAppInfoPage() {
         try {
             Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
             String pkg = "com.android.settings";
@@ -1960,12 +1961,12 @@ public class UIHelper {
             intent.setComponent(new ComponentName(pkg, cls));
             intent.setData(Uri.parse("package:" + APP.getContext().getPackageName()));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if(isIntentExisting(APP.getContext(),intent)){
+            if (isIntentExisting(APP.getContext(), intent)) {
                 APP.getContext().startActivity(intent);
-            }else{
+            } else {
                 showToastShort("打开失败");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             showToastShort("打开失败");
         }
     }
@@ -1974,22 +1975,22 @@ public class UIHelper {
      * 要先申请读写权限
      * PermissionsManager.getPermissionSimple(onListener, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE);
      */
-    public static List<VideoInfo> getSystemVideoSimpleList(String... videoType){
+    public static List<VideoInfo> getSystemVideoSimpleList(String... videoType) {
         List<VideoInfo> list = null;
         try {
             String[] selectionType;
-            if(videoType==null||videoType.length==0){
+            if (videoType == null || videoType.length == 0) {
                 selectionType = new String[]{"video/*"};
-            }else{
+            } else {
                 selectionType = new String[videoType.length];
-                for (int i = 0;i<videoType.length;i++){
-                    selectionType[i] = "video/"+videoType[i];
+                for (int i = 0; i < videoType.length; i++) {
+                    selectionType[i] = "video/" + videoType[i];
                 }
             }
-            Cursor cursor = APP.getContext().getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,  null,
+            Cursor cursor = APP.getContext().getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null,
                     MediaStore.Video.Media.MIME_TYPE + "=? or "
                             + MediaStore.Video.Media.MIME_TYPE + "=?",
-                    selectionType, MediaStore.Video.Media.DATE_ADDED+" DESC");
+                    selectionType, MediaStore.Video.Media.DATE_ADDED + " DESC");
             if (cursor != null) {
                 list = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -2002,10 +2003,10 @@ public class UIHelper {
                     String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));  //
                     long duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
                     long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
-                    if(duration>0&&size>0) {
-                        if(!TextUtils.isEmpty(path)){
+                    if (duration > 0 && size > 0) {
+                        if (!TextUtils.isEmpty(path)) {
                             File file = new File(path);
-                            if(file.isFile()&&file.exists()&&file.length()>0){
+                            if (file.isFile() && file.exists() && file.length() > 0) {
                                 VideoInfo videoInfo = new VideoInfo(path, duration);
                                 list.add(videoInfo);
                             }
@@ -2014,7 +2015,7 @@ public class UIHelper {
                 }
                 cursor.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
@@ -2087,5 +2088,24 @@ public class UIHelper {
             stringBuilder.append(hv);
         }
         return stringBuilder.toString();
+    }
+
+    public static void getAudioFocus() {
+        AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            am.abandonAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    UIHelper.showLog("AudioManager", "onAudioFocusChange focusChange:" + focusChange);
+                }
+            });
+        }
+    }
+
+    public static void removeAudioFocus(){
+        AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
+        if (am == null) return;
+        am.abandonAudioFocus(null);
     }
 }

@@ -29,13 +29,13 @@
 //    }
 //
 //    @Override
-//    public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
-//        videoController.setOnVideoStatusListener(onVideoStatusListener);
+//    public void addOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
+//        videoController.addOnVideoStatusListener(onVideoStatusListener);
 //    }
 //
 //    @Override
-//    public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-//        videoController.setOnVideoPrepareListener(onVideoPrepareListener);
+//    public void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
+//        videoController.addOnVideoPrepareListener(onVideoPrepareListener);
 //    }
 //
 //    @Override

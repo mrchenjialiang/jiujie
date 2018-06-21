@@ -93,8 +93,9 @@ dependencies {
 //    视频缓存
     compile "${rootProject.ext.videocache}"
 
+    compile 'com.google.android.exoplayer:exoplayer-core:2.8.1'
 //    compile 'com.google.android.exoplayer:exoplayer:r2.6.1'
-    compile 'com.google.android.exoplayer:exoplayer:r2.5.1'
+//    compile 'com.google.android.exoplayer:exoplayer:r2.5.1'
 //    compile 'com.google.android.exoplayer:exoplayer-ui:r2.5.1'
 
 //    compile 'com.google.android.exoplayer:exoplayer:r2.8.0'

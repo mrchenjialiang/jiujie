@@ -6,22 +6,34 @@ import com.jiujie.base.util.UIHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleText {
 
     public static void main(String[] args) {
 
-        File file = new File("C:/Users/Administrator/Desktop/20180531153838972.mp4");
-        long startTime = System.currentTimeMillis();
-        String fileMD5 = getFileMD5(file);
-        long endTime = System.currentTimeMillis();
-        System.out.println("fileMD5:"+fileMD5);
-        System.out.println("fileMD5 耗时:"+(endTime - startTime));
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        list.add("3");
+        list.add("1");
+        list.remove("1");
+        list.remove("0");
+        System.out.println(list);
 
-        startTime = System.currentTimeMillis();
-        System.out.println("fileMD5-1:"+ UIHelper.getFileMD5(file));
-        endTime = System.currentTimeMillis();
-        System.out.println("fileMD5-1 耗时:"+(endTime - startTime));
+
+//        File file = new File("C:/Users/Administrator/Desktop/20180531153838972.mp4");
+//        long startTime = System.currentTimeMillis();
+//        String fileMD5 = getFileMD5(file);
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("fileMD5:"+fileMD5);
+//        System.out.println("fileMD5 耗时:"+(endTime - startTime));
+//
+//        startTime = System.currentTimeMillis();
+//        System.out.println("fileMD5-1:"+ UIHelper.getFileMD5(file));
+//        endTime = System.currentTimeMillis();
+//        System.out.println("fileMD5-1 耗时:"+(endTime - startTime));
 
 
 

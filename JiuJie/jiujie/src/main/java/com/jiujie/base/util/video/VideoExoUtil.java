@@ -3,6 +3,7 @@ package com.jiujie.base.util.video;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,10 +16,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -31,7 +29,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.jiujie.base.util.UIHelper;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ChenJiaLiang on 2018/5/8.
@@ -47,15 +46,26 @@ public class VideoExoUtil implements VideoController {
     private TextureView textureView;
     private SurfaceHolder surfaceHolder;
     private boolean isLoop;
-    private String videoPath;
     private boolean isAutoStart;
     private SimpleExoPlayer simpleExoPlayer;
-    private String thumbUrl;
-    private OnVideoStatusListener onVideoStatusListener;
-    private OnVideoPrepareListener onVideoPrepareListener;
+    private List<OnVideoStatusListener> videoStatusListenerList;
+    private List<OnVideoPrepareListener> videoPrepareListenerList;
+    private float volume = -1;
+    private boolean isPrepared;
+    private boolean isPause;
+    private int videoWidth;
+    private int videoHeight;
 
     public enum VideoScaleType {
         SCALE_FILL_XY, SCALE_CROP_CENTER
+    }
+
+    public VideoExoUtil(Context context, Surface surface, VideoScaleType videoScaleType) {
+        this(context, surface, true, true, videoScaleType);
+    }
+
+    public VideoExoUtil(Context context, Surface surface, boolean isLoop, VideoScaleType videoScaleType) {
+        this(context, surface, isLoop, true, videoScaleType);
     }
 
     public VideoExoUtil(Context context, Surface surface, boolean isLoop, boolean isAutoStart, VideoScaleType videoScaleType) {
@@ -83,6 +93,14 @@ public class VideoExoUtil implements VideoController {
         this.isAutoStart = isAutoStart;
         this.videoScaleType = videoScaleType;
         init();
+    }
+
+    public VideoExoUtil(Context context, SurfaceHolder surfaceHolder, VideoScaleType videoScaleType) {
+        this(context, surfaceHolder, true, true, videoScaleType);
+    }
+
+    public VideoExoUtil(Context context, SurfaceHolder surfaceHolder, boolean isLoop, VideoScaleType videoScaleType) {
+        this(context, surfaceHolder, isLoop, true, videoScaleType);
     }
 
     public VideoExoUtil(Context context, SurfaceHolder surfaceHolder, boolean isLoop, boolean isAutoStart, VideoScaleType videoScaleType) {
@@ -123,8 +141,6 @@ public class VideoExoUtil implements VideoController {
 
         // 2. Create the player
         simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-        // 自动播放?  开始/暂停 方法
-        simpleExoPlayer.setPlayWhenReady(isAutoStart);
         //循环播放配置
         simpleExoPlayer.setRepeatMode(isLoop ? Player.REPEAT_MODE_ALL : Player.REPEAT_MODE_OFF);
         //视频缩放配置
@@ -134,25 +150,30 @@ public class VideoExoUtil implements VideoController {
             simpleExoPlayer.setVideoScalingMode(2);//crop center
         }
 
-        bindPlayerToView();
-        simpleExoPlayer.setVideoListener(new SimpleExoPlayer.VideoListener() {
+        simpleExoPlayer.setPlayWhenReady(isAutoStart);
+
+//        bindPlayerToView();
+        simpleExoPlayer.addVideoListener(new SimpleExoPlayer.VideoListener() {
             @Override
             public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-                if (onVideoStatusListener != null) {
-                    onVideoStatusListener.onPrepare(width, height);
-                }
-                if (onVideoPrepareListener != null) onVideoPrepareListener.onPrepare(width, height);
+                videoWidth = width;
+                videoHeight = height;
+                UIHelper.showLog(TAG, "onVideoSizeChanged");
             }
 
             @Override
             public void onRenderedFirstFrame() {
-
+                UIHelper.showLog(TAG, "onRenderedFirstFrame");
             }
         });
         simpleExoPlayer.addListener(new Player.EventListener() {
+
             @Override
-            public void onTimelineChanged(Timeline timeline, Object o) {
-                UIHelper.showLog(TAG, "addListener onTimelineChanged");
+            public void onTimelineChanged(Timeline timeline, Object o, int i) {
+                UIHelper.showLog(TAG, "addListener onTimelineChanged timeline:" + timeline.toString());
+                UIHelper.showLog(TAG, "addListener onTimelineChanged getPeriodCount:" + timeline.getPeriodCount());
+                UIHelper.showLog(TAG, "addListener onTimelineChanged o:" + o);
+                UIHelper.showLog(TAG, "addListener onTimelineChanged i:" + i);
             }
 
             @Override
@@ -167,33 +188,67 @@ public class VideoExoUtil implements VideoController {
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                UIHelper.showLog(TAG, "addListener onPlayerStateChanged playWhenReady:" + playWhenReady + ",playbackState:" + playbackState + ",isPlaying:" + isPlaying());
+                if (playWhenReady) {
+                    if (volume >= 0) simpleExoPlayer.setVolume(volume);
+                }
+                UIHelper.showLog(TAG, "addListener onPlayerStateChanged playWhenReady:" + playWhenReady + ",playbackState:" + playbackState);
                 switch (playbackState) {
                     case ExoPlayer.STATE_IDLE://1
-                        UIHelper.showLog(TAG, "ExoPlayer idle!");
-                        if (onVideoStatusListener != null) {
-                            onVideoStatusListener.onCompleted(null);
+                        UIHelper.showLog(TAG, "addListener onPlayerStateChanged idle!");
+                        //一般不会进入这里，是发生错误了，取消播放了，才空闲进入这里
+                        if (videoStatusListenerList != null) {
+                            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                videoStatusListener.onError(null, "文件损坏或解码异常");
+                            }
                         }
                         break;
                     case ExoPlayer.STATE_BUFFERING://2
-                        UIHelper.showLog(TAG, "ExoPlayer buffering true");
-                        if (onVideoStatusListener != null) {
-                            onVideoStatusListener.onBufferListen(true);
+                        UIHelper.showLog(TAG, "addListener onPlayerStateChanged buffering true");
+                        if (videoStatusListenerList != null) {
+                            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                videoStatusListener.onBufferListen(true);
+                            }
                         }
                         break;
                     case ExoPlayer.STATE_READY://3
-                        UIHelper.showLog(TAG, "ExoPlayer buffering false");
-                        if (onVideoStatusListener != null) {
-                            onVideoStatusListener.onBufferListen(false);
+                        if (!isPrepared) {
+                            isPrepared = true;
+                            UIHelper.showLog(TAG, "addListener onPlayerStateChanged isPrepared true");
+
+                            if (videoStatusListenerList != null) {
+                                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                    videoStatusListener.onPrepare(videoWidth, videoHeight);
+                                }
+                            }
+
+                            if (videoPrepareListenerList != null) {
+                                for (OnVideoPrepareListener onPreparedListener : videoPrepareListenerList) {
+                                    onPreparedListener.onPrepare(videoWidth, videoHeight);
+                                }
+                            }
+
+                            if (videoStatusListenerList != null) {
+                                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                    videoStatusListener.onStart();
+                                }
+                            }
+                        }
+                        UIHelper.showLog(TAG, "addListener onPlayerStateChanged buffering false");
+                        if (videoStatusListenerList != null) {
+                            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                videoStatusListener.onBufferListen(false);
+                            }
                         }
                         break;
                     case ExoPlayer.STATE_ENDED://4
                         UIHelper.showLog(TAG, "Playback ended!");
-                        if(isLoop){
+                        if (isLoop) {
                             simpleExoPlayer.seekTo(0);
                         }
-                        if (onVideoStatusListener != null) {
-                            onVideoStatusListener.onCompleted(null);
+                        if (videoStatusListenerList != null) {
+                            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                videoStatusListener.onCompleted(null);
+                            }
                         }
                         break;
                 }
@@ -205,22 +260,34 @@ public class VideoExoUtil implements VideoController {
             }
 
             @Override
-            public void onPlayerError(ExoPlaybackException e) {
-                e.printStackTrace();
-                UIHelper.showLog(TAG, "addListener onPlayerError " + e);
-
+            public void onShuffleModeEnabledChanged(boolean b) {
+                UIHelper.showLog(TAG, "addListener onShuffleModeEnabledChanged b:" + b);
             }
 
             @Override
-            public void onPositionDiscontinuity() {
-                UIHelper.showLog(TAG, "addListener onPositionDiscontinuity");
+            public void onPlayerError(ExoPlaybackException e) {
+                e.printStackTrace();
+                UIHelper.showLog(TAG, "addListener onPlayerError " + e);
+                if (videoStatusListenerList != null) {
+                    for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                        videoStatusListener.onError(null, e.getMessage());
+                    }
+                }
+            }
 
+            @Override
+            public void onPositionDiscontinuity(int i) {
+                UIHelper.showLog(TAG, "addListener onPositionDiscontinuity " + i);
             }
 
             @Override
             public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
                 UIHelper.showLog(TAG, "addListener onPlaybackParametersChanged");
+            }
 
+            @Override
+            public void onSeekProcessed() {
+                UIHelper.showLog(TAG, "addListener onSeekProcessed");
             }
         });
     }
@@ -246,45 +313,51 @@ public class VideoExoUtil implements VideoController {
     }
 
     @Override
-    public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
-        this.onVideoStatusListener = onVideoStatusListener;
+    public void addOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
+        if (videoStatusListenerList == null) {
+            videoStatusListenerList = new ArrayList<>();
+        }
+        videoStatusListenerList.add(onVideoStatusListener);
     }
 
     @Override
-    public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-        this.onVideoPrepareListener = onVideoPrepareListener;
+    public void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
+        if (videoPrepareListenerList == null) {
+            videoPrepareListenerList = new ArrayList<>();
+        }
+        videoPrepareListenerList.add(onVideoPrepareListener);
     }
 
     @Override
     public boolean isPrepared() {
-        return false;
+        return isPrepared;
     }
 
     @Override
     public boolean isPause() {
-        return false;
+        return isPause;
+    }
+
+    @Override
+    public void doPrepareUI(String videoPath, String thumbUrl) {
+
     }
 
     @Override
     public void doPrepare(String videoPath, String thumbUrl) {
         if (simpleExoPlayer == null) return;
-        this.videoPath = videoPath;
-        this.thumbUrl = thumbUrl;
-        // 默认带宽测量
-        DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
+        doPrepareUI(videoPath, thumbUrl);
+        if (TextUtils.isEmpty(videoPath)) {
+            return;
+        }
+        isPrepared = false;
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, context.getPackageName()), defaultBandwidthMeter);
-// Produces Extractor instances for parsing the media data.
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-// This is the MediaSource representing the media to be played.
-        MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(this.videoPath),
-                dataSourceFactory, extractorsFactory, null, new ExtractorMediaSource.EventListener() {
-            @Override
-            public void onLoadError(IOException e) {
-                e.printStackTrace();
-                UIHelper.showLog(TAG, "onLoadError " + e);
-            }
-        });
+                Util.getUserAgent(context, context.getPackageName()), new DefaultBandwidthMeter());
+        ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(dataSourceFactory)
+                .setCustomCacheKey(videoPath)
+//                .setContinueLoadingCheckIntervalBytes(500 * 1024)
+                .setTag(videoPath);
+        ExtractorMediaSource mediaSource = factory.createMediaSource(Uri.parse(videoPath));
         // 准备播放
         simpleExoPlayer.prepare(mediaSource);
 
@@ -295,12 +368,26 @@ public class VideoExoUtil implements VideoController {
     public void doStart() {
         if (simpleExoPlayer == null) return;
         simpleExoPlayer.setPlayWhenReady(true);
+        isPause = false;
+
+        if (videoStatusListenerList != null) {
+            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                videoStatusListener.onStart();
+            }
+        }
     }
 
     @Override
     public void doPause() {
         if (simpleExoPlayer == null) return;
         simpleExoPlayer.setPlayWhenReady(false);
+        isPause = true;
+
+        if (videoStatusListenerList != null) {
+            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                videoStatusListener.onPause();
+            }
+        }
     }
 
     @Override
@@ -310,6 +397,7 @@ public class VideoExoUtil implements VideoController {
 
     @Override
     public void setVoice(float volume) {
+        this.volume = volume;
         if (simpleExoPlayer == null) return;
         simpleExoPlayer.setVolume(volume);
     }
@@ -339,8 +427,32 @@ public class VideoExoUtil implements VideoController {
     @Override
     public void doRelease() {
         if (simpleExoPlayer == null) return;
+
+        if (surfaceView != null) {
+            simpleExoPlayer.clearVideoSurfaceView(surfaceView);
+            surfaceView = null;
+        } else if (surface != null) {
+            simpleExoPlayer.clearVideoSurface(surface);
+            surface = null;
+        } else if (textureView != null) {
+            simpleExoPlayer.clearVideoTextureView(textureView);
+            textureView = null;
+        } else if (surfaceHolder != null) {
+            simpleExoPlayer.clearVideoSurfaceHolder(surfaceHolder);
+            surfaceHolder = null;
+        }
+
         simpleExoPlayer.release();
         simpleExoPlayer = null;
+
+        if (videoStatusListenerList != null) {
+            videoStatusListenerList.clear();
+            videoStatusListenerList = null;
+        }
+        if (videoPrepareListenerList != null) {
+            videoPrepareListenerList.clear();
+            videoPrepareListenerList = null;
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.jiujie.base.jk.AppRequest;
 import com.jiujie.base.util.UIHelper;
 
 
@@ -19,6 +20,7 @@ public class APP {
     private static int statusBarHeightByReadR;
     private static int titleHeight;
     private static String providerAuthorities;
+    private static AppRequest appRequest;
 
     public static void init(Context context, boolean isCrashError, String defaultDoMain, boolean isDeBug, String providerAuthorities) {
         APP.context = context;
@@ -80,5 +82,13 @@ public class APP {
         }
         titleHeight = getContext().getResources().getDimensionPixelOffset(R.dimen.height_of_title);
         return titleHeight;
+    }
+
+    public static void setAppRequest(AppRequest appRequest) {
+        APP.appRequest = appRequest;
+    }
+
+    public static AppRequest getAppRequest() {
+        return appRequest;
     }
 }

@@ -34,13 +34,13 @@
 //    }
 //
 //    @Override
-//    public void setOnVideoStatusListener(final OnVideoStatusListener onVideoStatusListener) {
-//        if(videoUtil!=null)videoUtil.setOnVideoStatusListener(onVideoStatusListener);
+//    public void addOnVideoStatusListener(final OnVideoStatusListener onVideoStatusListener) {
+//        if(videoUtil!=null)videoUtil.addOnVideoStatusListener(onVideoStatusListener);
 //    }
 //
 //    @Override
-//    public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-//        if(videoUtil!=null)videoUtil.setOnVideoPrepareListener(onVideoPrepareListener);
+//    public void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
+//        if(videoUtil!=null)videoUtil.addOnVideoPrepareListener(onVideoPrepareListener);
 //    }
 //
 //    @Override

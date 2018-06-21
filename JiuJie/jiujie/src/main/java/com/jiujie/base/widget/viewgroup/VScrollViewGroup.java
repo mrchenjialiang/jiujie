@@ -186,7 +186,7 @@ public class VScrollViewGroup extends FrameLayout {
         if (myScrollViewGroupAdapter.getCount() == 1) {
             mCurrentPosition = 0;
             myScrollViewGroupAdapter.prepare(currentViewGroup, mCurrentPosition);
-            onItemShow(false);
+            onItemShow(false,false);
         } else {
             if (mCurrentPosition < 0) {
                 mCurrentPosition = 0;
@@ -195,15 +195,14 @@ public class VScrollViewGroup extends FrameLayout {
                 mCurrentPosition = myScrollViewGroupAdapter.getCount() - 1;
             }
             myScrollViewGroupAdapter.prepare(currentViewGroup, mCurrentPosition);
-            onItemShow(true);
+            onItemShow(true, true);
         }
     }
 
-    private void onItemShow(boolean isShouldPrepareOther) {
-        if (isShouldPrepareOther) {
-            prepareLast();
-            prepareNext();
-        }
+    private void onItemShow(boolean isShouldPrepareLast, boolean isShouldPrepareNext) {
+        if (myScrollViewGroupAdapter == null) return;
+        if(isShouldPrepareLast)prepareLast();
+        if(isShouldPrepareNext)prepareNext();
         myScrollViewGroupAdapter.show(currentViewGroup, mCurrentPosition);
         requestLayout();
         if (onMyPageChangeListener != null) {
@@ -227,6 +226,14 @@ public class VScrollViewGroup extends FrameLayout {
             index = 0;
         }
         myScrollViewGroupAdapter.prepare(nextViewGroup, index);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (myScrollViewGroupAdapter == null) return;
+        myScrollViewGroupAdapter.doRelease();
+        myScrollViewGroupAdapter = null;
     }
 
     private enum AnimType {
@@ -291,6 +298,7 @@ public class VScrollViewGroup extends FrameLayout {
     private void onAnimEnd(AnimType animType) {
         if (myScrollViewGroupAdapter == null) return;
         if (animType == AnimType.toNext) {
+            myScrollViewGroupAdapter.hide(mCurrentPosition);
             mCurrentPosition++;
             if (mCurrentPosition > myScrollViewGroupAdapter.getCount() - 1) {
                 mCurrentPosition = 0;
@@ -301,8 +309,9 @@ public class VScrollViewGroup extends FrameLayout {
             lastViewGroup = linShi;
             moveX = 0;
             moveY = 0;
-            onItemShow(true);
+            onItemShow(true, true);
         } else if (animType == AnimType.toLast) {
+            myScrollViewGroupAdapter.hide(mCurrentPosition);
             mCurrentPosition--;
             if (mCurrentPosition < 0) {
                 mCurrentPosition = myScrollViewGroupAdapter.getCount() - 1;
@@ -313,7 +322,7 @@ public class VScrollViewGroup extends FrameLayout {
             nextViewGroup = linShi;
             moveX = 0;
             moveY = 0;
-            onItemShow(true);
+            onItemShow(true, true);
         }
     }
 
