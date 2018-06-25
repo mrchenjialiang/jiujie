@@ -27,38 +27,38 @@ public class VideoCacheUtil {
     private VideoCacheUtil() {
     }
 
-    public static VideoCacheUtil instance(){
-        if(videoCacheUtil==null){
+    public static VideoCacheUtil instance() {
+        if (videoCacheUtil == null) {
             videoCacheUtil = new VideoCacheUtil();
         }
         return videoCacheUtil;
     }
 
-    public void init(Context context,String saveDir,String cacheDir,long cacheSize){
+    public void init(Context context, String saveDir, String cacheDir, long cacheSize) {
         this.context = context.getApplicationContext();
         this.saveDir = saveDir;
         this.cacheDir = cacheDir;
         this.cacheSize = cacheSize;
-        if(TextUtils.isEmpty(this.saveDir)){
+        if (TextUtils.isEmpty(this.saveDir)) {
             this.saveDir = getDefaultSaveDir();
         }
-        if(TextUtils.isEmpty(this.cacheDir)){
+        if (TextUtils.isEmpty(this.cacheDir)) {
             this.cacheDir = getDefaultCacheDir();
         }
-        if(this.cacheSize==0){
-            this.cacheSize = 500*1024*1024;
+        if (this.cacheSize == 0) {
+            this.cacheSize = 500 * 1024 * 1024;
         }
     }
 
     private String getDefaultCacheDir() {
         File cacheDir = context.getExternalCacheDir();
-        if(cacheDir==null){
+        if (cacheDir == null) {
             cacheDir = context.getCacheDir();
         }
-        return cacheDir.getAbsolutePath()+"/video/";
+        return cacheDir.getAbsolutePath() + "/video/";
     }
 
-    private String getDefaultSaveDir(){
+    private String getDefaultSaveDir() {
         String packageName = context.getPackageName();
         String[] split = packageName.split("\\.");
         StringBuilder dirSb = new StringBuilder(Environment.getExternalStorageDirectory() + "/");
@@ -75,22 +75,22 @@ public class VideoCacheUtil {
         return dirSb.toString();
     }
 
-    public String getVideoSavePath(String url){
-        if(TextUtils.isEmpty(saveDir)){
+    public String getVideoSavePath(String url) {
+        if (TextUtils.isEmpty(saveDir)) {
             return null;
         }
-        if(TextUtils.isEmpty(url)){
+        if (TextUtils.isEmpty(url)) {
             return null;
         }
         return saveDir + new Md5FileNameGenerator().generate(url);
     }
 
     public String getVideoPath(String url) {
-        UIHelper.showLog(this,"getVideoPath url:"+url);
-        if(!TextUtils.isEmpty(url)&&url.startsWith("http")){
+        UIHelper.showLog(this, "getVideoPath url:" + url);
+        if (!TextUtils.isEmpty(url) && url.startsWith("http")) {
             String videoPath = getVideoSavePath(url);
-            if (!TextUtils.isEmpty(videoPath)&&new File(videoPath).exists()) {
-                UIHelper.showLog(this,"getVideoPath return videoPath:"+videoPath);
+            if (!TextUtils.isEmpty(videoPath) && new File(videoPath).exists()) {
+                UIHelper.showLog(this, "getVideoPath return videoPath:" + videoPath);
                 return videoPath;
             } else {
                 //仅能操作网络视频
@@ -100,17 +100,17 @@ public class VideoCacheUtil {
                     public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
 
                     }
-                },url);
+                }, url);
                 String proxyUrl = proxyService.getProxyUrl(url);
-                UIHelper.showLog(this,"getVideoPath return proxyUrl:"+proxyUrl);
+                UIHelper.showLog(this, "getVideoPath return proxyUrl:" + proxyUrl);
                 return proxyUrl;
             }
-        }else{
+        } else {
             return url;
         }
     }
 
-    public String getCacheDir(){
+    public String getCacheDir() {
         return cacheDir;
     }
 
@@ -119,11 +119,16 @@ public class VideoCacheUtil {
     }
 
     private HttpProxyCacheServer newProxy() {
-        if(context==null||TextUtils.isEmpty(cacheDir))return null;
-        return new HttpProxyCacheServer.Builder(context)
-                .cacheDirectory(new File(cacheDir))
-                .maxCacheSize(cacheSize)
-                .build();
+        try {
+            if (context == null || TextUtils.isEmpty(cacheDir)) return null;
+            return new HttpProxyCacheServer.Builder(context)
+                    .cacheDirectory(new File(cacheDir))
+                    .maxCacheSize(cacheSize)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

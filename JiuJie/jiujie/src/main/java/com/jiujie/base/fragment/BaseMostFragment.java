@@ -44,4 +44,13 @@ public abstract class BaseMostFragment extends Fragment implements LoadStatus {
             appRequest.onFragmentPause(getPageName());
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppRequest appRequest = APP.getAppRequest();
+        if (appRequest != null) {
+            appRequest.onFragmentResult(requestCode, resultCode, data);
+        }
+    }
 }

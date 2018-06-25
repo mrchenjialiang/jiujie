@@ -1316,7 +1316,6 @@ public class UIHelper {
         return null;
     }
 
-
     /**
      * 判断微信是否可用
      */
@@ -1335,7 +1334,7 @@ public class UIHelper {
     }
 
     /**
-     * 判断qq是否可用
+     * 判断 用户是否安装QQ客户端
      */
     public static boolean isQQClientAvailable(Context context) {
         final PackageManager packageManager = context.getPackageManager();
@@ -1343,7 +1342,14 @@ public class UIHelper {
         if (pinfo != null) {
             for (int i = 0; i < pinfo.size(); i++) {
                 String pn = pinfo.get(i).packageName;
-                if (pn.equals("com.tencent.mobileqq")) {
+                if (
+                        pn.equalsIgnoreCase("com.tencent.qqlite") || //QQ轻聊版
+                                pn.equalsIgnoreCase("com.tencent.mobileqq") || //手机QQ
+                                pn.equalsIgnoreCase("com.tencent.eim") ||//企业QQ
+                                pn.equalsIgnoreCase("com.tencent.minihd.qq") || //QQ HD 安卓平板
+                                pn.equalsIgnoreCase("com.tencent.qq.kddi") || //QQ 日本版
+                                pn.equalsIgnoreCase("com.tencent.mobileqqi") //QQ 国际版
+                        ) {
                     return true;
                 }
             }
@@ -2091,21 +2097,29 @@ public class UIHelper {
     }
 
     public static void getAudioFocus() {
-        AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
-        if (am != null) {
-            am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-            am.abandonAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
-                @Override
-                public void onAudioFocusChange(int focusChange) {
-                    UIHelper.showLog("AudioManager", "onAudioFocusChange focusChange:" + focusChange);
-                }
-            });
+        try {
+            AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
+            if (am != null) {
+                am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                am.abandonAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
+                    @Override
+                    public void onAudioFocusChange(int focusChange) {
+                        UIHelper.showLog("AudioManager", "onAudioFocusChange focusChange:" + focusChange);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public static void removeAudioFocus(){
-        AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
-        if (am == null) return;
-        am.abandonAudioFocus(null);
+    public static void removeAudioFocus() {
+        try {
+            AudioManager am = (AudioManager) APP.getContext().getSystemService(Context.AUDIO_SERVICE);
+            if (am == null) return;
+            am.abandonAudioFocus(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

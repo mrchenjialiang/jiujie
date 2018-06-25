@@ -10,9 +10,20 @@ import android.content.Intent;
 
 public interface AppRequest {
     void onActivityCreateBeforeSuper(Activity activity);
-    void onActivityResume(Activity mActivity, String pageName);
-    void onActivityPause(Activity mActivity, String pageName);
+
+    void onActivityRestart(Activity activity);
+
+    void onActivityResume(Activity activity, String pageName);
+
+    void onActivityPause(Activity activity, String pageName);
+
     void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    void onActivityDestroy(Activity activity);
+
     void onFragmentResume(String pageName);
+
     void onFragmentPause(String pageName);
+
+    void onFragmentResult(int requestCode, int resultCode, Intent data);
 }

@@ -9,7 +9,10 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.jiujie.base.APP;
+import com.jiujie.base.WaitingDialog;
+import com.jiujie.base.dialog.EnsureDialog;
 import com.jiujie.base.jk.OnListener;
+import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.jk.SimpleDownloadFileListen;
 import com.jiujie.base.util.ImageUtil;
 import com.jiujie.base.util.SharePHelper;
@@ -60,6 +63,37 @@ public class MainActivity extends MyBaseActivity {
         UIHelper.showLog(this,"externalStoragePublicDirectory DIRECTORY_DCIM:"+Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
         UIHelper.showLog(this,"externalStoragePublicDirectory DIRECTORY_MOVIES:"+Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath());
 
+        UIHelper.showToastShort("create");
+        final WaitingDialog waitingDialog = new WaitingDialog(mActivity);
+        waitingDialog.create();
+        waitingDialog.show();
+        addOnDestroyListener(new OnSimpleListener() {
+            @Override
+            public void onListen() {
+                UIHelper.showToastShort("onDestroy");
+                if(waitingDialog.isShowing()){
+                    waitingDialog.dismiss();
+                }
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                    UIHelper.showToastShort("Thread.sleep 3000");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        UIHelper.showToastShort("onPause");
     }
 
     //    /storage/emulated/0/shoujiduoduo/Wallpaper/壁纸多多图片缓存/1516478.jpg
@@ -162,8 +196,11 @@ public class MainActivity extends MyBaseActivity {
         startActivity(new Intent(mActivity,FragmentActivity.class));
     }
 
+    int count;
     public void doWallpaper(View view) {
-        startActivity(new Intent(mActivity,ImageActivity.class));
+        count++;
+        UIHelper.showToastShort("doWallpaper click "+count);
+//        startActivity(new Intent(mActivity,ImageActivity.class));
     }
 
     public void toScrollKeepTop(View view) {

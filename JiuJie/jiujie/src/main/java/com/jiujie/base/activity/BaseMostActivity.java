@@ -1,17 +1,20 @@
 package com.jiujie.base.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.jiujie.base.APP;
 import com.jiujie.base.jk.AppRequest;
+import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.EventBusObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 这里不要包含有任何界面上的操作
@@ -21,7 +24,8 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public abstract class BaseMostActivity extends AppCompatActivity {
 
-    public Activity mActivity;
+    public BaseMostActivity mActivity;
+    private List<OnSimpleListener> onDestroyListenerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +44,29 @@ public abstract class BaseMostActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        AppRequest appRequest = APP.getAppRequest();
+        if (appRequest != null) {
+            appRequest.onActivityRestart(this);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        AppRequest appRequest = APP.getAppRequest();
+        if (appRequest != null) {
+            appRequest.onActivityDestroy(this);
+        }
+        if (onDestroyListenerList != null) {
+            for (OnSimpleListener onSimpleListener : onDestroyListenerList) {
+                onSimpleListener.onListen();
+            }
+            onDestroyListenerList.clear();
+            onDestroyListenerList = null;
+        }
     }
 
     @Override
@@ -85,6 +109,13 @@ public abstract class BaseMostActivity extends AppCompatActivity {
 
     public String getPageName() {
         return this.getClass().getSimpleName();
+    }
+
+    public void addOnDestroyListener(OnSimpleListener onSimpleListener) {
+        if (onDestroyListenerList == null) {
+            onDestroyListenerList = new ArrayList<>();
+        }
+        onDestroyListenerList.add(onSimpleListener);
     }
 
 }
