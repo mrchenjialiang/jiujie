@@ -1,6 +1,5 @@
 package com.jiujie.jiujie.ui.activity;
 
-import android.os.Environment;
 import android.view.ViewGroup;
 
 import com.jiujie.base.util.UIHelper;
@@ -47,7 +46,7 @@ public class VideoActivity extends MyBaseActivity {
 
         setLoading();
         videoUtil = new VideoTextureViewUtil(myTextureView,true,true,(ViewGroup) myTextureView.getParent());
-        videoUtil.setOnVideoPrepareListener(new OnVideoPrepareListener() {
+        videoUtil.addOnVideoPrepareListener(new OnVideoPrepareListener() {
             @Override
             public void onPrepare(int videoWidth, int videoHeight) {
                 setLoadingEnd();

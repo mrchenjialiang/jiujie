@@ -133,12 +133,12 @@
 //    }
 //
 //    @Override
-//    public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
+//    public void addOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
 //        this.onVideoStatusListener = onVideoStatusListener;
 //    }
 //
 //    @Override
-//    public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
+//    public void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
 //        this.onVideoPrepareListener = onVideoPrepareListener;
 //    }
 //

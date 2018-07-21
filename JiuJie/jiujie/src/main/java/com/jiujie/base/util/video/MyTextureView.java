@@ -36,19 +36,22 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.jiujie.base.jk.OnSimpleListener;
 import com.jiujie.base.util.UIHelper;
 
-public class MyTextureView extends TextureView implements VideoController{
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyTextureView extends TextureView implements VideoController {
     private final String TAG = "VideoController MyTextureView";
     private Surface mSurface = null;
     private MediaPlayer mMediaPlayer = null;
-    private int         mAudioSession;
-    private int         mVideoWidth;
-    private int         mVideoHeight;
-    private int         mCurrentBufferPercentage;
+    private int mAudioSession;
+    private int mVideoWidth;
+    private int mVideoHeight;
+    private int mCurrentBufferPercentage;
     private int fixedWidth;
     private int fixedHeight;
     private Matrix matrix;
-    private OnVideoStatusListener onVideoStatusListener;
-    private OnVideoPrepareListener onVideoPrepareListener;
+    private List<OnVideoStatusListener> videoStatusListenerList;
+    private List<OnVideoPrepareListener> videoPrepareListenerList;
     private String videoPath;
     private boolean isLoop;
     private boolean isAutoStart;
@@ -113,9 +116,9 @@ public class MyTextureView extends TextureView implements VideoController{
                 width = widthSpecSize;
                 height = heightSpecSize;
 
-                if ( mVideoWidth * height  < width * mVideoHeight ) {
+                if (mVideoWidth * height < width * mVideoHeight) {
                     width = height * mVideoWidth / mVideoHeight;
-                } else if ( mVideoWidth * height  > width * mVideoHeight ) {
+                } else if (mVideoWidth * height > width * mVideoHeight) {
                     height = width * mVideoHeight / mVideoWidth;
                 }
             } else if (widthSpecMode == MeasureSpec.EXACTLY) {
@@ -217,7 +220,7 @@ public class MyTextureView extends TextureView implements VideoController{
     }
 
     public int getResizedHeight() {
-        if (fixedHeight== 0) {
+        if (fixedHeight == 0) {
             return getHeight();
         } else {
             return fixedHeight;
@@ -241,19 +244,19 @@ public class MyTextureView extends TextureView implements VideoController{
     private boolean isFirstPrepared = true;
     private MediaPlayer.OnPreparedListener mPreparedListener = new MediaPlayer.OnPreparedListener() {
         public void onPrepared(MediaPlayer mp) {
-            if(mMediaPlayer==null)return;
+            if (mMediaPlayer == null) return;
             isPrepared = true;
 
-            if(volume>=0)mMediaPlayer.setVolume(volume,volume);
+            if (volume >= 0) mMediaPlayer.setVolume(volume, volume);
 
-            UIHelper.showLog(TAG,"onPrepared isPause:"+isPause);
-            if(!isPause){
-                if(isFirstPrepared){
+            UIHelper.showLog(TAG, "onPrepared isPause:" + isPause);
+            if (!isPause) {
+                if (isFirstPrepared) {
                     isFirstPrepared = false;
-                    if(isAutoStart){
+                    if (isAutoStart) {
                         doStart();
                     }
-                }else if(isLoop){
+                } else if (isLoop) {
                     doStart();
                 }
             }
@@ -264,31 +267,42 @@ public class MyTextureView extends TextureView implements VideoController{
             if (mVideoWidth != 0 && mVideoHeight != 0) {
                 getSurfaceTexture().setDefaultBufferSize(mVideoWidth, mVideoHeight);
             }
-            if(containerView!=null){
-                setFixedSize(containerView.getWidth(),containerView.getHeight());
+            if (containerView != null) {
+                setFixedSize(containerView.getWidth(), containerView.getHeight());
             }
 
-            if(onVideoPrepareListener !=null){
-                onVideoPrepareListener.onPrepare(mVideoWidth,mVideoHeight);
+            if (videoStatusListenerList != null) {
+                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                    videoStatusListener.onPrepare(mVideoWidth, mVideoHeight);
+                }
             }
 
-            if(onVideoStatusListener!=null) {
-                onVideoStatusListener.onPrepare(mVideoWidth, mVideoHeight);
+            if (videoPrepareListenerList != null) {
+                for (OnVideoPrepareListener onPreparedListener : videoPrepareListenerList) {
+                    onPreparedListener.onPrepare(mVideoWidth, mVideoHeight);
+                }
             }
-
         }
     };
 
     private OnCompletionListener mCompletionListener = new OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    if(onVideoStatusListener!=null)onVideoStatusListener.onCompleted(mp);
-                    if(isLoop){
-                        doReStart();
-                    }else{
-                        if(onVideoStatusListener!=null)onVideoStatusListener.onPause();
+        public void onCompletion(MediaPlayer mp) {
+            if (videoStatusListenerList != null) {
+                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                    videoStatusListener.onCompleted(mp);
+                }
+            }
+            if (isLoop) {
+                doReStart();
+            } else {
+                if (videoStatusListenerList != null) {
+                    for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                        videoStatusListener.onPause();
                     }
                 }
-            };
+            }
+        }
+    };
 
     private OnInfoListener mInfoListener =
             new OnInfoListener() {
@@ -300,13 +314,17 @@ public class MyTextureView extends TextureView implements VideoController{
 //                            mMediaPlayer.setSurface(mSurface);
                             break;
                         case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                            if(onVideoStatusListener !=null){
-                                onVideoStatusListener.onBufferListen(true);
+                            if (videoStatusListenerList != null) {
+                                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                    videoStatusListener.onBufferListen(true);
+                                }
                             }
                             break;
                         case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                            if(onVideoStatusListener !=null){
-                                onVideoStatusListener.onBufferListen(false);
+                            if (videoStatusListenerList != null) {
+                                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                    videoStatusListener.onBufferListen(false);
+                                }
                             }
                             break;
                         default:
@@ -319,13 +337,15 @@ public class MyTextureView extends TextureView implements VideoController{
     private OnErrorListener mErrorListener =
             new OnErrorListener() {
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    UIHelper.showLog(TAG,"OnErrorListener what:"+what+",extra:"+extra);
-                    if(mMediaPlayer==null)return true;
-                    if(isLoop){
+                    UIHelper.showLog(TAG, "OnErrorListener what:" + what + ",extra:" + extra);
+                    if (mMediaPlayer == null) return true;
+                    if (isLoop) {
                         doReStart();
                     }
-                    if(onVideoStatusListener !=null){
-                        onVideoStatusListener.onError(mp, "文件损坏或解码异常");
+                    if (videoStatusListenerList != null) {
+                        for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                            videoStatusListener.onError(mp, "文件损坏或解码异常");
+                        }
                     }
                     return true;//播放异常，则停止播放，防止弹窗使界面阻塞
                 }
@@ -334,16 +354,16 @@ public class MyTextureView extends TextureView implements VideoController{
     private MediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener =
             new MediaPlayer.OnBufferingUpdateListener() {
                 public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                    UIHelper.showLog(TAG,"OnBufferingUpdateListener percent:"+percent);
+                    UIHelper.showLog(TAG, "OnBufferingUpdateListener percent:" + percent);
                     mCurrentBufferPercentage = percent;
                 }
             };
 
-    private SurfaceTextureListener mSurfaceTextureListener = new SurfaceTextureListener(){
+    private SurfaceTextureListener mSurfaceTextureListener = new SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureSizeChanged(final SurfaceTexture surface, final int width, final int height) {
-            UIHelper.showLog(TAG,"onSurfaceTextureSizeChanged");
-            if(outsideSurfaceTextureListener!=null){
+            UIHelper.showLog(TAG, "onSurfaceTextureSizeChanged");
+            if (outsideSurfaceTextureListener != null) {
                 outsideSurfaceTextureListener.onSurfaceTextureSizeChanged(surface, width, height);
             }
         }
@@ -351,20 +371,20 @@ public class MyTextureView extends TextureView implements VideoController{
         @Override
         public void onSurfaceTextureAvailable(final SurfaceTexture surface, final int width, final int height) {
             //部分机型，很奇葩的，会在息屏后调用 onSurfaceTextureDestroyed 马上又调用 onSurfaceTextureAvailable，从而导致视频还在播放中
-            UIHelper.showLog(TAG,"onSurfaceTextureAvailable");
+            UIHelper.showLog(TAG, "onSurfaceTextureAvailable");
             mSurface = new Surface(surface);
-            if(!TextUtils.isEmpty(videoPath)){
-                doPrepare(videoPath,thumbUrl);
+            if (!TextUtils.isEmpty(videoPath)) {
+                doPrepare(videoPath, thumbUrl);
             }
-            if(outsideSurfaceTextureListener!=null){
+            if (outsideSurfaceTextureListener != null) {
                 outsideSurfaceTextureListener.onSurfaceTextureAvailable(surface, width, height);
             }
         }
 
         @Override
         public boolean onSurfaceTextureDestroyed(final SurfaceTexture surface) {
-            UIHelper.showLog(TAG,"onSurfaceTextureDestroyed");
-            if(outsideSurfaceTextureListener!=null){
+            UIHelper.showLog(TAG, "onSurfaceTextureDestroyed");
+            if (outsideSurfaceTextureListener != null) {
                 outsideSurfaceTextureListener.onSurfaceTextureDestroyed(surface);
             }
 
@@ -376,15 +396,16 @@ public class MyTextureView extends TextureView implements VideoController{
             doRelease();
             return true;
         }
+
         @Override
         public void onSurfaceTextureUpdated(final SurfaceTexture surface) {
-            if(outsideSurfaceTextureListener!=null){
+            if (outsideSurfaceTextureListener != null) {
                 outsideSurfaceTextureListener.onSurfaceTextureUpdated(surface);
             }
             // do nothing
-            if(!isLoadingEnd){
+            if (!isLoadingEnd) {
                 isLoadingEnd = true;
-                if(onFirstSurfaceUpdateListener!=null)onFirstSurfaceUpdateListener.onListen();
+                if (onFirstSurfaceUpdateListener != null) onFirstSurfaceUpdateListener.onListen();
             }
         }
     };
@@ -394,13 +415,19 @@ public class MyTextureView extends TextureView implements VideoController{
     }
 
     @Override
-    public void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
-        this.onVideoStatusListener = onVideoStatusListener;
+    public void addOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener) {
+        if (videoStatusListenerList == null) {
+            videoStatusListenerList = new ArrayList<>();
+        }
+        videoStatusListenerList.add(onVideoStatusListener);
     }
 
     @Override
-    public void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
-        this.onVideoPrepareListener = onVideoPrepareListener;
+    public void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener) {
+        if (videoPrepareListenerList == null) {
+            videoPrepareListenerList = new ArrayList<>();
+        }
+        videoPrepareListenerList.add(onVideoPrepareListener);
     }
 
     @Override
@@ -414,14 +441,20 @@ public class MyTextureView extends TextureView implements VideoController{
     }
 
     @Override
+    public void doPrepareUI(String videoPath, String thumbUrl) {
+
+    }
+
+    @Override
     public void doPrepare(String videoPath, String thumbUrl) {
-        UIHelper.showLog(TAG,"doPrepare");
-        if(TextUtils.isEmpty(videoPath)){
+        UIHelper.showLog(TAG, "doPrepare");
+        if (TextUtils.isEmpty(videoPath)) {
             return;
         }
+        doPrepareUI(videoPath, thumbUrl);
         this.videoPath = videoPath;
         this.thumbUrl = thumbUrl;
-        if(TextUtils.isEmpty(this.videoPath)){
+        if (TextUtils.isEmpty(this.videoPath)) {
             return;
         }
         if (mSurface == null) {
@@ -429,20 +462,10 @@ public class MyTextureView extends TextureView implements VideoController{
         }
         isPrepared = false;
 
-        boolean isFirst = mMediaPlayer==null;
-        if(isFirst){
-            AudioManager am = (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-            if(am!=null){
-                am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-                am.abandonAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
-                    @Override
-                    public void onAudioFocusChange(int focusChange) {
-                        UIHelper.showLog(TAG,"onAudioFocusChange focusChange:"+focusChange);
-                    }
-                });
-            }
+        boolean isFirst = mMediaPlayer == null;
+        if (isFirst) {
             mMediaPlayer = new MediaPlayer();
-        }else{
+        } else {
             mMediaPlayer.reset();
         }
         try {
@@ -463,39 +486,46 @@ public class MyTextureView extends TextureView implements VideoController{
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mMediaPlayer.prepareAsync();
-            if(isFirst){
+            if (isFirst) {
                 requestLayout();
                 invalidate();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            UIHelper.showLog("Exception on doPrepare :"+e);
-            if(onVideoStatusListener!=null)onVideoStatusListener.onError(mMediaPlayer,"文件异常");
+            UIHelper.showLog("Exception on doPrepare :" + e);
+            if (videoStatusListenerList != null) {
+                for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                    videoStatusListener.onError(mMediaPlayer, "文件异常");
+                }
+            }
         }
     }
 
     @Override
     public void doStart() {
         isPause = false;
-        UIHelper.showLog(TAG,"doStart");
-        if(mMediaPlayer==null)return;
+        UIHelper.showLog(TAG, "doStart");
+        if (mMediaPlayer == null) return;
         try {
             mMediaPlayer.start();
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(mMediaPlayer==null)return;
+                    if (mMediaPlayer == null) return;
                     if (mMediaPlayer.getCurrentPosition() > 30) {
-                        if(onVideoStatusListener !=null){
-                            onVideoStatusListener.onStart();
+
+                        if (videoStatusListenerList != null) {
+                            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                                videoStatusListener.onStart();
+                            }
                         }
                     } else {
                         postDelayed(this, 50);
                     }
                 }
             }, 50);
-        }catch (Exception e){
-            UIHelper.showLog(TAG,"Exception doStart "+e);
+        } catch (Exception e) {
+            UIHelper.showLog(TAG, "Exception doStart " + e);
             e.printStackTrace();
             doReStart();
         }
@@ -504,52 +534,60 @@ public class MyTextureView extends TextureView implements VideoController{
     @Override
     public void doPause() {
         isPause = true;
-        UIHelper.showLog(TAG,"doPause");
-        if(mMediaPlayer==null)return;
-        if(!mMediaPlayer.isPlaying())return;
+        UIHelper.showLog(TAG, "doPause");
+        if (mMediaPlayer == null) return;
+        if (!mMediaPlayer.isPlaying()) return;
         mMediaPlayer.pause();
-        if(onVideoStatusListener !=null){
-            onVideoStatusListener.onPause();
+
+        if (videoStatusListenerList != null) {
+            for (OnVideoStatusListener videoStatusListener : videoStatusListenerList) {
+                videoStatusListener.onPause();
+            }
         }
     }
 
     @Override
     public void doSeekTo(int position) {
-        UIHelper.showLog(TAG,"doSeekTo "+position);
-        if(mMediaPlayer==null)return;
+        UIHelper.showLog(TAG, "doSeekTo " + position);
+        if (mMediaPlayer == null) return;
         mMediaPlayer.seekTo(position);
     }
 
     @Override
     public void doReStart() {
-        UIHelper.showLog(TAG,"doReStart ");
-        doPrepare(videoPath,thumbUrl);
+        UIHelper.showLog(TAG, "doReStart ");
+        doPrepare(videoPath, thumbUrl);
     }
 
     @Override
     public void doRelease() {
-        UIHelper.showLog(TAG,"doRelease ");
+        UIHelper.showLog(TAG, "doRelease ");
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            AudioManager am = (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-            if(am==null)return;
-            am.abandonAudioFocus(null);
+        }
+        if (videoStatusListenerList != null) {
+            videoStatusListenerList.clear();
+            videoStatusListenerList = null;
+        }
+        if (videoPrepareListenerList != null) {
+            videoPrepareListenerList.clear();
+            videoPrepareListenerList = null;
         }
     }
 
     @Override
     public boolean isPlaying() {
-        return mMediaPlayer!=null && mMediaPlayer.isPlaying();
+        return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 
     @Override
     public void setVoice(float volume) {
-        UIHelper.showLog(TAG,"setVoice ");
+        UIHelper.showLog(TAG, "setVoice ");
         this.volume = volume;
-        if(mMediaPlayer==null)return;
-        mMediaPlayer.setVolume(volume,volume);
+        if (mMediaPlayer == null) return;
+        mMediaPlayer.setVolume(volume, volume);
     }
 
     @Override

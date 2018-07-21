@@ -17,7 +17,7 @@
             android:background="@drawable/s_item_bg"
             android:onClick="doWallpaper"
             android:gravity="center"
-            android:text="壁纸测试"/>
+            android:text="doWallpaper"/>
 
         <View style="@style/HLine_app_bg1"/>
 

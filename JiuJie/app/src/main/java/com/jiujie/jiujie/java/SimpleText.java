@@ -1,24 +1,27 @@
 package com.jiujie.jiujie.java;
 
 
+import com.jiujie.base.util.UIHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleText {
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < 50; i++) {
-            int[] result = new int[5];
-            int index = new Random().nextInt(5);
-            for (int j = 0; j < 5; j++) {
-                result[j] = j == index ? 1 : 0;
-            }
-            System.out.println("index:" + index + ",result:"+ Arrays.toString(result));
-        }
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        list.add("3");
+        list.add("1");
+        list.remove("1");
+        list.remove("0");
+        System.out.println(list);
+
 
 //        File file = new File("C:/Users/Administrator/Desktop/20180531153838972.mp4");
 //        long startTime = System.currentTimeMillis();
@@ -31,6 +34,7 @@ public class SimpleText {
 //        System.out.println("fileMD5-1:"+ UIHelper.getFileMD5(file));
 //        endTime = System.currentTimeMillis();
 //        System.out.println("fileMD5-1 耗时:"+(endTime - startTime));
+
 
 
 //        List<String> dataList = new ArrayList<>();

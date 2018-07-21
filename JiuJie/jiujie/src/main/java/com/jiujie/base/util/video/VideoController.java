@@ -8,10 +8,11 @@ import android.media.MediaPlayer;
  */
 
 public interface VideoController {
-    void setOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener);
-    void setOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener);
+    void addOnVideoStatusListener(OnVideoStatusListener onVideoStatusListener);
+    void addOnVideoPrepareListener(OnVideoPrepareListener onVideoPrepareListener);
     boolean isPrepared();
     boolean isPause();
+    void doPrepareUI(String videoPath, String thumbUrl);
     void doPrepare(String videoPath,String thumbUrl);
     void doStart();
     void doPause();
