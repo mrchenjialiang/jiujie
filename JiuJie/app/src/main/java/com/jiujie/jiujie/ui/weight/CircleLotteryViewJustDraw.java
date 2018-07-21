@@ -21,13 +21,12 @@ import com.jiujie.base.util.UIHelper;
  * Email:576507648@qq.com
  */
 
-public class CircleLotteryView extends View {
+public class CircleLotteryViewJustDraw extends View {
 
     /**
      * 圆的直径
      */
     private int diameter;
-    private float mTotalMoveAngle;
     private RectF mRectF;
     private Paint mPaint;
     private String[] texts = {"时时彩", "11选5", "快3", "低频彩", "快乐8", "PK拾"};
@@ -57,24 +56,25 @@ public class CircleLotteryView extends View {
     private int jgAngle = 2;
     private ValueAnimator scrollAnimator;
     private int mTouchSlop;
-    private float mDownAngle;
+    private float tempDownAngle;
     private int currentPosition;
     private float downX;
     private float downY;
     private float downTotalMoveAngle;
+    private float rotateAngle;
     private float finalDownAngle;
 
-    public CircleLotteryView(@NonNull Context context) {
+    public CircleLotteryViewJustDraw(@NonNull Context context) {
         super(context);
         init();
     }
 
-    public CircleLotteryView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public CircleLotteryViewJustDraw(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CircleLotteryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public CircleLotteryViewJustDraw(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -116,12 +116,17 @@ public class CircleLotteryView extends View {
             mRectF.right = radius * 2 - itemHeight / 2; // 左下角x
             mRectF.bottom = radius * 2 - itemHeight / 2; // 右下角y
         }
+
+        canvas.save();
+        canvas.rotate(rotateAngle, getWidth() / 2, getHeight() / 2);
+        canvas.restore();
+
         //设置圆环宽度
         mPaint.setStrokeWidth(itemHeight);
         //设置为空心圆
         mPaint.setStyle(Paint.Style.STROKE);
 
-        float startAngle = -90 - singleAngleForArc / 2;
+        float startAngle = -90 - singleAngleForArc / 2 + rotateAngle;
         for (int i = 0; i < circleAllItemSize; i++) {
             mPaint.setColor(bgColors[i % bgColors.length]);
             canvas.drawArc(mRectF, startAngle, singleAngleForArc, false, mPaint);
@@ -138,7 +143,7 @@ public class CircleLotteryView extends View {
 
         for (int i = 0; i < circleAllItemSize; i++) {
             canvas.save();
-            canvas.rotate(singleAngle * i, getWidth() / 2, getHeight() / 2);
+            canvas.rotate(singleAngle * i + rotateAngle, getWidth() / 2, getHeight() / 2);
             float x = radius;
             float y = itemHeight / 2 + 14;
             canvas.drawText(texts[i % texts.length], x, y, mPaint);
@@ -156,10 +161,9 @@ public class CircleLotteryView extends View {
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                downTotalMoveAngle = mTotalMoveAngle;
-                finalDownAngle = mDownAngle = getAbsAngle(x, y);
+                finalDownAngle = tempDownAngle = getAbsAngle(x, y);
 
-                UIHelper.showLog(this, "mDownAngle:" + mDownAngle + ",mTotalMoveAngle:" + mTotalMoveAngle);
+                UIHelper.showLog(this, "tempDownAngle:" + tempDownAngle);
 
                 if (Math.pow(x - getWidth() / 2, 2) + Math.pow(y - getHeight() / 2, 2) > Math.pow(radius, 2)) {
                     return false;
@@ -175,10 +179,10 @@ public class CircleLotteryView extends View {
                 onEventMove(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-//                onEventUp(x, y);
+                onEventUp(x, y);
                 break;
             case MotionEvent.ACTION_CANCEL:
-//                onEventUp(x, y);
+                onEventUp(x, y);
                 break;
         }
         return true;
@@ -186,82 +190,64 @@ public class CircleLotteryView extends View {
 
     private void onEventMove(float x, float y) {
         float currentAngle = getAbsAngle(x, y);
-        float disAngle = currentAngle - mDownAngle;
-        UIHelper.showLog(this,"x:"+x+",y:"+y+",disAngle:"+disAngle);
-        mTotalMoveAngle += disAngle;
-        mDownAngle = currentAngle;
-        while (mTotalMoveAngle<0){
-            mTotalMoveAngle = mTotalMoveAngle + 360;
-        }
-
-//        UIHelper.showLog(this,"setRotation:"+mTotalMoveAngle+",disAngle:"+disAngle+",currentAngle:"+currentAngle);
-        setRotation(mTotalMoveAngle);
+        float disAngle = currentAngle - tempDownAngle;
+        tempDownAngle = currentAngle;
+        rotateAngle += disAngle;
+        rotateAngle = rotateAngle % 360;
+        invalidate();
     }
 
     private void onEventUp(float x, float y) {
-        if (Math.abs(downTotalMoveAngle - mTotalMoveAngle) < 0.1) {
-            doClick(x, y);
+        float upAngle = getAbsAngle(x, y);
+        UIHelper.showLog(this, "upAngle:" + upAngle);
+        if (Math.abs(upAngle - finalDownAngle) < 0.1) {
+            if (Math.pow(x - getWidth() / 2, 2) + Math.pow(y - getHeight() / 2, 2) < Math.pow(radius - itemHeight, 2)) {
+                return;
+            }
+            doClick(upAngle);
         } else {
             doFlying();
         }
     }
 
-    private void doClick(float x, float y) {
-        float resultAngle = getAbsAngle(x, y);
-        resultAngle = getResultAngle(resultAngle);
-        if (mTotalMoveAngle == resultAngle) {
+    private void doClick(float upAngle) {
+        UIHelper.showLog(this, "doClick");
+        float resultAngle = rotateAngle + 270 - getResultAngle(upAngle);
+        if (rotateAngle == resultAngle) {
             return;
         }
-        startAnim(mTotalMoveAngle, resultAngle);
+        startAnim(rotateAngle, resultAngle);
     }
 
     private void doFlying() {
-        float resultAngle = getResultAngle(mTotalMoveAngle);
+        UIHelper.showLog(this, "doFlying rotateAngle:" + rotateAngle);
 
-        if (mTotalMoveAngle == resultAngle) {
+        if (rotateAngle % singleAngle == 0) {
             return;
         }
-        startAnim(mTotalMoveAngle, resultAngle);
+        float resultAngle = rotateAngle;
+        resultAngle = getResultAngle(resultAngle);
+        if (rotateAngle == resultAngle) {
+            return;
+        }
+        startAnim(rotateAngle, resultAngle);
     }
 
     private float getResultAngle(float originalAngle) {
-        float resultAngle = 0;
-        float minDisAngle = 0;
-        if (originalAngle > 0) {
-            for (int i = 0; i < circleAllItemSize; i++) {
-                float disAngle = Math.abs(Math.abs(singleAngle * i) - Math.abs(originalAngle));
-                if (minDisAngle == 0 || minDisAngle > disAngle) {
-                    minDisAngle = disAngle;
-                    resultAngle = singleAngle * i;
-                }
+        float resultAngle;
+        int size = (int) (originalAngle / singleAngle);
+        float left = originalAngle - singleAngle * size;
+        if (Math.abs(left) >= singleAngle / 2) {
+            if (left > 0) {
+                resultAngle = singleAngle * (size + 1);
+            } else {
+                resultAngle = singleAngle * (size - 1);
             }
-        } else if (originalAngle < 0) {
-            for (int i = -circleAllItemSize + 1; i <= 0; i++) {
-                float disAngle = Math.abs(Math.abs(singleAngle * i) - Math.abs(originalAngle));
-                if (minDisAngle == 0 || minDisAngle > disAngle) {
-                    minDisAngle = disAngle;
-                    resultAngle = singleAngle * i;
-                }
-            }
+        } else {
+            resultAngle = singleAngle * size;
         }
+        resultAngle = resultAngle % 360;
         return resultAngle;
-    }
-
-    /**
-     * 旋转圆盘
-     */
-    private void getCheck() {
-        mTotalMoveAngle %= 360;
-        setRotation(mTotalMoveAngle);
-    }
-
-    /**
-     * 获取移动的角度
-     */
-    private float getAngle(float xTouch, float yTouch) {
-        float x = xTouch - radius;
-        float y = yTouch - radius;
-        return (float) (Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI);
     }
 
     /**
@@ -272,20 +258,6 @@ public class CircleLotteryView extends View {
         float x = xTouch - radius;
         float y = yTouch - radius;
         float angle = (float) (Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI);
-//        if(x == 0){
-//            if(y>0){
-//                return 90;
-//            }else{
-//                return 270;
-//            }
-//        }
-//        if(y == 0){
-//            if(x>0){
-//                return 0;
-//            }else{
-//                return 180;
-//            }
-//        }
         int quadrant = getQuadrant(xTouch, yTouch);
         if (quadrant == 1) {
             return 360 - Math.abs(angle);
@@ -312,41 +284,33 @@ public class CircleLotteryView extends View {
         }
     }
 
-
-    /**
-     * 通过角度判断象限
-     */
-    private int getQuadrantByAngle(int angle) {
-        if (angle <= 90) {
-            return 4;
-        } else if (angle <= 180) {
-            return 3;
-        } else if (angle <= 270) {
-            return 2;
-        } else {
-            return 1;
-        }
-    }
-
     private void startAnim(float startValue, float endValue) {
-
-        UIHelper.showLog(this, "startAnim start:" + startValue + ",end:" + endValue);
-        if (Math.abs(endValue - startValue) > 180) {
-            endValue = 360 - endValue;
+        UIHelper.showLog(this, "startAnim startValue:" + startValue + ",endValue:" + endValue);
+        startValue = startValue % 360;
+        endValue = endValue % 360;
+        if (Math.abs(Math.abs(endValue) - Math.abs(startValue)) > 180) {
+            if (startValue > 180) {
+                startValue = 180 - startValue;
+            } else if (startValue < -180) {
+                startValue = 180 + startValue;
+            }
+            if (endValue > 180) {
+                endValue = 180 - endValue;
+            } else if (endValue < -180) {
+                endValue = 180 + endValue;
+            }
         }
-        UIHelper.showLog(this, "startAnim1 start:" + startValue + ",end:" + endValue);
-
         scrollAnimator = ValueAnimator.ofFloat(startValue, endValue);
         scrollAnimator.setDuration(200);
         final float finalEndValue = endValue;
         scrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mTotalMoveAngle = (float) animation.getAnimatedValue();
+                rotateAngle = (float) animation.getAnimatedValue();
                 // 重新布局
-                getCheck();
-                if (mTotalMoveAngle == finalEndValue) {
-                    int position = (int) (mTotalMoveAngle / singleAngle);
+                invalidate();
+                if (rotateAngle == finalEndValue) {
+                    int position = (int) (rotateAngle / singleAngle);
                     if (position < 0) {
                         position = -position;
                     } else if (position > 0) {
@@ -358,7 +322,7 @@ public class CircleLotteryView extends View {
                             onItemChangeListener.onListen(position);
                         }
                     }
-                    UIHelper.showLog("CircleLotteryView", "startAnim mTotalMoveAngle:" + mTotalMoveAngle);
+                    UIHelper.showLog("CircleLotteryView1", "position:" + position + ",rotateAngle:" + rotateAngle);
                 }
             }
         });

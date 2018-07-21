@@ -7,70 +7,78 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <com.jiujie.jiujie.ui.weight.RingView
-        android:id="@+id/ringView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        app:image_angle="15"
-        app:image_padding="20"
-        app:list="@array/logo_list" />
+    <!--<com.jiujie.jiujie.ui.weight.RingView-->
+        <!--android:id="@+id/ringView"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="200dp"-->
+        <!--app:image_angle="15"-->
+        <!--app:image_padding="20"-->
+        <!--app:list="@array/logo_list" />-->
+
+    <!--<com.jiujie.jiujie.ui.weight.CircleLotteryViewGroup-->
+        <!--android:layout_width="300dp"-->
+        <!--android:layout_height="300dp" />-->
 
     <com.jiujie.jiujie.ui.weight.CircleLotteryView
         android:layout_width="300dp"
         android:layout_height="300dp" />
 
-    <com.jiujie.jiujie.ui.weight.CircleScrollViewGroup
-        android:layout_width="200dp"
-        android:layout_height="200dp">
+    <com.jiujie.jiujie.ui.weight.CircleLotteryViewJustDraw
+        android:layout_width="300dp"
+        android:layout_height="300dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text1" />
+    <!--<com.jiujie.jiujie.ui.weight.CircleScrollViewGroup-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="200dp">-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text2" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text1" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text3" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text2" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text4" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text3" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text5" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text4" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text6" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text5" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text7" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text6" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp50"
-            android:gravity="center"
-            android:text="text8" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text7" />-->
 
-    </com.jiujie.jiujie.ui.weight.CircleScrollViewGroup>
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/dp50"-->
+            <!--android:gravity="center"-->
+            <!--android:text="text8" />-->
+
+    <!--</com.jiujie.jiujie.ui.weight.CircleScrollViewGroup>-->
 
 </LinearLayout>
