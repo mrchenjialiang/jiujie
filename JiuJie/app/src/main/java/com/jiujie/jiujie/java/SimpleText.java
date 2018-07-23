@@ -1,8 +1,6 @@
 package com.jiujie.jiujie.java;
 
 
-import com.jiujie.base.util.UIHelper;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
@@ -13,14 +11,70 @@ public class SimpleText {
 
     public static void main(String[] args) {
 
-        List<String> list = new ArrayList<>();
-        list.add("1");
-        list.add("2");
-        list.add("3");
-        list.add("1");
-        list.remove("1");
-        list.remove("0");
-        System.out.println(list);
+        List<Float> list = new ArrayList<>();
+        list.add(0.41f);//1
+        list.add(0.3f);//2
+        list.add(0.25f);//3
+        list.add(0.22f);//4
+        list.add(0.20f);//5
+        list.add(0.18f);//6
+        list.add(0.16f);//7
+        list.add(0.14f);//8
+        list.add(0.12f);//9
+        list.add(0.11f);//10
+        list.add(0.11f);//11
+        list.add(0.10f);//12
+        list.add(0.10f);//13
+        list.add(0.09f);//14
+        list.add(0.085f);//15
+        list.add(0.083f);//16
+        list.add(0.081f);//17
+        list.add(0.078f);//18
+        list.add(0.075f);//19
+        list.add(0.074f);//20
+        list.add(0.073f);//21
+        list.add(0.071f);//22
+        list.add(0.070f);//23
+        list.add(0.068f);//24
+        list.add(0.067f);//25
+        list.add(0.066f);//26
+        list.add(0.063f);//27
+        list.add(0.060f);//28
+        list.add(0.056f);//29
+        list.add(0.055f);//30
+
+        int addNum = 21000;
+        int resultNum = 0;
+        int passDay = 365*10;
+        List<Integer> leftNumList = new ArrayList<>();//每天的存活用户
+        for (int i = 0; i < passDay; i++) {
+            leftNumList.add(0);
+        }
+        for (int i = 0; i < passDay; i++) {
+            if (i > list.size() - 1) {
+                Float liuCun = list.get(list.size() - 1);
+                //超过一个月后，留存大于0.01时，每3天减少千分之一的留存
+                if (liuCun > 0.01) {
+                    if(i % 3 == 0){
+                        liuCun = liuCun - 0.001f;
+                    }
+                }else if (liuCun > 0.001) {
+                    //超过一个月后，留存大于0.001时，每3天减少万分之一的留存
+                    if(i % 10 == 0){
+                        liuCun = liuCun - 0.0001f;
+                    }
+                }
+                list.add(liuCun);
+            }
+            if(i==150){
+                System.out.println("5个月后留存:" + list.get(i));
+            }
+            leftNumList.set(i, (int) (addNum * list.get(i)));
+        }
+        for (int i = 0; i < passDay; i++) {
+            resultNum += leftNumList.get(i);
+        }
+        System.out.println("resultNum:" + resultNum);
 
 
 //        File file = new File("C:/Users/Administrator/Desktop/20180531153838972.mp4");
@@ -34,7 +88,6 @@ public class SimpleText {
 //        System.out.println("fileMD5-1:"+ UIHelper.getFileMD5(file));
 //        endTime = System.currentTimeMillis();
 //        System.out.println("fileMD5-1 耗时:"+(endTime - startTime));
-
 
 
 //        List<String> dataList = new ArrayList<>();

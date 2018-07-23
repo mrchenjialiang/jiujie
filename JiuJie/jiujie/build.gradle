@@ -83,7 +83,6 @@ dependencies {
     compile "${rootProject.ext.eventbus}"
     compile "${rootProject.ext.barlibrary}"
 
-
 //    compile project(':glide3')
 //    compile(name: 'glide3-release', ext: 'aar')
     compile "${rootProject.ext.glide}"
@@ -94,14 +93,5 @@ dependencies {
     compile "${rootProject.ext.videocache}"
 
     compile 'com.google.android.exoplayer:exoplayer-core:2.8.1'
-//    compile 'com.google.android.exoplayer:exoplayer:r2.6.1'
-//    compile 'com.google.android.exoplayer:exoplayer:r2.5.1'
-//    compile 'com.google.android.exoplayer:exoplayer-ui:r2.5.1'
-
-//    compile 'com.google.android.exoplayer:exoplayer:r2.8.0'
-//    compile 'com.google.android.exoplayer:extension-rtmp:r2.5.1'
-//    compile 'com.google.android.exoplayer:exoplayer:r2.6.1'
-
-//    使用implementation还是api需要视情况而定，implementation只能用于当前module，如果在库中以这种方式设置依赖，那么在app的module是引用不到的，但是api可以，api相当于compile。
 
 }

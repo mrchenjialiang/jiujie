@@ -46,9 +46,11 @@ public abstract class BaseDialog {
         if (layout == null) {
             throw new NullPointerException("BaseDialog getLayoutId or getLayout should one not be null or 0");
         }
-        initUI(layout);
 
         dialog = new Dialog(context, R.style.Dialog);
+
+        initUI(layout);
+
 //		dialog = new Dialog(activity, R.style.bottom_dialog);
         Window dialogWindow = dialog.getWindow();
         if (dialogWindow == null) {

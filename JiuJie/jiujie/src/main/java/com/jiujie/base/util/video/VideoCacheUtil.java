@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.danikula.videocache.CacheListener;
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.danikula.videocache.file.Md5FileNameGenerator;
 import com.jiujie.base.util.UIHelper;
@@ -95,15 +94,29 @@ public class VideoCacheUtil {
             } else {
                 //仅能操作网络视频
                 HttpProxyCacheServer proxyService = getProxyService();
-                proxyService.registerCacheListener(new CacheListener() {
-                    @Override
-                    public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
-
-                    }
-                }, url);
-                String proxyUrl = proxyService.getProxyUrl(url);
-                UIHelper.showLog(this, "getVideoPath return proxyUrl:" + proxyUrl);
-                return proxyUrl;
+//                proxyService.registerCacheListener(new CacheListener() {
+//                    @Override
+//                    public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
+//
+//                    }
+//                }, url);
+                if (proxyService == null) {
+                    UIHelper.showLog(this, "getVideoPath fail because proxyService == null");
+                    return url;
+                }
+                if (TextUtils.isEmpty(url)) {
+                    UIHelper.showLog(this, "getVideoPath fail because url isEmpty:" + url);
+                    return url;
+                }
+                try {
+                    String proxyUrl = proxyService.getProxyUrl(url);
+                    UIHelper.showLog(this, "getVideoPath return proxyUrl:" + proxyUrl);
+                    return proxyUrl;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    UIHelper.showLog(this, "getVideoPath fail becauseException :" + e);
+                    return url;
+                }
             }
         } else {
             return url;

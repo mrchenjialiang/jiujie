@@ -43,9 +43,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppBaseTheme.TranslucentStatus">
+        <!--android:theme="@style/SplashTheme"-->
         <activity
             android:name=".ui.activity.MainActivity"
-            android:theme="@style/SplashTheme">
+            android:launchMode="singleTask"
+            android:theme="@style/Slide.trans">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -89,6 +91,16 @@
         <activity
             android:name=".ui.activity.VideoExoActivity"
             android:theme="@style/Slide.trans" />
+        <activity
+            android:name=".ui.activity.CsActivity"
+            android:theme="@style/Slide.trans" />
+        <activity
+            android:name=".ui.activity.mediacodec.MediaCodecActivity"
+            android:theme="@style/Slide.trans" />
+        <activity android:name=".ui.activity.mediacodec.decoder.AudioDecoderActivity" />
+        <activity android:name=".ui.activity.mediacodec.decoder.VideoDecoderActivity" />
+        <activity android:name=".ui.activity.mediacodec.VideoDecoderDemo1Activity" />
+
 
         <service android:name=".service.JiuJieKeepService" />
         <service
@@ -114,7 +126,11 @@
                 android:resource="@xml/videowallpaper_path" />
         </service>
 
-        <activity android:name=".ui.activity.CsActivity"></activity>
+        <receiver
+            android:name=".receiver.HomeReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
     </application>
 
 </manifest>

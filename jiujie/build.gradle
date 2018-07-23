@@ -54,7 +54,6 @@ ext {
     multidex = "com.android.support:multidex:1.0.1"
 
     butterknife7 = "com.jakewharton:butterknife:7.0.1"
-    rxpermissions = "com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar"
 
     //DragSlopLayout有用
     recyclerview_animators = "jp.wasabeef:recyclerview-animators:2.2.3"

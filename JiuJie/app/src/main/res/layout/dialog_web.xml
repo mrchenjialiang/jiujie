@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <!--<com.jiujie.base.widget.ScaleFrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginLeft="50dp"-->
+        <!--android:layout_marginRight="50dp"-->
+        <!--app:scaleHeight="1.29">-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:gravity="center">-->
+
+            <!--<WebView-->
+                <!--android:id="@+id/dw_webView"-->
+                <!--android:layout_width="200dp"-->
+                <!--android:layout_height="257dp" />-->
+
+        <!--</LinearLayout>-->
+
+    <!--</com.jiujie.base.widget.ScaleFrameLayout>-->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <WebView
+            android:id="@+id/dw_webView"
+            android:layout_width="@dimen/dp240"
+            android:layout_height="@dimen/dp310"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:layout_width="@dimen/dp250"
+            android:layout_height="@dimen/dp321"
+            android:src="@drawable/hongbao"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</LinearLayout>

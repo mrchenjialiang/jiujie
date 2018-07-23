@@ -5,8 +5,14 @@
     android:layout_height="match_parent"
     tools:context="com.jiujie.jiujie.ui.activity.VideoActivity">
 
-    <SurfaceView
-        android:id="@+id/ve_surfaceView"
+    <!--<SurfaceView-->
+        <!--android:id="@+id/ve_surfaceView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"/>-->
+
+    <TextureView
+        android:id="@+id/ve_textureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"/>

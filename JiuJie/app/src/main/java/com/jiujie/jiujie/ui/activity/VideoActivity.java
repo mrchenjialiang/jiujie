@@ -1,5 +1,6 @@
 package com.jiujie.jiujie.ui.activity;
 
+import android.os.Environment;
 import android.view.ViewGroup;
 
 import com.jiujie.base.util.UIHelper;
@@ -32,7 +33,8 @@ public class VideoActivity extends MyBaseActivity {
 //    private String videoPath = Environment.getExternalStorageDirectory()+"/wanghong.mp4";//问题网红
 //    private String videoPath = Environment.getExternalStorageDirectory()+"/video_heng.mp4";//横屏视频
 //    private String videoPath = Environment.getExternalStorageDirectory()+"/normal.mp4";//普通视频
-    private String videoPath = "/storage/emulated/0/DCIM/Camera/00b25e14a5ed3af4059e8341cb54f497.mp4";//R11本机视频
+    private String videoPath = Environment.getExternalStorageDirectory()+"/111111.mp4";//伪横屏视频
+//    private String videoPath = "/storage/emulated/0/DCIM/Camera/00b25e14a5ed3af4059e8341cb54f497.mp4";//R11本机视频
 
     @Override
     public void initUI() {
@@ -49,6 +51,8 @@ public class VideoActivity extends MyBaseActivity {
         videoUtil.addOnVideoPrepareListener(new OnVideoPrepareListener() {
             @Override
             public void onPrepare(int videoWidth, int videoHeight) {
+                UIHelper.showLog("videoWidth:"+videoWidth);
+                UIHelper.showLog("videoHeight:"+videoHeight);
                 setLoadingEnd();
             }
         });

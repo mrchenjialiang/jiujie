@@ -3,6 +3,7 @@ package com.jiujie.base.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.jiujie.base.R;
+import com.jiujie.base.util.UIHelper;
 
 
 /**
@@ -85,7 +87,6 @@ public class WebActivity extends BaseActivity {
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         url = intent.getStringExtra("url");
-
     }
 
     private void initTitle() {
@@ -162,6 +163,12 @@ public class WebActivity extends BaseActivity {
                 view.loadUrl(url);
                 return true;
             }
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            UIHelper.showLog("onPageStarted:"+url);
         }
     }
 

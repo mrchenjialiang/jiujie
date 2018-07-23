@@ -24,6 +24,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -51,6 +53,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -457,6 +460,16 @@ public class UIHelper {
         return screenHeight;
     }
 
+    public static int getScreenWidth(Context context){
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        return dm.widthPixels;
+    }
+
+    public static int getScreenHeight(Context context){
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        return dm.heightPixels;
+    }
+
     public static int getScreenWidthByRead(Context context) {
         Integer screenWidth = SharePHelper.instance(context).readObject("screenWidth");
         return screenWidth == null ? 0 : screenWidth;
@@ -529,10 +542,11 @@ public class UIHelper {
     /**
      * 时间格式转换
      */
-    public static long timeStrToTimeLong(String timeStr, String format) {
+    public static long timeStrToTimeLong(String timeStr, String timeFormat) {
+        timeFormat = checkTimeFormat(timeFormat);
         Date date;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
             sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
             date = sdf.parse(timeStr);
         } catch (ParseException e) {
@@ -545,6 +559,8 @@ public class UIHelper {
      * 时间格式转换
      */
     public static String timeStrToTimeStr(String timeStr, String oldFormat, String newFormat) {
+        oldFormat = checkTimeFormat(oldFormat);
+        newFormat = checkTimeFormat(newFormat);
         Date date;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(oldFormat);
@@ -576,10 +592,11 @@ public class UIHelper {
      * 将时间戳转换成类似yyyy-MM-dd HH:mm:ss
      *
      * @param timestamp  时间戳  秒为单位
-     * @param timeFromat 时间格式
+     * @param timeFormat 时间格式
      */
-    public static String timeDoubleMiaoToString(Double timestamp, String timeFromat) {
-        SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+    public static String timeDoubleMiaoToString(Double timestamp, String timeFormat) {
+        timeFormat = checkTimeFormat(timeFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
         sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date((long) (timestamp * 1000L)));
     }
@@ -588,10 +605,11 @@ public class UIHelper {
      * 将时间戳转换成类似yyyy-MM-dd HH:mm:ss
      *
      * @param timestamp  时间戳  秒为单位
-     * @param timeFromat 时间格式
+     * @param timeFormat 时间格式
      */
-    public static String timeLongMiaoToString(long timestamp, String timeFromat) {
-        SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+    public static String timeLongMiaoToString(long timestamp, String timeFormat) {
+        timeFormat = checkTimeFormat(timeFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
         sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date(timestamp * 1000L));
     }
@@ -599,8 +617,9 @@ public class UIHelper {
     /**
      * 毫秒 时间戳转换为String
      */
-    public static String timeLongHaoMiaoToString(long millis, String timeFromat) {
-        SimpleDateFormat sdf = new SimpleDateFormat(timeFromat);
+    public static String timeLongHaoMiaoToString(long millis, String timeFormat) {
+        timeFormat = checkTimeFormat(timeFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
         sdf.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID));
         return sdf.format(new Date(millis));
     }
@@ -608,10 +627,20 @@ public class UIHelper {
     /**
      * 毫秒 时间戳转换为String
      */
-    public static String timeLongHaoMiaoToString(long millis, String timeForm, String timeZoneId) {
-        SimpleDateFormat sdf = new SimpleDateFormat(timeForm);
+    public static String timeLongHaoMiaoToString(long millis, String timeFormat, String timeZoneId) {
+        timeFormat = checkTimeFormat(timeFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
         sdf.setTimeZone(TimeZone.getTimeZone(timeZoneId));
         return sdf.format(new Date(millis));
+    }
+
+    private static String checkTimeFormat(String timeFormat) {
+        if (TextUtils.isEmpty(timeFormat)) {
+            timeFormat = "yyyy-MM-dd";
+        } else {
+            timeFormat = timeFormat.replaceAll("YYYY", "yyyy");
+        }
+        return timeFormat;
     }
 
     /**
@@ -709,6 +738,15 @@ public class UIHelper {
         WaitingDialog waitingDialog = new WaitingDialog(activity);
         waitingDialog.create();
         return waitingDialog.getDialog();
+    }
+
+    /**
+     * 清空剪切板
+     */
+    public static void clearClipBoard() {
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) APP.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) return;
+        clipboard.setPrimaryClip(ClipData.newPlainText("text", ""));
     }
 
     /**
@@ -2119,6 +2157,42 @@ public class UIHelper {
             if (am == null) return;
             am.abandonAudioFocus(null);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void getVideoInfo(String videoPath) {
+        try {
+            long startTime = System.currentTimeMillis();
+            MediaExtractor extractor = new MediaExtractor();
+            extractor.setDataSource(videoPath);
+            //遍历媒体轨道
+            for (int i = 0; i < extractor.getTrackCount(); i++) {
+                MediaFormat format = extractor.getTrackFormat(i);
+                String mime = format.getString(MediaFormat.KEY_MIME);
+                UIHelper.showLog("mime:" + mime);
+                if (mime.startsWith("video/")) {//视频轨道
+                    int rotation = 0;
+                    int width = 0;
+                    int height = 0;
+                    if (format.containsKey("rotation-degrees")) {
+                        rotation = format.getInteger("rotation-degrees");
+                    }
+                    if (format.containsKey("height")) {
+                        height = format.getInteger("height");
+                    }
+                    if (format.containsKey("width")) {
+                        width = format.getInteger("width");
+                    }
+
+                    UIHelper.showLog("getVideoInfo width:" + width + "，height:" + height + "，rotation:" + rotation);
+                    break;
+                }
+            }
+            extractor.release();
+            long endTime = System.currentTimeMillis();
+            UIHelper.showLog("getVideoInfo time:" + (endTime - startTime));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

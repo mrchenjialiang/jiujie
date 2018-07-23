@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -34,6 +33,7 @@ public class VScrollViewGroup extends FrameLayout {
     private float tempX, tempY;
     private int mTouchSlop;
     private OnTouchListen onTouchListen;
+    private boolean isLoop = true;
 
     public VScrollViewGroup(Context context) {
         super(context);
@@ -246,7 +246,8 @@ public class VScrollViewGroup extends FrameLayout {
     private void startAnim(int fromValue, final int toValue, final AnimType animType) {
         UIHelper.showLog("startAnim fromValue:" + fromValue + ",toValue:" + toValue);
         if (fromValue == toValue) return;
-        int needTime = Math.max(200, Math.min(400, Math.abs(toValue - fromValue)));
+        int needTime = Math.max(100, Math.min(400, Math.abs(toValue - fromValue)/10));
+//        needTime = Math.abs(toValue - fromValue)/10;
         if (valueAnimator != null && valueAnimator.isRunning()) {
             valueAnimator.cancel();
         }
@@ -348,13 +349,13 @@ public class VScrollViewGroup extends FrameLayout {
                 // 满足此条件屏蔽子类的touch事件
                 if (orientation == Orientation.horizontal) {
                     if (Math.abs(currentX - downX) > mTouchSlop && Math.abs(currentY - downY) <= Math.abs(currentX - downX)) {
-                        Log.e("VScrollViewGroup", "水平拦截");
+                        UIHelper.showLog("VScrollViewGroup", "水平拦截");
                         isTouchMoveEnable = true;
                         return true;
                     }
                 } else if (orientation == Orientation.vertical) {
                     if (Math.abs(currentY - downY) > mTouchSlop && Math.abs(currentX - downX) <= Math.abs(currentY - downY)) {
-                        Log.e("VScrollViewGroup", "垂直拦截");
+                        UIHelper.showLog("VScrollViewGroup", "垂直拦截");
                         isTouchMoveEnable = true;
                         return true;
                     }
@@ -436,6 +437,7 @@ public class VScrollViewGroup extends FrameLayout {
             if (moveX != 0) {
                 mVelocityTracker.computeCurrentVelocity(1000);
                 float velocity = mVelocityTracker.getXVelocity(0);
+                UIHelper.showLog(this,"velocity:"+velocity);
                 if (Math.abs(moveX) >= getWidth() / 2 || Math.abs(velocity) > 1000) {
                     if (moveX > 0) {
                         startAnim(moveX, getWidth(), AnimType.toNext);
@@ -450,6 +452,7 @@ public class VScrollViewGroup extends FrameLayout {
             if (moveY != 0) {
                 mVelocityTracker.computeCurrentVelocity(1000);
                 float velocity = mVelocityTracker.getYVelocity(0);
+                UIHelper.showLog(this,"velocity:"+velocity);
                 if (Math.abs(moveY) >= getHeight() / 2 || Math.abs(velocity) > 1000) {
                     if (moveY > 0) {
                         startAnim(moveY, getHeight(), AnimType.toNext);

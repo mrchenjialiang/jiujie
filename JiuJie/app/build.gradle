@@ -76,11 +76,9 @@ dependencies {
     compile "${rootProject.ext.converter_gson}"
     compile "${rootProject.ext.adapter_rxjava}"
     compile "${rootProject.ext.converter_scalars}"
-    compile "${rootProject.ext.umeng}"
     compile "${rootProject.ext.photoview}"
     compile "${rootProject.ext.eventbus}"
 
-    compile "${rootProject.ext.rxpermissions}"
     compile "${rootProject.ext.barlibrary}"
 
     compile "${rootProject.ext.butterknife7}"

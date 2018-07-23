@@ -158,7 +158,7 @@ public class VideoExoUtil implements VideoController {
             public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
                 videoWidth = width;
                 videoHeight = height;
-                UIHelper.showLog(TAG, "onVideoSizeChanged");
+                UIHelper.showLog(TAG, "onVideoSizeChanged width:" + width + ",height:" + height + ",unappliedRotationDegrees:" + unappliedRotationDegrees + ",pixelWidthHeightRatio:" + pixelWidthHeightRatio);
             }
 
             @Override

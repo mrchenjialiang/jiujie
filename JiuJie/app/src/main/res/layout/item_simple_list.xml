@@ -7,11 +7,10 @@
         android:id="@+id/iml_text"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:background="@drawable/s_item_bg"
         android:gravity="center"
-        android:textColor="@color/white6"
-        android:text="lala"/>
+        android:text="text"/>
 
-    <View style="@style/HLine"
-        android:background="@color/white2"/>
+    <View style="@style/HLine_app_bg1"/>
 
 </LinearLayout>

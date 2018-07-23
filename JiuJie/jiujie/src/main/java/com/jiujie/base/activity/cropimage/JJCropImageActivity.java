@@ -25,21 +25,21 @@ public class JJCropImageActivity extends BaseActivity {
     /**
      * @param scaleHeight 裁剪的宽高比例
      */
-    public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight, OnListener<String> onCropListener){
-        launch(activity, path, savePath, saveName, scaleHeight,0, onCropListener);
+    public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight, OnListener<String> onCropListener) {
+        launch(activity, path, savePath, saveName, scaleHeight, 0, onCropListener);
     }
 
     /**
      * @param scaleHeight 裁剪的宽高比例
      */
-    public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight,int cropFileMaxLength, OnListener<String> onCropListener){
+    public static void launch(Activity activity, String path, String savePath, String saveName, float scaleHeight, int cropFileMaxLength, OnListener<String> onCropListener) {
         JJCropImageActivity.onCropListener = onCropListener;
-        activity.startActivity(new Intent(activity,JJCropImageActivity.class)
-                .putExtra("path",path)
-                .putExtra("savePath",savePath)
-                .putExtra("saveName",saveName)
-                .putExtra("scaleHeight",scaleHeight)
-                .putExtra("cropFileMaxLength",cropFileMaxLength)
+        activity.startActivity(new Intent(activity, JJCropImageActivity.class)
+                .putExtra("path", path)
+                .putExtra("savePath", savePath)
+                .putExtra("saveName", saveName)
+                .putExtra("scaleHeight", scaleHeight)
+                .putExtra("cropFileMaxLength", cropFileMaxLength)
         );
     }
 
@@ -47,10 +47,11 @@ public class JJCropImageActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         onCropListener = null;
-        if(waitingDialog!=null&&waitingDialog.isShowing()){
+        if (waitingDialog != null && waitingDialog.isShowing()) {
             waitingDialog.dismiss();
         }
     }
+
     private void initTitle() {
         LinearLayout baseTitleLayout = getBaseTitleLayout();
         baseTitleLayout.findViewById(R.id.tcp_btn_back).setOnClickListener(new View.OnClickListener() {
@@ -72,13 +73,13 @@ public class JJCropImageActivity extends BaseActivity {
         mBtnEnsure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(waitingDialog==null) waitingDialog = UIHelper.getWaitingDialog(mActivity);
+                if (waitingDialog == null) waitingDialog = UIHelper.getWaitingDialog(mActivity);
                 waitingDialog.show();
                 cropImageView.doSave(new OnListener<String>() {
                     @Override
                     public void onListen(String s) {
                         waitingDialog.dismiss();
-                        if(onCropListener!=null){
+                        if (onCropListener != null) {
                             onCropListener.onListen(s);
                         }
                         finish();
@@ -98,12 +99,12 @@ public class JJCropImageActivity extends BaseActivity {
     public void initUI() {
         Intent intent = getIntent();
         String mPath = intent.getStringExtra("path");
-        if(TextUtils.isEmpty(mPath)){
+        if (TextUtils.isEmpty(mPath)) {
             UIHelper.showToastShort("图片不存在");
             finish();
             return;
         }
-        if(!new File(mPath).exists()){
+        if (!new File(mPath).exists()) {
             UIHelper.showToastShort("图片不存在");
             finish();
             return;
@@ -116,7 +117,7 @@ public class JJCropImageActivity extends BaseActivity {
         initTitle();
 
         cropImageView = (JJCropImageView) findViewById(R.id.ci_cropImageView);
-        cropImageView.setCropData(mPath, savePath, saveName, scaleHeight,cropFileMaxLength);
+        cropImageView.setCropData(mPath, savePath, saveName, scaleHeight, cropFileMaxLength);
 
         //自带的，返回键不好整，可能颜色和背景对不上，不好定死
 //        mTitle.setLeftButtonBack();
